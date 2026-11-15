@@ -1,0 +1,117 @@
+@font-face {
+  font-family: Geist;
+  src: url("images/notier-geist.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+}
+:root {
+  --paper: #f8f7f3;
+  --surface: #fff;
+  --ink: #181816;
+  --muted: #55534c;
+  --edge: #dfddd4;
+  --accent: #244438;
+  font-family: Geist, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-size: 1rem; line-height: 1.6; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-underline-offset: .2em; }
+a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+.skip {
+  position: absolute;
+  z-index: 1;
+  top: .5rem;
+  left: .5rem;
+  padding: .5rem 1rem;
+  background: var(--surface);
+  clip-path: inset(50%);
+}
+.skip:focus { clip-path: none; }
+.shell { width: min(100% - 3rem, 71rem); margin-inline: auto; }
+.top, .bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1rem;
+}
+.top { border-bottom: 1px solid var(--edge); }
+.brand { display: inline-flex; align-items: center; gap: .55rem; font-size: 1.1rem; font-weight: 700; text-decoration: none; }
+.brand img { border-radius: .35rem; }
+nav { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; }
+nav a { color: var(--muted); font-size: .91rem; font-weight: 500; text-decoration: none; }
+nav a:hover, .bottom a:hover { color: var(--ink); text-decoration: underline; }
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(1.75rem, 5vw, 4.75rem);
+  padding: clamp(3.5rem, 9vw, 7rem) 0 clamp(3rem, 7vw, 5rem);
+}
+.platform { margin: 0 0 .8rem; color: var(--muted); font-size: .86rem; font-weight: 600; }
+h1, h2, p, figure { margin-top: 0; }
+h1 {
+  margin-bottom: 1.15rem;
+  font-size: clamp(2.3rem, 5vw, 4.6rem);
+  line-height: .99;
+  font-weight: 740;
+  letter-spacing: -.067em;
+}
+.intro h1 span { font-size: .67em; font-weight: 680; color: var(--muted); letter-spacing: -.05em; }
+.lead { margin-bottom: 1.6rem; max-width: 38ch; color: var(--muted); font-size: clamp(1rem, 1.7vw, 1.15rem); }
+.actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 2.7rem;
+  padding: .44rem .85rem;
+  border: 1px solid var(--edge);
+  border-radius: .55rem;
+  font-size: .9rem;
+  font-weight: 620;
+  text-decoration: none;
+}
+.primary { color: var(--surface); background: var(--ink); border-color: var(--ink); }
+.primary:hover { background: var(--accent); border-color: var(--accent); }
+.secondary { background: var(--surface); }
+.secondary:hover { border-color: var(--ink); }
+.showcase { min-width: 0; margin: 0; }
+.showcase img { width: 100%; height: auto; border: 1px solid var(--edge); border-radius: clamp(.7rem, 1.8vw, 1.15rem); background: #f1f1f1; }
+figcaption { margin-top: .45rem; color: var(--muted); font-size: .8rem; text-align: right; }
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(.85rem, 4vw, 2.75rem);
+  padding: 1.65rem 0 2.2rem;
+  border-top: 1px solid var(--edge);
+}
+.features h2 { margin-bottom: .3rem; font-size: 1rem; font-weight: 680; }
+.features p { color: var(--muted); font-size: .94rem; margin-bottom: .45rem; }
+code { font: .87em ui-monospace, monospace; }
+.text-link { color: var(--accent); font-size: .88rem; font-weight: 600; }
+.bottom { border-top: 1px solid var(--edge); color: var(--muted); font-size: .91rem; }
+.bottom p { margin: 0; }
+.policy { max-width: 47rem; padding-block: clamp(2rem, 6vw, 4.5rem); }
+.policy h1 { font-size: clamp(2rem, 5.6vw, 3.6rem); line-height: 1.06; }
+.policy h2 { margin: 1.9rem 0 .4rem; font-size: 1.2rem; line-height: 1.3; }
+.policy p { color: var(--muted); }
+.policy a { color: var(--accent); }
+.policy nav { margin-bottom: 1.8rem; }
+.policy nav a[aria-current="page"] { font-weight: 720; text-decoration: underline; }
+.policy code { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .lead { max-width: 54ch; }
+}
+@media (max-width: 520px) {
+  .shell { width: calc(100% - 2rem); }
+  .features { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .bottom { flex-direction: column; align-items: flex-start; gap: .45rem; }
+}

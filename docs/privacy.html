@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy policy · Notier">
+  <title>Notier Privacy Policy</title>
+  <link rel="canonical" href="https://nullnode1.github.io/notier-app/privacy.html">
+  <link rel="icon" href="images/notier-oauth-logo.png" type="image/png">
+  <link rel="stylesheet" href="notier.css">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="shell top">
+    <a class="brand" href="./"><img src="images/notier-oauth-logo.png" alt="" width="32" height="32">Notier</a>
+    <nav aria-label="Notier"><a href="./">Home</a><a href="https://github.com/nullnode1/notier-app">GitHub</a></nav>
+  </header>
+  <main class="shell policy" id="content">
+    <h1>Notier Privacy Policy</h1>
+    <nav aria-label="Language">
+      <a href="privacy.html" lang="en" aria-current="page">English</a>
+      <a href="privacy-tr.html" lang="tr">Türkçe</a>
+      <a href="privacy-ru.html" lang="ru">Русский</a>
+    </nav>
+    <p>Last updated 15 November 2026.</p>
+    <h2 id="notes-on-your-device">Notes on your device</h2>
+    <p>Notier is a Markdown editor for Android. It opens notes in the folder you choose through Android’s file picker. Android may remember this folder or individual file permissions so you can open them again. Notier keeps settings, pinned-note references, and any unsaved draft in its private app storage on your device. The app can be used with local files without a Google account.</p>
+    <h2 id="google-drive">Google Drive</h2>
+    <p>Drive is optional. If you connect it, Google handles account selection and authorization. Notier uses the <code>https://www.googleapis.com/auth/drive</code> scope to browse existing folders, identify Markdown notes, open and save them, and perform changes you request, such as moving a note or sending it to Trash. Notier reads file and folder metadata, such as names, types, identifiers, modification dates, and capabilities, to build the list and count notes. It reads Markdown content when you open a Drive note.</p>
+    <p>To restore a session, Notier can keep the selected Google account name and last Drive folder identifier in private app storage. The access token used by the app and its short-lived listing cache are held in memory. Google Play services manages authorization on the device. If you open notes through Android’s file picker instead, Notier may retain the grants and references Android provides for the files you selected.</p>
+    <h2 id="how-data-is-used-and-shared">How data is used and shared</h2>
+    <p>Notier makes Drive requests directly from your device to Google. The app has no Notier backend, advertising SDK, or usage-analytics service. Notier does not send Drive notes to its developer. If you choose to share or export a note through Android, the destination you select receives it. Markdown previews can request remote images, audio, or video from the services referenced in a note. Those services can receive your IP address and ordinary request data when the media loads.</p>
+    <p>Notier’s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including its Limited Use requirements.</p>
+    <h2 id="your-choices-and-deletion">Your choices and deletion</h2>
+    <p>In Notier, open <strong>Google Drive → Drive account → Sign out of Drive</strong> to clear the direct Drive session and request that Google revoke the app’s access. You can check or remove access in your <a href="https://myaccount.google.com/connections">Google Account connections</a>. Files in Drive remain in your Drive account unless you move them to Trash or delete them. For files added through Android’s picker, use <strong>Remove from list</strong> to remove the entry and release its saved grant.</p>
+    <p>Clearing Notier’s app data in Android settings removes local app settings, remembered entries, and unsaved drafts. Notes you saved as files in device folders or Drive can be managed from those locations.</p>
+    <h2 id="contact">Contact</h2>
+    <p>For privacy questions, use the <a href="https://github.com/nullnode1/notier-app/issues">Issues</a> section of the Notier repository. Describe the issue without posting note contents, account credentials, or access tokens.</p>
+  </main>
+  <footer class="shell bottom">
+    <p><a href="./">Notier</a></p>
+    <p><a href="https://github.com/nullnode1/notier-app/blob/main/LICENSE">GNU GPL v3</a></p>
+  </footer>
+</body>
+</html>
