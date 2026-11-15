@@ -24,6 +24,7 @@ import android.os.SystemClock
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import android.text.Editable
+import android.text.Html
 import android.text.InputType
 import android.text.TextWatcher
 import android.text.TextUtils
@@ -56,6 +57,7 @@ import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.SeekBar
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
@@ -141,6 +143,9 @@ internal class MainActivity : Activity() {
     private var leavingAfterSave = false
     private var pickerPending = false
     private var keepNoteAfterRecreate = false
+    private var resumed = false
+    private var pendingUpdates = false
+    private var launchNotesShown = false
     private var pendingCopyUri: Uri? = null
     private var pendingCopyFlags = 0
     private var applyingEdit = false
@@ -171,9 +176,11 @@ internal class MainActivity : Activity() {
     private lateinit var modeTitle: TextView
     private lateinit var noteSubtitle: TextView
     private lateinit var saveButton: ImageButton
+    private lateinit var contentsButton: ImageButton
     private lateinit var content: FrameLayout
     private lateinit var fullscreen: FrameLayout
     private var preview: WebView? = null
+    private var outline = emptyList<OutlineHeading>()
     private var copyPort: WebMessagePort? = null
     private var fullScreenCallback: WebChromeClient.CustomViewCallback? = null
 
@@ -188,6 +195,8 @@ internal class MainActivity : Activity() {
         notierTheme = NotierTheme.from(prefs.getString("theme", null))
         setTheme(notierTheme.style)
         super.onCreate(state)
+        pendingUpdates = state == null && intent?.action == Updates.OPEN_UPDATES
+        Updates.ensureScheduled(this)
         folderUri = prefs.getString("folder", null)?.let(Uri::parse)
         driveScreen = prefs.getBoolean("drive_screen", false)
         reconnectDrive = prefs.getBoolean("direct_drive", false)
@@ -236,16 +245,44 @@ internal class MainActivity : Activity() {
                 pendingCopyUri = null
                 onCopySelected(uri, pendingCopyFlags)
             }
+            showLaunchPanel()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        resumed = true
+        showLaunchPanel()
         preview?.onResume()
         if (!startLoading && draft == null && !busy) reloadNotes()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.action != Updates.OPEN_UPDATES) return
+        pendingUpdates = true
+        showLaunchPanel()
+    }
+
+    private fun showLaunchPanel() {
+        if (!resumed || startLoading || pickerPending || isFinishing || isDestroyed) return
+        if (pendingUpdates) {
+            pendingUpdates = false
+            showUpdates(fromSettings = false)
+            return
+        }
+        val version = Updates.installedVersion(this)
+        if (!launchNotesShown && prefs.getString("last_release_notes", null) != version) {
+            launchNotesShown = true
+            showReleaseNotes(version, onClose = {
+                if (!isChangingConfigurations && !isDestroyed)
+                    prefs.edit().putString("last_release_notes", version).apply()
+            })
+        }
+    }
+
     override fun onPause() {
+        resumed = false
         if (draft == null && !startLoading) rememberListPosition()
         main.removeCallbacks(saveDraft)
         persistDraft()
@@ -315,9 +352,37 @@ internal class MainActivity : Activity() {
         val column = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         home.addView(column, frameMatch())
 
+        val top = LinearLayout(this).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setPaddingRelative(dp(16), dp(12), dp(16), dp(4))
+        }
+        top.addView(ImageView(this).apply {
+            setImageResource(R.drawable.app_icon)
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, linear(30, 30).apply { marginEnd = dp(10) })
+        top.addView(label("Notier", 24f, bold = true).apply {
+            letterSpacing = -.035f
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+        }, LinearLayout.LayoutParams(0, WRAP, 1f))
+        top.addView(icon(R.drawable.ic_list, s(R.string.navigation), 20, quiet = true) { anchor ->
+            showMenu(anchor, listOf(
+                MenuAction(R.string.local_notes, R.drawable.ic_hard_drive, selected = !driveScreen) { switchStorage(false) },
+                MenuAction(R.string.drive_area, R.drawable.ic_cloud, selected = driveScreen) { switchStorage(true) },
+                if (driveScreen) MenuAction(R.string.drive_account, R.drawable.ic_log_in) { showDriveAccount() }
+                else MenuAction(R.string.choose_folder, R.drawable.ic_folder_open) { chooseFolder() },
+                MenuAction(R.string.updates, R.drawable.ic_cloud_download) { showUpdates(fromSettings = false) },
+                MenuAction(R.string.release_notes, R.drawable.ic_book_open) { showReleaseNotes() },
+                MenuAction(R.string.about_source, R.drawable.ic_code) { openProjectLink(Updates.PROJECT, onlineRequired = true) },
+                MenuAction(R.string.project_site, R.drawable.ic_link_2) { openProjectLink(Updates.SITE, onlineRequired = true) }
+            ))
+        }, buttonLayout())
+        top.addView(icon(R.drawable.ic_settings, s(R.string.settings), 21) { showSettings() }, buttonLayout())
+        column.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
+
         val bar = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(10))
+            setPaddingRelative(dp(16), dp(4), dp(16), dp(4))
         }
         val pickerLabel = if (driveScreen) R.string.drive_account else R.string.choose_folder
         bar.addView(icon(if (driveScreen) R.drawable.ic_cloud else R.drawable.ic_folder_open, s(pickerLabel), 21) {
@@ -369,9 +434,7 @@ internal class MainActivity : Activity() {
         }
         bar.addView(searchBox, LinearLayout.LayoutParams(0, buttonDp(48), 1f).apply {
             marginStart = dp(6)
-            marginEnd = dp(6)
         })
-        bar.addView(icon(R.drawable.ic_settings, s(R.string.settings), 21) { showSettings() }, buttonLayout())
         column.addView(bar, LinearLayout.LayoutParams(MATCH, WRAP))
 
         val heading = LinearLayout(this).apply {
@@ -589,7 +652,215 @@ internal class MainActivity : Activity() {
             }
         }
         row(general, R.string.about, R.drawable.ic_circle_help, "") { showAbout() }
+        row(general, R.string.updates, R.drawable.ic_cloud_download, Updates.installedVersion(this)) { showUpdates() }
+        row(general, R.string.release_notes, R.drawable.ic_book_open, "") { showReleaseNotes(up = ::showSettings) }
         showDialog(dialog)
+    }
+
+    private fun showUpdates(fromSettings: Boolean = true) {
+        val rows = settingsColumn()
+        val dialog = settingsDialog(s(R.string.updates), rows, up = fromSettings)
+        val version = Updates.installedVersion(this)
+        val header = label(s(R.string.updates_installed, version), 15f, bold = true).apply {
+            setPaddingRelative(dp(12), dp(5), dp(12), dp(5))
+        }
+        val status = label("", 15f).apply {
+            setPaddingRelative(dp(12), dp(3), dp(12), dp(3))
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+        }
+        val checked = label("", 12f, palette.muted).apply {
+            setPaddingRelative(dp(12), dp(3), dp(12), dp(9))
+        }
+        val message = label("", 13f, palette.muted).apply {
+            setPaddingRelative(dp(12), 0, dp(12), dp(9))
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+        }
+        rows.addView(header)
+        rows.addView(status)
+        rows.addView(checked)
+        rows.addView(message)
+
+        val download = settingsRow(s(R.string.updates_download), "", leading = R.drawable.ic_file_down, navigate = true)
+        val openRelease = settingsRow(s(R.string.updates_open), "", leading = R.drawable.ic_link_2, navigate = true)
+        var result = Updates.cached(this)
+        fun showResult() {
+            val newer = result.available(version)
+            status.text = when {
+                newer != null -> s(R.string.updates_available, newer.tag)
+                result.checkedAt == 0L -> ""
+                result.release != null -> s(R.string.updates_current)
+                else -> s(R.string.updates_no_release)
+            }
+            status.visibility = if (status.text.isEmpty()) View.GONE else View.VISIBLE
+            checked.text = if (result.checkedAt == 0L) s(R.string.updates_never_checked)
+                else s(R.string.updates_last_checked, dateFormat.format(Date(result.checkedAt)))
+            message.text = when (result.issue) {
+                Updates.Issue.OFFLINE -> s(R.string.updates_offline)
+                Updates.Issue.RATE_LIMITED -> s(R.string.updates_rate_limited)
+                Updates.Issue.UNAVAILABLE -> s(R.string.updates_failed)
+                null -> ""
+            }
+            message.visibility = if (message.text.isEmpty()) View.GONE else View.VISIBLE
+            download.visibility = if (newer == null) View.GONE else View.VISIBLE
+            openRelease.visibility = if (newer == null) View.GONE else View.VISIBLE
+            if (newer != null) {
+                download.setOnClickListener { openProjectLink(newer.apk, onlineRequired = true) }
+                openRelease.setOnClickListener { openProjectLink(newer.url, onlineRequired = true) }
+            }
+        }
+        val check = settingsRow(s(R.string.check_updates), "", leading = R.drawable.ic_refresh_cw)
+        fun runCheck() {
+            if (!check.isEnabled) return
+            check.isEnabled = false
+            check.alpha = .55f
+            message.visibility = View.VISIBLE
+            message.text = s(R.string.updates_checking)
+            kotlin.concurrent.thread(name = "Notier manual update check") {
+                val refreshed = Updates.check(applicationContext)
+                main.post {
+                    if (isDestroyed || !dialog.isShowing) return@post
+                    check.isEnabled = true
+                    check.alpha = 1f
+                    result = refreshed
+                    showResult()
+                }
+            }
+        }
+        check.setOnClickListener { runCheck() }
+        rows.addView(check)
+        rows.addView(download)
+        rows.addView(openRelease)
+        showResult()
+
+        val notifications = settingsRow(s(R.string.update_notifications), s(R.string.update_notifications_hint),
+            leading = R.drawable.ic_cloud)
+        val enabled = Switch(this).apply {
+            contentDescription = s(R.string.update_notifications)
+            val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf())
+            thumbTintList = ColorStateList(states, intArrayOf(palette.onAccent, palette.muted))
+            trackTintList = ColorStateList(states, intArrayOf(palette.accent, palette.line))
+        }
+        fun updateToggle() {
+            enabled.isChecked = Updates.notificationsEnabled(this)
+        }
+        notifications.addView(enabled, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(8) })
+        updateToggle()
+        notifications.setOnClickListener { enabled.performClick() }
+        enabled.setOnClickListener {
+            when {
+                Updates.notificationsEnabled(this) -> Updates.changeNotifications(this, false)
+                Build.VERSION.SDK_INT >= 33 && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+                    android.content.pm.PackageManager.PERMISSION_GRANTED -> {
+                    updatePermissionResult = {
+                        updateToggle()
+                        if (Updates.notificationsEnabled(this) && dialog.isShowing) runCheck()
+                    }
+                    requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), UPDATE_PERMISSION)
+                }
+                !Updates.canNotify(this) -> toast(s(R.string.update_permission_denied))
+                !Updates.changeNotifications(this, true) -> toast(s(R.string.updates_failed))
+                else -> runCheck()
+            }
+            updateToggle()
+        }
+        rows.addView(notifications)
+        rows.addView(settingsRow(s(R.string.release_notes), "", leading = R.drawable.ic_book_open, navigate = true).apply {
+            setOnClickListener {
+                dialog.dismiss()
+                showReleaseNotes(up = { showUpdates(fromSettings) })
+            }
+        })
+        rowProjectWebsite(rows)
+        showDialog(dialog)
+        if (result.issue != Updates.Issue.OFFLINE && System.currentTimeMillis() - result.checkedAt >= 5 * 60_000L)
+            runCheck()
+    }
+
+    private fun rowProjectWebsite(rows: LinearLayout) {
+        rows.addView(settingsRow(s(R.string.project_site), "", leading = R.drawable.ic_link_2, navigate = true).apply {
+            setOnClickListener { openProjectLink(Updates.SITE, onlineRequired = true) }
+        })
+    }
+
+    private fun releaseArticle(tag: String): Pair<String, String>? {
+        val path = "updates/$tag"
+        val file = if (appLocale.language == "tr") "$path.md" else "$path.en.md"
+        return runCatching {
+            assets.open(file).bufferedReader().use { it.readText() }.let { raw ->
+                raw.lineSequence().first().removePrefix("# ") to raw.substringAfter('\n').trim()
+            }
+        }.getOrNull()
+    }
+
+    private fun showReleaseNotes(tag: String = Updates.installedVersion(this), up: (() -> Unit)? = null,
+                                 onClose: (() -> Unit)? = null) {
+        val article = releaseArticle(tag) ?: return
+        val rows = settingsColumn()
+        val dialog = settingsDialog(s(R.string.release_notes), rows, up = up != null, onUp = { up?.invoke() })
+        val hero = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPaddingRelative(dp(16), dp(16), dp(16), dp(16))
+            background = rounded(palette.surface, 17, palette.line)
+            addView(label(tag, 13f, palette.muted, bold = true))
+            addView(label(article.first, 25f, bold = true).apply {
+                accessibilityHeadingIfSupported()
+                setPaddingRelative(0, dp(7), 0, 0)
+            })
+        }
+        rows.addView(hero, LinearLayout.LayoutParams(MATCH, WRAP))
+        rows.addView(label("", 15f).apply {
+            textDirection = if (appLocale.language == "tr") View.TEXT_DIRECTION_LOCALE else View.TEXT_DIRECTION_LTR
+            setPaddingRelative(dp(5), dp(16), dp(5), dp(8))
+            setLineSpacing(dp(3).toFloat(), 1f)
+            text = Html.fromHtml(Markdown.article(article.second), Html.FROM_HTML_MODE_LEGACY).trimEnd()
+        })
+        rows.addView(settingsRow(s(R.string.release_archive), "", leading = R.drawable.ic_list, navigate = true).apply {
+            setOnClickListener {
+                dialog.dismiss()
+                showReleaseArchive(tag, up)
+            }
+        })
+        rows.addView(settingsRow(s(R.string.release_repository), "", leading = R.drawable.ic_code, navigate = true).apply {
+            val suffix = if (appLocale.language == "tr") ".md" else ".en.md"
+            setOnClickListener { openProjectLink("${Updates.PROJECT}/blob/main/docs/updates/$tag$suffix", onlineRequired = true) }
+        })
+        dialog.setOnDismissListener { onClose?.invoke() }
+        showDialog(dialog)
+    }
+
+    private fun showReleaseArchive(current: String, up: (() -> Unit)?) {
+        val rows = settingsColumn()
+        val back = { showReleaseNotes(current, up) }
+        val dialog = settingsDialog(s(R.string.release_archive), rows, up = true, onUp = back)
+        val versions = assets.list("updates").orEmpty().filter { filename -> releaseFile.matches(filename) }
+            .map { it.removeSuffix(".md") }.sortedWith { first, second ->
+                when {
+                    Updates.versionIsNewer(first, second) -> -1
+                    Updates.versionIsNewer(second, first) -> 1
+                    else -> 0
+                }
+            }
+        for (tag in versions) {
+            val title = releaseArticle(tag)?.first ?: continue
+            rows.addView(settingsRow(tag, title, leading = R.drawable.ic_book_open, navigate = true).apply {
+                setOnClickListener {
+                    dialog.dismiss()
+                    showReleaseNotes(tag, up = { showReleaseArchive(current, up) })
+                }
+            })
+        }
+        showDialog(dialog)
+    }
+
+    private var updatePermissionResult: (() -> Unit)? = null
+
+    override fun onRequestPermissionsResult(request: Int, permissions: Array<out String>, results: IntArray) {
+        super.onRequestPermissionsResult(request, permissions, results)
+        if (request != UPDATE_PERMISSION) return
+        if (!Updates.canNotify(this)) toast(s(R.string.update_permission_denied))
+        else if (!Updates.changeNotifications(this, true)) toast(s(R.string.updates_failed))
+        updatePermissionResult?.invoke()
+        updatePermissionResult = null
     }
 
     private fun showIconStyles() {
@@ -614,10 +885,12 @@ internal class MainActivity : Activity() {
         IconStyle.LUCIDE -> copyIcon
         IconStyle.BOLD -> copyIcon.replace("stroke-width=\"2\"", "stroke-width=\"3\"")
         IconStyle.PIXEL -> """
-            <svg class="copy-icon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"
-                 xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.8"
-                 stroke-linecap="square" stroke-linejoin="miter">
-                <path d="M5 16H3V3H16V5 M8 8H21V21H8Z"/>
+            <svg class="copy-icon" width="24" height="24" viewBox="0 0 16 16" aria-hidden="true"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path fill="#302726" d="M1 1H12V4H15V15H4V12H1Z"/>
+                <path fill="#C38646" d="M2 2H10V4H4V10H2Z"/>
+                <path fill="#FFE8B3" d="M5 5H14V14H5Z"/>
+                <path fill="#795130" d="M7 7H12V8H7ZM7 10H11V11H7Z"/>
             </svg>
         """.trimIndent()
     }
@@ -646,7 +919,10 @@ internal class MainActivity : Activity() {
             openProjectLink("https://github.com/nullnode1")
         }
         item(project, R.string.about_source, "nullnode1/notier-app", R.drawable.ic_link_2) {
-            openProjectLink("https://github.com/nullnode1/notier-app")
+            openProjectLink(Updates.PROJECT, onlineRequired = true)
+        }
+        item(project, R.string.project_site, "", R.drawable.ic_link_2) {
+            openProjectLink(Updates.SITE, onlineRequired = true)
         }
         item(legal, R.string.about_license, "GNU GPL v3", R.drawable.ic_file_text) {
             showAboutDocument(R.string.about_license, "LICENSE")
@@ -665,12 +941,15 @@ internal class MainActivity : Activity() {
         showDialog(dialog)
     }
 
-    private fun openProjectLink(url: String) {
+    private fun openProjectLink(url: String, onlineRequired: Boolean = false) {
+        if (onlineRequired && !Updates.online(this)) {
+            toast(s(R.string.updates_offline))
+            return
+        }
         try {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         } catch (_: ActivityNotFoundException) {
             toast(s(R.string.open_link_error))
-            showAbout()
         }
     }
 
@@ -928,6 +1207,7 @@ internal class MainActivity : Activity() {
         if (draft != null || !::homeAdapter.isInitialized) return
         val needle = searchKey(query.trim())
         val all = if (driveScreen) driveFiles else files
+        val driveOffline = driveScreen && !Updates.online(this)
         val matches = if (needle.isEmpty()) all else all.filter { searchKey(displayTitle(it)).contains(needle) }
         val allNoteCount = all.count { !it.isFolder }
         val sorted = if (sortByTitle) matches.sortedWith { first, second ->
@@ -948,6 +1228,7 @@ internal class MainActivity : Activity() {
             ).joinToString("  ·  ")
         }
         homeSubtitle.text = when {
+            driveOffline -> "$countText  ·  ${s(R.string.drive_offline)}"
             driveScreen -> if (driveUnavailable == 0) countText else "$countText ${s(R.string.drive_items_missing)}"
             folderName.isNotEmpty() -> "$folderName  ·  $countText"
             folderUri != null -> "${s(R.string.folder_selected)}  ·  $countText"
@@ -971,6 +1252,8 @@ internal class MainActivity : Activity() {
         emptyPanel.visibility = if (!loading && matches.isEmpty()) View.VISIBLE else View.GONE
         if (emptyPanel.visibility != View.VISIBLE) return
         val state = when {
+            driveOffline && needle.isEmpty() -> EmptyState(R.drawable.ic_cloud, R.string.drive_area,
+                s(R.string.drive_offline), R.string.local_notes) { switchStorage(false) }
             driveScreen && driveUnavailable > 0 && !driveNeedsConsent -> EmptyState(R.drawable.ic_refresh_cw,
                 R.string.drive_area, s(R.string.drive_access_problem), R.string.refresh_notes, ::refreshFromGesture)
             !driveScreen && folderError != null -> EmptyState(R.drawable.ic_folder_open,
@@ -989,6 +1272,7 @@ internal class MainActivity : Activity() {
                 s(R.string.first_note_hint), R.string.new_note, ::newNote)
         }
         emptyIcon.setImageDrawable(appIcons.drawable(state.icon, iconStyle))
+        emptyIcon.imageTintList = if (shouldTint(state.icon, iconStyle)) ColorStateList.valueOf(palette.muted) else null
         emptyTitle.text = s(state.title)
         emptyText.text = state.message
         emptyText.visibility = if (state.message.isEmpty()) View.GONE else View.VISIBLE
@@ -1029,6 +1313,7 @@ internal class MainActivity : Activity() {
     private fun reloadNotes(force: Boolean = false) {
         if (if (driveScreen) driveLoading || authorizingDrive else folderLoading) return
         if (!driveScreen) updateFolder()
+        else if (!Updates.online(this)) updateHome()
         else if (driveApi != null) {
             if (force || drivePages.get(driveFolderId)?.fresh != true || driveFolder == null) refreshDriveFolder()
         }
@@ -1044,7 +1329,7 @@ internal class MainActivity : Activity() {
     }
 
     private fun switchStorage(toDrive: Boolean) {
-        if (busy || startLoading) return
+        if (busy || startLoading || toDrive == driveScreen) return
         hideKeyboard()
         if (!toDrive) driveCountTask?.cancel(true)
         driveScreen = toDrive
@@ -1095,6 +1380,10 @@ internal class MainActivity : Activity() {
 
     private fun connectDrive(interactive: Boolean = true) {
         if (authorizingDrive || busy || startLoading) return
+        if (!Updates.online(this)) {
+            if (interactive) toast(s(R.string.drive_offline))
+            return
+        }
         if (interactive) {
             driveRenewalAttempted = false
             val picker = AccountPicker.AccountChooserOptions.Builder()
@@ -1335,6 +1624,10 @@ internal class MainActivity : Activity() {
 
     private fun refreshDriveFolder(id: String = driveFolderId, retryRoot: Boolean = true, knownFolder: DriveItem? = null) {
         val api = driveApi ?: return
+        if (!Updates.online(this)) {
+            updateHome()
+            return
+        }
         val request = ++driveRequest
         driveCountTask?.cancel(true)
         driveLoading = true
@@ -1873,6 +2166,10 @@ internal class MainActivity : Activity() {
         heading.addView(modeTitle)
         heading.addView(noteSubtitle)
         bar.addView(heading, LinearLayout.LayoutParams(0, WRAP, 1f))
+        contentsButton = icon(R.drawable.ic_list_ordered, s(R.string.toc), 20, quiet = true) {
+            showContents()
+        }.apply { visibility = View.GONE }
+        bar.addView(contentsButton, buttonLayout(44))
         val more = icon(R.drawable.ic_ellipsis, s(R.string.note_actions), 21, quiet = true) { anchor ->
             if (busy) return@icon
             showMenu(anchor, listOf(
@@ -2183,7 +2480,7 @@ internal class MainActivity : Activity() {
         }) { result ->
             if (preview !== view) return@background
             result.onSuccess { page ->
-                view.settings.javaScriptEnabled = page.hasFrames || page.codeBlocks.isNotEmpty()
+                view.settings.javaScriptEnabled = page.hasFrames || page.codeBlocks.isNotEmpty() || page.outline.isNotEmpty()
                 view.settings.domStorageEnabled = page.hasFrames
                 view.webViewClient = PreviewClient(tree, page, font, initialScroll)
                 view.webChromeClient = object : WebChromeClient() {
@@ -2210,6 +2507,27 @@ internal class MainActivity : Activity() {
         }
     }
 
+    private fun showContents() {
+        val view = preview ?: return
+        if (outline.isEmpty()) return
+        val rows = settingsColumn()
+        val dialog = settingsDialog(s(R.string.toc), rows)
+        val topLevel = outline.minOf { it.level }
+        outline.forEach { heading ->
+            val row = settingsRow(heading.title, "", navigate = true)
+            row.setPaddingRelative(dp(12 + (heading.level - topLevel) * 7), dp(5), dp(10), dp(5))
+            row.setOnClickListener {
+                dialog.dismiss()
+                if (preview === view) {
+                    val id = org.json.JSONObject.quote(heading.id)
+                    view.evaluateJavascript("document.getElementById($id)?.scrollIntoView({block:'start'});", null)
+                }
+            }
+            rows.addView(row)
+        }
+        showDialog(dialog)
+    }
+
     private inner class PreviewClient(
         private val tree: Uri?,
         private val page: Preview,
@@ -2218,6 +2536,8 @@ internal class MainActivity : Activity() {
     ) : WebViewClient() {
         override fun onPageFinished(view: WebView, url: String) {
             if (preview !== view || url != Markdown.ORIGIN) return
+            outline = page.outline
+            contentsButton.visibility = if (outline.isEmpty()) View.GONE else View.VISIBLE
             if (initialScroll > 0) {
                 val offset = initialScroll
                 initialScroll = 0
@@ -2288,6 +2608,8 @@ internal class MainActivity : Activity() {
     }
 
     private fun destroyPreview() {
+        outline = emptyList()
+        if (::contentsButton.isInitialized) contentsButton.visibility = View.GONE
         exitFullscreen()
         copyPort?.close()
         copyPort = null
@@ -2889,16 +3211,20 @@ internal class MainActivity : Activity() {
         addState(intArrayOf(), rounded(color, radius, border))
     }
 
+    private fun shouldTint(resource: Int, style: IconStyle) = resource != R.drawable.app_icon &&
+        (style != IconStyle.PIXEL || !usesPixelColors(resource))
+
     private fun glyph(resource: Int, tint: Int, style: IconStyle = iconStyle) = ImageView(this).apply {
         setImageDrawable(appIcons.drawable(resource, style))
-        if (resource != R.drawable.app_icon) imageTintList = ColorStateList.valueOf(tint)
+        if (shouldTint(resource, style)) imageTintList = ColorStateList.valueOf(tint)
         importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
     }
 
     private fun icon(resource: Int, description: String, size: Int, quiet: Boolean = false, tapped: (View) -> Unit) =
         ImageButton(this).apply {
             setImageDrawable(appIcons.drawable(resource, iconStyle)?.apply { setBounds(0, 0, dp(size), dp(size)) })
-            imageTintList = ColorStateList.valueOf(if (quiet) palette.ink else palette.onAccent)
+            if (shouldTint(resource, iconStyle)) imageTintList = ColorStateList.valueOf(if (quiet) palette.ink else palette.onAccent)
+            tag = resource
             scaleType = ImageView.ScaleType.FIT_CENTER
             val inset = px((if (size == 34) 15 else if (quiet && size <= 18) 11 else 12) * buttonScale)
             contentDescription = description
@@ -2913,7 +3239,9 @@ internal class MainActivity : Activity() {
         background = InsetDrawable(pressSurface(color, 12, if (selected) palette.outline else null), dp(3))
         val inset = px(13 * buttonScale)
         setPadding(inset, inset, inset, inset)
-        imageTintList = ColorStateList.valueOf(if (selected) palette.ink else if (muted && notierTheme == NotierTheme.DARK) palette.muted else palette.onAccent)
+        val tint = if (selected) palette.ink else if (muted && notierTheme == NotierTheme.DARK) palette.muted else palette.onAccent
+        imageTintList = if (shouldTint(tag as? Int ?: 0, iconStyle)) ColorStateList.valueOf(tint) else null
+        imageAlpha = if (muted) 150 else 255
     }
 
     companion object {
@@ -2929,12 +3257,20 @@ internal class MainActivity : Activity() {
             "ur" to "اردو", "id" to "Bahasa Indonesia", "ms" to "Bahasa Melayu", "vi" to "Tiếng Việt",
             "th" to "ไทย", "fil" to "Filipino", "sw" to "Kiswahili", "sr" to "Српски",
             "bg" to "Български", "hr" to "Hrvatski", "lt" to "Lietuvių", "lv" to "Latviešu",
-            "et" to "Eesti", "zh-Hant" to "繁體中文")
+            "et" to "Eesti", "zh-Hant" to "繁體中文",
+            "kk" to "Қазақша · Кирилл",
+            "kk-Latn" to "Qazaqşa · Latyn (2021)",
+            "ky" to "Кыргызча", "az" to "Azərbaycanca", "tk" to "Türkmençe",
+            "uz" to "Oʻzbekcha · Lotin (1995)", "uz-Latn-2026" to "Özbekça · Lotin (2026)",
+            "uz-Latn-1993" to "Ōzbekça · Lotin (1993)", "uz-Cyrl" to "Ўзбекча · Кирилл",
+            "tg" to "Тоҷикӣ", "fa-AF" to "دری", "ps" to "پښتو")
+        private val releaseFile = Regex("v[0-9]+(?:\\.[0-9]+){2}\\.md")
         private const val PICK_FOLDER = 11
         private const val SAVE_COPY = 12
         private const val PICK_DRIVE = 13
         private const val AUTHORIZE_DRIVE = 14
         private const val PICK_GOOGLE_ACCOUNT = 15
+        private const val UPDATE_PERMISSION = 16
         private const val DOCUMENT_GRANTS = Intent.FLAG_GRANT_READ_URI_PERMISSION or
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         private const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT

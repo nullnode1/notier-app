@@ -26,6 +26,10 @@ In Notier, open **Google Drive → Drive account → Sign out of Drive** to clea
 
 Clearing Notier’s app data in Android settings removes local app settings, remembered entries, and unsaved drafts. Notes you saved as files in device folders or Drive can be managed from those locations.
 
+## Checking for updates
+
+When you check for updates or enable update notifications, Notier requests public release information from the GitHub API. These requests can expose your IP address and standard connection information to GitHub. Update requests contain no notes, files, or Google account information. You can turn off background checks in Notier’s update settings. Notier keeps the last successful check time and public release metadata on your device, so you can read the result offline.
+
 ## Contact
 
 For privacy questions, use the **Issues** section of the Notier repository. Describe the issue without posting note contents, account credentials, or access tokens.

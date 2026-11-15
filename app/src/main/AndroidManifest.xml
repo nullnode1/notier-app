@@ -1,7 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.notier" android:versionCode="12" android:versionName="v1.0.2">
+    package="app.notier" android:versionCode="14" android:versionName="v1.0.4">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="36" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <queries>
         <package android:name="com.google.android.apps.docs" />
         <package android:name="com.google.android.gms" />
@@ -13,6 +16,8 @@
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
         <activity android:name="com.google.android.gms.common.api.GoogleApiActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" android:exported="false" />
+        <service android:name="app.notier.UpdateJob" android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <activity android:name="app.notier.MainActivity" android:exported="true"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboardHidden|orientation|screenSize|screenLayout"

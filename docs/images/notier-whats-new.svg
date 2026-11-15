@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 570" role="img" aria-labelledby="title desc">
+<title id="title">Notier release notes</title>
+<desc id="desc">New version notes with article headings and a release notes archive link.</desc>
+<g font-family="Geist, Arial, Helvetica, sans-serif">
+<rect x="0" y="0" width="780" height="570" rx="24" fill="#e9ece2"/>
+<rect x="75" y="42" width="633" height="501" rx="29" fill="#d4dcca"/>
+<rect x="68" y="34" width="633" height="500" rx="29" fill="#fafafa" stroke="#d4d9cd"/>
+<svg x="96" y="56" width="31" height="31" viewBox="0 0 16 16"><path d="M2 3h2V2h10v1h1v11H4v-1H2z" fill="#302726"/><path d="M3 4h2V3h9v10H5v-1H3z" fill="#795130"/><path d="M5 4h8v7H5z" fill="#FFE8B3"/><path d="M5 11h8v1h-8z" fill="#D8BB86"/><path d="M6 5h6v1h-6zM6 7h5v1h-5zM6 9h4v1h-4z" fill="#795130"/><path d="M10 3h2v3h-2z" fill="#CF5256"/></svg>
+<text x="139" y="80" font-size="25" fill="#171916" font-weight="740">Release notes</text>
+<svg x="644" y="59" width="26" height="26" viewBox="0 0 16 16"><path d="M1 3h2V1h2v2h2v2h2V3h2V1h2v2h2v2h-2v2h-2v2h2v2h2v2h-2v2h-2v-2H9v-2H7v2H5v2H3v-2H1v-2h2V9h2V7H3V5H1z" fill="#373B48"/><path d="M3 3h2v2h2v2h2V5h2V3h2v2h-2v2H9v2h2v2h2v2h-2v-2H9V9H7v2H5v2H3v-2h2V9h2V7H5V5H3z" fill="#E98982"/></svg>
+<rect x="97" y="111" width="575" height="122" rx="14" fill="#f0f2eb" stroke="#dde1d8"/>
+<text x="121" y="144" font-size="14" fill="#4a5649" font-weight="700">v1.0.4</text>
+<text x="121" y="189" font-size="31" fill="#171916" font-weight="740">Updates and new pixel icons</text>
+<text x="119" y="270" font-size="21" fill="#171916" font-weight="720">Update from GitHub</text>
+<text x="119" y="304" font-size="17" fill="#464a41" font-weight="500">Download a new APK from the Updates screen.</text>
+<text x="119" y="329" font-size="17" fill="#464a41" font-weight="500">Your last result remains readable offline.</text>
+<text x="119" y="379" font-size="21" fill="#171916" font-weight="720">Blocky pixel icons</text>
+<svg x="116" y="401" width="34" height="34" viewBox="0 0 16 16"><path d="M1 4h2V3h5v2h6v2h1v5h-1v2H1z" fill="#302726"/><path d="M2 4h5v2h6v2H4v2H2z" fill="#795130"/><path d="M5 7h9v2h-1v4H2v-2h1v-2h2z" fill="#FFC660"/><path d="M2 12h11v1H2zM5 7h9v1h-9z" fill="#C38646"/><path d="M7 9h4v1h-4z" fill="#FFE8B3"/></svg>
+<svg x="173" y="401" width="34" height="34" viewBox="0 0 16 16"><path d="M11 1h3v1h1v3h-1v1h-1v1h-1v1h-1v1h-1v1H9v1H8v1H7v1H6v1H4v1H1v-3h1v-2h1V9h1V8h1V7h1V6h1V5h1V4h1V3h1V2h1z" fill="#302726"/><path d="M10 3h3v3h-1v1h-1v1h-1v1H9v1H8v1H7v1H4V9h1V8h1V7h1V6h1V5h1V4h1z" fill="#C38646"/><path d="M10 3h2v1h-1v1h-1v1H9v1H8v1H7v1H6v1H4V9h1V8h1V7h1V6h1V5h1V4h1z" fill="#FFC660"/><path d="M3 10h1v1h1v1h1v1H4v1H2v-2h1z" fill="#FFE8B3"/><path d="M11 2h3v2h-3zM13 4h1v1h-1z" fill="#73DECF"/><path d="M2 13h1v1h-1z" fill="#373B48"/></svg>
+<svg x="230" y="401" width="34" height="34" viewBox="0 0 16 16"><path d="M2 5h2V3h2V2h4v1h2v2h2v2h1v4h-1v1h-3v1h-1v1H9v1H7v-1H6v-1H5v-1H2v-1H1V7h1z" fill="#373B48"/><path d="M2 7h2V5h2V4h1V3h2v1h2v2h2v2h1v3H2z" fill="#A9D9F0"/><path d="M2 9h12v2h-12z" fill="#CFD7DB"/><path d="M6 6h4v4h2v2h-1v1h-1v1H6v-1H5v-1H4v-2h2z" fill="#248D8B"/><path d="M7 7h2v4h2v1h-1v1H9v1H7v-1H6v-1H5v-1h2z" fill="#73DECF"/></svg>
+<svg x="287" y="401" width="34" height="34" viewBox="0 0 16 16"><path d="M2 1h10v1h2v2h1v11H1V1z" fill="#373B48"/><path d="M2 2h9v1h2v2h1v9H2z" fill="#248D8B"/><path d="M3 3h1v10h-1zM4 3h7v1h-7zM5 8h8v5h-8z" fill="#73DECF"/><path d="M5 2h6v4h-6zM6 9h6v4h-6z" fill="#CFD7DB"/><path d="M8 2h2v3h-2zM7 10h4v1h-4zM7 12h3v1h-3z" fill="#7A8493"/></svg>
+<rect x="97" y="461" width="575" height="48" rx="11" fill="#fff" stroke="#dde1d8"/>
+<svg x="112" y="470" width="27" height="27" viewBox="0 0 16 16"><path d="M1 3h14v10h-14z" fill="#302726"/><path d="M2 4h12v8h-12z" fill="#795130"/><path d="M3 4h10v7h-10z" fill="#C38646"/><path d="M4 6h8v1h-8zM4 9h8v1h-8z" fill="#FFC660"/><path d="M4 5h2v1h-2zM4 8h2v1h-2z" fill="#FFE8B3"/></svg>
+<text x="151" y="490" font-size="16" fill="#171916" font-weight="650">Release notes archive</text>
+<text x="646" y="490" font-size="22" fill="#555b50" font-weight="500">›</text>
+</g>
+</svg>

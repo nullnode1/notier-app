@@ -5,6 +5,7 @@ internal fun pixelIcon(resource: Int) = when (resource) {
     R.drawable.ic_arrow_down_up -> R.drawable.px_arrow_down_up
     R.drawable.ic_arrow_left -> R.drawable.px_arrow_left
     R.drawable.ic_arrow_up -> R.drawable.px_arrow_up
+    R.drawable.ic_book_open -> R.drawable.px_book_open
     R.drawable.ic_bold -> R.drawable.px_bold
     R.drawable.ic_check -> R.drawable.px_check
     R.drawable.ic_chevron_down -> R.drawable.px_chevron_down
@@ -54,4 +55,12 @@ internal fun pixelIcon(resource: Int) = when (resource) {
     R.drawable.ic_undo_2 -> R.drawable.px_undo_2
     R.drawable.ic_x -> R.drawable.px_x
     else -> resource
+}
+
+internal fun usesPixelColors(resource: Int) = when (resource) {
+    R.drawable.ic_book_open, R.drawable.ic_cloud, R.drawable.ic_cloud_download, R.drawable.ic_eye,
+    R.drawable.ic_file_text, R.drawable.ic_folder_open, R.drawable.ic_hard_drive, R.drawable.ic_list,
+    R.drawable.ic_list_ordered, R.drawable.ic_pencil, R.drawable.ic_plus, R.drawable.ic_save,
+    R.drawable.ic_search, R.drawable.ic_settings, R.drawable.ic_x -> true
+    else -> false
 }

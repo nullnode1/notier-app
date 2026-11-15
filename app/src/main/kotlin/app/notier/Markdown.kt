@@ -6,21 +6,28 @@ import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension
 import org.commonmark.ext.gfm.tables.TablesExtension
 import org.commonmark.ext.task.list.items.TaskListItemsExtension
 import org.commonmark.node.Image
+import org.commonmark.node.Code
 import org.commonmark.node.FencedCodeBlock
+import org.commonmark.node.Heading
 import org.commonmark.node.IndentedCodeBlock
 import org.commonmark.node.Link
 import org.commonmark.node.Node
 import org.commonmark.node.Paragraph
+import org.commonmark.node.SoftLineBreak
+import org.commonmark.node.HardLineBreak
 import org.commonmark.node.Text
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlRenderer
 import java.net.URI
+import java.text.Normalizer
 import java.util.Locale
 import java.util.UUID
 
 internal data class Preview(val html: String, val localImages: Map<String, List<String>>,
-    val hasFrames: Boolean, val codeBlocks: List<String>)
+    val hasFrames: Boolean, val codeBlocks: List<String>, val outline: List<OutlineHeading>)
+
+internal data class OutlineHeading(val id: String, val title: String, val level: Int)
 
 internal class PreviewStrings(val language: String, private val translate: (Int, Array<out Any>) -> String) {
     fun text(id: Int, vararg args: Any) = translate(id, args)
@@ -47,10 +54,14 @@ internal object Markdown {
         TaskListItemsExtension.create(), AutolinkExtension.create()
     )
     private val parser = Parser.builder().extensions(extensions).build()
-    private val renderer = HtmlRenderer.builder().extensions(extensions)
+    private val headingPunctuation = Regex("[^\\p{L}\\p{N}\\p{M}_\\-\\s]")
+    private val headingSpaces = Regex("\\s+")
+
+    private fun renderer(anchors: Map<Heading, OutlineHeading>) = HtmlRenderer.builder().extensions(extensions)
         .escapeHtml(true).sanitizeUrls(true).percentEncodeUrls(true)
         .attributeProviderFactory {
-            org.commonmark.renderer.html.AttributeProvider { _, tag, attributes ->
+            org.commonmark.renderer.html.AttributeProvider { node, tag, attributes ->
+                if (node is Heading) anchors[node]?.let { attributes["id"] = it.id }
                 if (tag == "img") {
                     attributes["loading"] = "lazy"
                     attributes["decoding"] = "async"
@@ -65,10 +76,15 @@ internal object Markdown {
             }
         }.build()
 
+    fun article(markdown: String): String =
+        renderer(emptyMap()).render(parser.parse(markdown.removePrefix("\uFEFF")))
+
     fun render(markdown: String, css: String, localMedia: Boolean, copyIcon: String, copyScript: String, strings: PreviewStrings): Preview {
         val tree = parser.parse(markdown.removePrefix("\uFEFF"))
         val localImages = linkedMapOf<String, List<String>>()
         val codeBlocks = mutableListOf<String>()
+        val headings = linkedMapOf<Heading, OutlineHeading>()
+        val headingIds = mutableSetOf<String>()
         var hasFrames = false
 
         fun replaceImage(node: Image) {
@@ -99,6 +115,18 @@ internal object Markdown {
         }
 
         fun visit(node: Node) {
+            if (node is Heading) {
+                val title = buildString { appendHeadingText(node) }.trim()
+                if (title.isNotEmpty()) {
+                    val slug = Normalizer.normalize(title, Normalizer.Form.NFC).lowercase(Locale.ROOT)
+                        .replace(headingPunctuation, "").trim().replace(headingSpaces, "-")
+                        .ifEmpty { "section" }
+                    var id = slug
+                    var duplicate = 1
+                    while (!headingIds.add(id)) id = "$slug-${duplicate++}"
+                    headings[node] = OutlineHeading(id, title, node.level)
+                }
+            }
             val code = when (node) {
                 is FencedCodeBlock -> node.literal
                 is IndentedCodeBlock -> node.literal
@@ -142,13 +170,13 @@ internal object Markdown {
         }
 
         visit(tree)
-        val body = renderer.render(tree).ifBlank { "<p class=\"empty\">${escape(strings.text(R.string.empty_note))}</p>" }
+        val body = renderer(headings).render(tree).ifBlank { "<p class=\"empty\">${escape(strings.text(R.string.empty_note))}</p>" }
         val nonce = if (codeBlocks.isEmpty()) null else UUID.randomUUID().toString()
         val scripts = if (nonce == null) "" else "script-src 'nonce-$nonce';"
         val bridge = if (nonce == null) "" else "<script nonce=\"$nonce\">$copyScript</script>"
         val html = """
             <!doctype html>
-            <html lang="${escape(strings.language)}" dir="${if (strings.language.substringBefore('-') in setOf("ar", "fa", "he", "iw", "ur")) "rtl" else "ltr"}">
+            <html lang="${escape(strings.language)}" dir="${if (strings.language.substringBefore('-') in setOf("ar", "fa", "he", "iw", "ur", "ps")) "rtl" else "ltr"}">
             <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -157,7 +185,22 @@ internal object Markdown {
             <style>$css</style>
             </head><body><article dir="auto">$body</article>$bridge</body></html>
         """.trimIndent()
-        return Preview(html, localImages, hasFrames, codeBlocks)
+        return Preview(html, localImages, hasFrames, codeBlocks, headings.values.toList())
+    }
+
+    private fun StringBuilder.appendHeadingText(node: Node) {
+        when (node) {
+            is Text -> append(node.literal)
+            is Code -> append(node.literal)
+            is SoftLineBreak, is HardLineBreak -> append(' ')
+            else -> {
+                var child = node.firstChild
+                while (child != null) {
+                    appendHeadingText(child)
+                    child = child.next
+                }
+            }
+        }
     }
 
     private class MediaNode(val html: String, val frame: Boolean = false) : org.commonmark.node.CustomNode()

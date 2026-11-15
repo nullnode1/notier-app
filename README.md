@@ -8,18 +8,29 @@
 
 ![Notier arayüz çizimi. Solda açık temalı not listesi, sağda koyu temalı Markdown editörü ve net piksel simgeler.](docs/images/notier-overview.svg)
 
-<sub>Arayüz çizimi · açık temada not listesi ve koyu temada Markdown düzenleyici.</sub>
+<sub>Arayüz çizimi · renkli piksel simgeli not listesi ve koyu temada Markdown içindekiler.</sub>
 
 **Kotlin · Android 8 ve üzeri · GNU GPL v3**
 
-[APK sürümleri](https://github.com/nullnode1/notier-app/releases) · [Kullanım kılavuzu](docs/BUILD.tr.md)
+[APK sürümleri](https://github.com/nullnode1/notier-app/releases) · [Proje sitesi](https://nullnode1.github.io/notier-app/) · [Kullanım kılavuzu](docs/BUILD.tr.md)
 
 ## Notier ile neler yapabilirsin?
 
 - **Klasörle çalış.** Cihazdan bir klasör seç, notları ada ya da tarihe göre sırala ve ara. Klasik liste, kompakt liste ve iki sütunlu ızgara arasında geçiş yap.
 - **Markdown yaz ve oku.** Ham metin ile önizleme arasında geçiş yap. Başlık, görev listesi, bağlantı ve kod için editör kısayollarını kullan. Önizlemede kod bloklarını tek dokunuşla kopyala.
 - **Drive’daki klasörlerini gez.** İzin verdiğinde mevcut klasörleri açabilir, Markdown notu oluşturabilir, taşıyabilir veya çöp kutusuna gönderebilirsin. Klasör kartları Markdown notlarını sayar.
-- **Görünümü özelleştir.** Açık ve koyu temayı, 13 yazı tipini, Lucide, net piksel ve kalın çizgi simgelerini dene. Metin, arayüz ve düğme boyutları ile köşe yuvarlaklığını ayrı ayrı ayarla. Arayüz 42 dil içerir.
+- **Görünümü özelleştir.** Açık ve koyu temayı, 13 yazı tipini, Lucide, net piksel ve kalın çizgi simgelerini dene. Metin, arayüz ve düğme boyutları ile köşe yuvarlaklığını ayrı ayrı ayarla. Arayüzde 54 dil ve alfabe seçeneği bulunur.
+- **Başlığa atla.** Önizlemede içindekiler simgesine dokun ve istediğin Markdown başlığını seç. `[Başlık](#başlık)` biçimindeki bölüm bağlantıları da çalışır.
+- **Güncellemeleri denetle.** Ayarlar’dan veya üst gezinti menüsünden GitHub Releases’i denetle. İstersen yeni Android sürümleri için bildirimleri aç.
+
+## Yama notları
+
+| Sürüm | Değişiklikler |
+| --- | --- |
+| [v1.0.4](docs/updates/v1.0.4.md) | Çevrimdışı güncelleme sonucu, renkli piksel simgeleri ve uygulama içi yama notları |
+| [v1.0.3](docs/updates/v1.0.3.md) | Markdown içindekiler ve yeni dil ve alfabe seçenekleri |
+
+![Uygulama içi yama notları](docs/images/notier-whats-new.svg)
 
 ## İlk notunu yaz
 
@@ -50,6 +61,8 @@
 ## Android’e kurulum
 
 Bu deponun **Releases** bölümündeki imzalı APK’yı Android cihazında aç. İlk kullanımda sol üstteki klasör düğmesine dokun ve notlarını saklayacağın klasörü seç. Drive isteğe bağlıdır. Bulut ekranından Google hesabını seçip erişim verebilirsin.
+
+Yeni Android sürümü için GitHub’da `v1.0.3` gibi bir etiketle kararlı bir Release yayımla ve imzalı APK’yı sürüm dosyası olarak yükle. Notier, yayımlanmış APK içeren sürümleri denetler. Bildirim zamanını Android belirler.
 
 ## Termux’ta derleme
 

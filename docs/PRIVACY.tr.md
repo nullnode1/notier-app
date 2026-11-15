@@ -26,6 +26,10 @@ Notier’de **Google Drive → Drive hesabı → Drive oturumunu kapat** yoluyla
 
 Android ayarlarından Notier uygulama verilerini temizlediğinde yerel ayarlar, saklanan kayıtlar ve kaydedilmemiş taslak silinir. Cihaz klasörlerine veya Drive’a dosya olarak kaydettiğin notları ilgili konumdan yönetebilirsin.
 
+## Güncelleme denetimi
+
+Güncellemeleri denetlediğinde veya güncelleme bildirimlerini açtığında Notier, GitHub API’sinden herkese açık sürüm bilgilerini ister. GitHub bu isteklerde IP adresini ve olağan bağlantı bilgilerini alabilir. Güncelleme istekleri not, dosya veya Google hesabı bilgisi içermez. Arka plan denetimlerini Notier’in güncelleme ayarlarından kapatabilirsin. Notier, son başarılı denetimin zamanını ve herkese açık sürüm bilgilerini cihazında saklar. Böylece sonucu çevrimdışı okuyabilirsin.
+
 ## İletişim
 
 Gizlilikle ilgili sorular için Notier deposunun **Issues** bölümünü kullanabilirsin. Sorunu iletirken not içeriğini, hesap bilgilerini veya erişim belirteçlerini paylaşma.

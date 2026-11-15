@@ -8,18 +8,29 @@
 
 ![Notier interface illustration showing the light note list and the dark Markdown editor with sharp pixel-style icons.](docs/images/notier-overview.svg)
 
-<sub>Interface illustration · the light note list and dark Markdown editor.</sub>
+<sub>Interface illustration · color pixel icons in the note list and a table of contents in dark preview.</sub>
 
 **Kotlin · Android 8 or later · GNU GPL v3**
 
-[APK releases](https://github.com/nullnode1/notier-app/releases) · [Build and use guide (Turkish)](docs/BUILD.tr.md)
+[APK releases](https://github.com/nullnode1/notier-app/releases) · [Project website](https://nullnode1.github.io/notier-app/) · [Build and use guide (Turkish)](docs/BUILD.tr.md)
 
 ## What you can do
 
 - **Work from a folder.** Pick a folder on your device, search your notes, and sort by title or date. Choose a classic list, compact list, or two-column grid.
 - **Write and read Markdown.** Switch between source and preview. Use shortcuts for headings, tasks, links, and code, then copy a code block with one tap in preview.
 - **Browse Drive folders.** With your permission, Notier opens existing folders and lets you create, move, or trash Markdown notes. Folder cards count Markdown notes.
-- **Make it yours.** Choose a light or dark theme, 13 typefaces, and Lucide, crisp pixel, or bold icons. Adjust text, interface, and button sizes separately. The interface supports 42 languages.
+- **Make it yours.** Choose a light or dark theme, 13 typefaces, and Lucide, crisp pixel, or bold icons. Adjust text, interface, and button sizes separately. Choose from 54 interface language and script options.
+- **Jump to a section.** Open the table of contents in preview and select a heading. Section links such as `[Heading](#heading)` work within the note.
+- **Check for updates.** Check GitHub Releases from Settings or the top navigation menu. Enable notifications for new Android releases if you like.
+
+## Release notes
+
+| Version | Changes |
+| --- | --- |
+| [v1.0.4](docs/updates/v1.0.4.en.md) | Offline update results, color pixel icons, and in-app release notes |
+| [v1.0.3](docs/updates/v1.0.3.en.md) | Table of contents and new languages and scripts |
+
+![In-app release notes](docs/images/notier-whats-new.svg)
 
 ## Write your first note
 
@@ -50,6 +61,8 @@ Preview supports tables, task lists, code blocks, and links. Android System WebV
 ## Install on Android
 
 Open the signed APK from the repository’s **Releases** section on your Android device. At first launch, use the folder button at the top left and choose where to keep your notes. Drive is optional. Open the cloud view to choose a Google account and grant access.
+
+For a new Android version, publish a stable GitHub Release with a tag such as `v1.0.3` and upload the signed APK as a release asset. Notier checks published releases that contain an APK. Android schedules background notifications.
 
 ## Build with Termux
 
