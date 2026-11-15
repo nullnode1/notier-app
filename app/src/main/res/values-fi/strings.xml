@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ei vielä onnistunutta tarkistusta</string>
     <string name="updates_offline">Offline-tilassa. Viimeinen tulos on saatavilla.</string>
     <string name="updates_rate_limited">GitHubilla on toistaiseksi rajoitettuja pyyntöjä. Yritä myöhemmin uudelleen.</string>
+    <string name="release_empty">Julkaisutietoja ei ole vielä saatavilla. Tarkista GitHub, kun olet yhteydessä.</string>
+    <string name="release_later">Näytä seuraavan käynnistyksen yhteydessä</string>
+    <string name="release_no_body">Tässä julkaisussa ei ole kirjallisia huomautuksia GitHubissa.</string>
+    <string name="release_read">Merkitse luetuksi</string>
+    <string name="theme_pixel">Pixel työpaja</string>
+    <string name="welcome_description">Valitse teema ja kieli. Voit muuttaa näitä milloin tahansa asetuksista.</string>
+    <string name="welcome_start">Avaa Notier</string>
+    <string name="welcome_title">Tervetuloa Noieriin</string>
 </resources>

@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ingen succesfuld kontrol endnu</string>
     <string name="updates_offline">Offline. Det sidste resultat forbliver tilgængeligt.</string>
     <string name="updates_rate_limited">GitHub har begrænsede anmodninger i øjeblikket. Prøv igen senere.</string>
+    <string name="release_empty">Der er endnu ingen tilgængelige release notes. Tjek GitHub, når du er tilsluttet.</string>
+    <string name="release_later">Vises ved næste lancering</string>
+    <string name="release_no_body">Denne udgivelse har ingen skriftlige noter om GitHub.</string>
+    <string name="release_read">Markér som læst</string>
+    <string name="theme_pixel">Pixel workshop</string>
+    <string name="welcome_description">Vælg et tema og sprog. Du kan til enhver tid ændre disse i Indstillinger.</string>
+    <string name="welcome_start">Åbn Notier</string>
+    <string name="welcome_title">Velkommen til Notier</string>
 </resources>

@@ -212,4 +212,12 @@
     <string name="updates_rate_limited">GitHub has limited requests for now. Try again later.</string>
     <string name="updates_download">Download APK</string>
     <string name="drive_offline">Drive is offline.</string>
+    <string name="theme_pixel">Pixel workshop</string>
+    <string name="welcome_title">Welcome to Notier</string>
+    <string name="welcome_description">Choose a theme and language. You can change these in Settings anytime.</string>
+    <string name="welcome_start">Open Notier</string>
+    <string name="release_read">Mark as read</string>
+    <string name="release_later">Show at next launch</string>
+    <string name="release_empty">No release notes available yet. Check GitHub when you’re connected.</string>
+    <string name="release_no_body">This release has no written notes on GitHub.</string>
 </resources>

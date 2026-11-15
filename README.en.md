@@ -19,7 +19,7 @@
 - **Work from a folder.** Pick a folder on your device, search your notes, and sort by title or date. Choose a classic list, compact list, or two-column grid.
 - **Write and read Markdown.** Switch between source and preview. Use shortcuts for headings, tasks, links, and code, then copy a code block with one tap in preview.
 - **Browse Drive folders.** With your permission, Notier opens existing folders and lets you create, move, or trash Markdown notes. Folder cards count Markdown notes.
-- **Make it yours.** Choose a light or dark theme, 13 typefaces, and Lucide, crisp pixel, or bold icons. Adjust text, interface, and button sizes separately. Choose from 54 interface language and script options.
+- **Make it yours.** Choose a light, dark, or Pixel Workshop theme, 13 typefaces, and Lucide, crisp pixel, or bold icons. Adjust text, interface, and button sizes separately. Choose from 54 interface language and script options.
 - **Jump to a section.** Open the table of contents in preview and select a heading. Section links such as `[Heading](#heading)` work within the note.
 - **Check for updates.** Check GitHub Releases from Settings or the top navigation menu. Enable notifications for new Android releases if you like.
 
@@ -27,10 +27,11 @@
 
 | Version | Changes |
 | --- | --- |
+| [v1.0.5](docs/updates/v1.0.5.en.md) | Live release notes, the welcome screen, Pixel Workshop, and the mobile site |
 | [v1.0.4](docs/updates/v1.0.4.en.md) | Offline update results, color pixel icons, and in-app release notes |
 | [v1.0.3](docs/updates/v1.0.3.en.md) | Table of contents and new languages and scripts |
 
-![In-app release notes](docs/images/notier-whats-new.svg)
+![Pixel Workshop welcome screen](docs/images/notier-pixel-workshop.svg)
 
 ## Write your first note
 

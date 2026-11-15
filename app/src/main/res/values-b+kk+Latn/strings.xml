@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Älı sättı tekseru joq</string>
     <string name="updates_offline">Oflain. Soñğy nätije qoljetımdı bolyp qalady.</string>
     <string name="updates_rate_limited">GitHub-ta äzırge şekteulı sūraular bar. Ärekettı keiınırek qaitalañyz.</string>
+    <string name="release_empty">Äzırge şyğarylym eskertpesı qoljetımdı emes. Qosylğan kezde GitHub tekserıñız.</string>
+    <string name="release_later">Kelesı ıske qosuda körsetu</string>
+    <string name="release_no_body">Būl şyğarylymda GitHub-ta jazbaşa eskertpeler joq.</string>
+    <string name="release_read">Oqylğan dep belgıleñız</string>
+    <string name="theme_pixel">Piksel şeberhanasy</string>
+    <string name="welcome_description">Taqyryp pen tıldı tañdañyz. Olardy kez kelgen uaqytta \"Parametrler\" bölımınen özgertuge bolady.</string>
+    <string name="welcome_start">Habarlamany aşyñyz</string>
+    <string name="welcome_title">Notier-ge qoş keldıñız</string>
 </resources>

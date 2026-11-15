@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 540" role="img" aria-labelledby="title desc">
+  <title id="title">Notier Pixel Workshop</title><desc id="desc">A square, layered welcome panel with a pixel theme preview and green button.</desc>
+  <defs>
+    <pattern id="squares" width="32" height="32" patternUnits="userSpaceOnUse"><path fill="#d9c9a4" d="M0 0h8v8H0zM16 16h8v8h-8z"/></pattern>
+  </defs>
+  <path fill="#e9dbbb" d="M0 0h720v540H0z"/>
+  <path fill="url(#squares)" d="M0 0h720v540H0z"/>
+  <path fill="#c2ac80" d="M109 64h518v431H109z"/>
+  <path fill="#65513a" d="M99 54h518v431H99z"/>
+  <path fill="#f7efdc" d="M103 58h510v423H103z"/>
+  <g font-family="DejaVu Sans,Arial,sans-serif" fill="#2a2017">
+    <path fill="#2a2017" d="M133 82h42v42h-42z"/><path fill="#fff" d="M141 115V91h5l15 14V91h6v24h-5l-15-14v14z"/>
+    <text x="190" y="111" font-size="23" font-weight="700">Notier</text>
+    <text x="133" y="166" font-size="32" font-weight="700">Notier’e hoş geldin</text>
+    <path fill="#b39a71" d="M133 190h450v56H133zM133 256h450v56H133zM133 322h450v56H133z"/>
+    <path fill="#f1e3c2" d="M135 192h446v52H135zM135 258h446v52H135zM135 324h446v52H135z"/>
+    <g font-size="17" font-weight="700"><text x="154" y="224">Tema</text><text x="154" y="290">Dil</text><text x="154" y="356">Yama notları</text></g>
+    <g font-size="16" text-anchor="end" fill="#584936"><text x="560" y="224">Piksel Atölyesi</text><text x="560" y="290">Türkçe</text><text x="560" y="356">›</text></g>
+    <path fill="#2d3a20" d="M133 402h450v50H133z"/><path fill="#849f62" d="M137 406h442v42H137z"/><path fill="#55733e" d="M141 410h434v34H141z"/>
+    <text x="358" y="434" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">Notier’i aç</text>
+  </g>
+</svg>

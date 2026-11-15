@@ -212,4 +212,12 @@
     <string name="updates_rate_limited">GitHub istekleri geçici olarak sınırladı. Daha sonra tekrar dene.</string>
     <string name="updates_download">APK’yı indir</string>
     <string name="drive_offline">Drive çevrimdışı.</string>
+    <string name="theme_pixel">Piksel atölyesi</string>
+    <string name="welcome_title">Notier’e hoş geldin</string>
+    <string name="welcome_description">Temanı ve dilini seç. Bu seçimleri Ayarlar’dan istediğin zaman değiştirebilirsin.</string>
+    <string name="welcome_start">Notier’i aç</string>
+    <string name="release_read">Okudum</string>
+    <string name="release_later">Bir sonraki açılışta göster</string>
+    <string name="release_empty">Henüz sürüm notu yok. Bağlantın olduğunda GitHub’dan denetle.</string>
+    <string name="release_no_body">GitHub’da bu sürüm için yazılı not yok.</string>
 </resources>

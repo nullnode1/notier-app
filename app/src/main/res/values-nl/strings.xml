@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Nog geen succesvolle controle</string>
     <string name="updates_offline">Offline. Het laatste resultaat blijft beschikbaar.</string>
     <string name="updates_rate_limited">GitHub heeft voorlopig een beperkt aantal verzoeken. Probeer het later opnieuw.</string>
+    <string name="release_empty">Er zijn nog geen releaseopmerkingen beschikbaar. Controleer GitHub wanneer je verbonden bent.</string>
+    <string name="release_later">Wordt getoond bij de volgende lancering</string>
+    <string name="release_no_body">Deze release bevat geen schriftelijke opmerkingen over GitHub.</string>
+    <string name="release_read">Markeer als gelezen</string>
+    <string name="theme_pixel">Pixel-workshop</string>
+    <string name="welcome_description">Kies een thema en taal. Je kunt deze op elk gewenst moment wijzigen in Instellingen.</string>
+    <string name="welcome_start">Notier openen</string>
+    <string name="welcome_title">Welkom bij Notier</string>
 </resources>

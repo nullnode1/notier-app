@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Δεν υπάρχει ακόμη επιτυχής έλεγχος</string>
     <string name="updates_offline">Εκτός σύνδεσης. Το τελευταίο αποτέλεσμα παραμένει διαθέσιμο.</string>
     <string name="updates_rate_limited">Το GitHub έχει περιορισμένα αιτήματα προς το παρόν. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="release_empty">Δεν υπάρχουν ακόμη διαθέσιμες σημειώσεις έκδοσης. Ελέγξτε το GitHub όταν είστε συνδεδεμένοι.</string>
+    <string name="release_later">Εμφάνιση στην επόμενη κυκλοφορία</string>
+    <string name="release_no_body">Αυτή η έκδοση δεν έχει γραπτές σημειώσεις στο GitHub.</string>
+    <string name="release_read">Επισήμανση ως αναγνωσμένου</string>
+    <string name="theme_pixel">Εργαστήριο Pixel</string>
+    <string name="welcome_description">Επιλέξτε θέμα και γλώσσα. Μπορείτε να τις αλλάξετε στις Ρυθμίσεις ανά πάσα στιγμή.</string>
+    <string name="welcome_start">Ανοίξτε το Notier</string>
+    <string name="welcome_title">Καλώς ήρθατε στο Notier</string>
 </resources>

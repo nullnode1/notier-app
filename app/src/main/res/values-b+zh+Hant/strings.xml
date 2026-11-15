@@ -210,4 +210,12 @@
     <string name="updates_never_checked">尚未檢查成功</string>
     <string name="updates_offline">離線。最後的結果仍然可用。</string>
     <string name="updates_rate_limited">GitHub 目前的請求有限。稍後再試。</string>
+    <string name="release_empty">尚無可用的發行說明。連接後檢查 GitHub。</string>
+    <string name="release_later">下次發佈時顯示</string>
+    <string name="release_no_body">此版本在 GitHub 上沒有書面註釋。</string>
+    <string name="release_read">標記為已讀</string>
+    <string name="theme_pixel">像素工作坊</string>
+    <string name="welcome_description">選擇主題和語言。您可以隨時在「設定」中變更這些內容。</string>
+    <string name="welcome_start">打開諾蒂爾</string>
+    <string name="welcome_title">歡迎來到諾蒂埃</string>
 </resources>

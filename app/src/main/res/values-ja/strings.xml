@@ -210,4 +210,12 @@
     <string name="updates_never_checked">まだチェックが成功していません</string>
     <string name="updates_offline">オフライン。最後の結果は引き続き利用可能です。</string>
     <string name="updates_rate_limited">現時点では、GitHub のリクエストは制限されています。後でもう一度試してください。</string>
+    <string name="release_empty">まだリリースノートはありません。接続したら GitHub を確認してください。</string>
+    <string name="release_later">次回の起動時に表示</string>
+    <string name="release_no_body">このリリースには GitHub にメモがありません。</string>
+    <string name="release_read">既読としてマークする</string>
+    <string name="theme_pixel">ピクセルワークショップ</string>
+    <string name="welcome_description">テーマと言語を選択します。これらは [設定] でいつでも変更できます。</string>
+    <string name="welcome_start">オープンノティエ</string>
+    <string name="welcome_title">ノティエへようこそ</string>
 </resources>

@@ -210,4 +210,12 @@
     <string name="updates_never_checked">Belum ada pemeriksaan yang berhasil</string>
     <string name="updates_offline">Luring. Hasil terakhir tetap tersedia.</string>
     <string name="updates_rate_limited">GitHub memiliki permintaan terbatas untuk saat ini. Coba lagi nanti.</string>
+    <string name="release_empty">Belum ada catatan rilis yang tersedia. Periksa GitHub saat Anda terhubung.</string>
+    <string name="release_later">Tampilkan pada peluncuran berikutnya</string>
+    <string name="release_no_body">Rilis ini tidak memiliki catatan tertulis di GitHub.</string>
+    <string name="release_read">Tandai sebagai telah dibaca</string>
+    <string name="theme_pixel">Lokakarya piksel</string>
+    <string name="welcome_description">Pilih tema dan bahasa. Anda dapat mengubahnya di Pengaturan kapan saja.</string>
+    <string name="welcome_start">Buka Notier</string>
+    <string name="welcome_title">Selamat datang di Notier</string>
 </resources>

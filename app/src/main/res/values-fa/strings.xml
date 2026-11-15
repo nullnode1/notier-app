@@ -212,4 +212,12 @@
     <string name="updates_never_checked">هنوز بررسی موفقیت آمیزی انجام نشده است</string>
     <string name="updates_offline">آفلاین. آخرین نتیجه در دسترس باقی می ماند.</string>
     <string name="updates_rate_limited">GitHub در حال حاضر درخواست های محدودی دارد. بعداً دوباره امتحان کنید.</string>
+    <string name="release_empty">هنوز یادداشت انتشار موجود نیست. وقتی متصل هستید GitHub را بررسی کنید.</string>
+    <string name="release_later">نمایش در راه اندازی بعدی</string>
+    <string name="release_no_body">این نسخه هیچ یادداشت نوشته شده ای در GitHub ندارد.</string>
+    <string name="release_read">علامت گذاری به عنوان خوانده شده</string>
+    <string name="theme_pixel">کارگاه پیکسل</string>
+    <string name="welcome_description">یک موضوع و زبان انتخاب کنید. هر زمان خواستید می‌توانید این موارد را در تنظیمات تغییر دهید.</string>
+    <string name="welcome_start">Notier را باز کنید</string>
+    <string name="welcome_title">به Notier خوش آمدید</string>
 </resources>

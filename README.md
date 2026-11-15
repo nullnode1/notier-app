@@ -19,7 +19,7 @@
 - **Klasörle çalış.** Cihazdan bir klasör seç, notları ada ya da tarihe göre sırala ve ara. Klasik liste, kompakt liste ve iki sütunlu ızgara arasında geçiş yap.
 - **Markdown yaz ve oku.** Ham metin ile önizleme arasında geçiş yap. Başlık, görev listesi, bağlantı ve kod için editör kısayollarını kullan. Önizlemede kod bloklarını tek dokunuşla kopyala.
 - **Drive’daki klasörlerini gez.** İzin verdiğinde mevcut klasörleri açabilir, Markdown notu oluşturabilir, taşıyabilir veya çöp kutusuna gönderebilirsin. Klasör kartları Markdown notlarını sayar.
-- **Görünümü özelleştir.** Açık ve koyu temayı, 13 yazı tipini, Lucide, net piksel ve kalın çizgi simgelerini dene. Metin, arayüz ve düğme boyutları ile köşe yuvarlaklığını ayrı ayrı ayarla. Arayüzde 54 dil ve alfabe seçeneği bulunur.
+- **Görünümü özelleştir.** Açık, koyu ve Piksel Atölyesi temalarını, 13 yazı tipini, Lucide, net piksel ve kalın çizgi simgelerini dene. Metin, arayüz ve düğme boyutları ile köşe yuvarlaklığını ayrı ayrı ayarla. Arayüzde 54 dil ve alfabe seçeneği bulunur.
 - **Başlığa atla.** Önizlemede içindekiler simgesine dokun ve istediğin Markdown başlığını seç. `[Başlık](#başlık)` biçimindeki bölüm bağlantıları da çalışır.
 - **Güncellemeleri denetle.** Ayarlar’dan veya üst gezinti menüsünden GitHub Releases’i denetle. İstersen yeni Android sürümleri için bildirimleri aç.
 
@@ -27,10 +27,11 @@
 
 | Sürüm | Değişiklikler |
 | --- | --- |
+| [v1.0.5](docs/updates/v1.0.5.md) | GitHub’dan yama notları, karşılama ekranı, Piksel Atölyesi ve mobil site |
 | [v1.0.4](docs/updates/v1.0.4.md) | Çevrimdışı güncelleme sonucu, renkli piksel simgeleri ve uygulama içi yama notları |
 | [v1.0.3](docs/updates/v1.0.3.md) | Markdown içindekiler ve yeni dil ve alfabe seçenekleri |
 
-![Uygulama içi yama notları](docs/images/notier-whats-new.svg)
+![Piksel Atölyesi karşılama ekranı](docs/images/notier-pixel-workshop.svg)
 
 ## İlk notunu yaz
 
@@ -62,7 +63,7 @@
 
 Bu deponun **Releases** bölümündeki imzalı APK’yı Android cihazında aç. İlk kullanımda sol üstteki klasör düğmesine dokun ve notlarını saklayacağın klasörü seç. Drive isteğe bağlıdır. Bulut ekranından Google hesabını seçip erişim verebilirsin.
 
-Yeni Android sürümü için GitHub’da `v1.0.3` gibi bir etiketle kararlı bir Release yayımla ve imzalı APK’yı sürüm dosyası olarak yükle. Notier, yayımlanmış APK içeren sürümleri denetler. Bildirim zamanını Android belirler.
+Yeni Android sürümü için GitHub’da `v1.0.5` gibi bir etiketle kararlı bir Release yayımla ve imzalı APK’yı sürüm dosyası olarak yükle. Notier, yayımlanmış APK içeren sürümleri denetler. Bildirim zamanını Android belirler. Yama notlarını Release açıklamasına ekle. Notier, bu açıklamayı GitHub’dan indirir ve çevrimdışı okuma için cihazda saklar.
 
 ## Termux’ta derleme
 

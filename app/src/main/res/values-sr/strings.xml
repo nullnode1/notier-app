@@ -214,4 +214,12 @@
     <string name="updates_never_checked">Још увек нема успешне провере</string>
     <string name="updates_offline">Оффлине. Последњи резултат остаје доступан.</string>
     <string name="updates_rate_limited">ГитХуб за сада има ограничене захтеве. Покушајте поново касније.</string>
+    <string name="release_empty">Још увек нема доступних белешки о издању. Проверите ГитХуб када сте повезани.</string>
+    <string name="release_later">Покажите при следећем лансирању</string>
+    <string name="release_no_body">Ово издање нема писане белешке на ГитХуб-у.</string>
+    <string name="release_read">Означи као прочитано</string>
+    <string name="theme_pixel">Пикел радионица</string>
+    <string name="welcome_description">Изаберите тему и језик. Можете их променити у подешавањима у било ком тренутку.</string>
+    <string name="welcome_start">Отвори Нотиер</string>
+    <string name="welcome_title">Добродошли у Нотиер</string>
 </resources>

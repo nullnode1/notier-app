@@ -28,7 +28,7 @@ Android ayarlarından Notier uygulama verilerini temizlediğinde yerel ayarlar, 
 
 ## Güncelleme denetimi
 
-Güncellemeleri denetlediğinde veya güncelleme bildirimlerini açtığında Notier, GitHub API’sinden herkese açık sürüm bilgilerini ister. GitHub bu isteklerde IP adresini ve olağan bağlantı bilgilerini alabilir. Güncelleme istekleri not, dosya veya Google hesabı bilgisi içermez. Arka plan denetimlerini Notier’in güncelleme ayarlarından kapatabilirsin. Notier, son başarılı denetimin zamanını ve herkese açık sürüm bilgilerini cihazında saklar. Böylece sonucu çevrimdışı okuyabilirsin.
+Notier’i açtığında, güncellemeleri denetlediğinde veya güncelleme bildirimlerini açtığında Notier, GitHub API’sinden herkese açık sürüm bilgilerini ister. GitHub bu isteklerde IP adresini ve olağan bağlantı bilgilerini alabilir. Güncelleme istekleri not, dosya veya Google hesabı bilgisi içermez. Arka plan denetimlerini Notier’in güncelleme ayarlarından kapatabilirsin. Notier, son başarılı denetimin zamanını ve herkese açık sürüm bilgilerini ve yama notlarını cihazında saklar. Böylece sonucu çevrimdışı okuyabilirsin.
 
 ## İletişim
 

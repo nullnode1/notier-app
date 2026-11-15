@@ -214,4 +214,12 @@
     <string name="updates_never_checked">Zatiaľ žiadna úspešná kontrola</string>
     <string name="updates_offline">Offline. The last result stays available.</string>
     <string name="updates_rate_limited">GitHub has limited requests for now. Skúste to znova neskôr.</string>
+    <string name="release_empty">Zatiaľ nie sú k dispozícii žiadne poznámky k vydaniu. Keď ste pripojení, skontrolujte GitHub.</string>
+    <string name="release_later">Zobraziť pri ďalšom spustení</string>
+    <string name="release_no_body">Toto vydanie neobsahuje žiadne písomné poznámky na GitHub.</string>
+    <string name="release_read">Označiť ako prečítané</string>
+    <string name="theme_pixel">Pixel workshop</string>
+    <string name="welcome_description">Vyberte si tému a jazyk. Tieto nastavenia môžete kedykoľvek zmeniť v Nastaveniach.</string>
+    <string name="welcome_start">Otvorte Notier</string>
+    <string name="welcome_title">Vitajte v Notier</string>
 </resources>

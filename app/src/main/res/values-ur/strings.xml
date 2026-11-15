@@ -212,4 +212,12 @@
     <string name="updates_never_checked">ابھی تک کوئی کامیاب چیک نہیں ہوا۔</string>
     <string name="updates_offline">آف لائن۔ آخری نتیجہ دستیاب رہتا ہے۔</string>
     <string name="updates_rate_limited">GitHub کے پاس فی الحال محدود درخواستیں ہیں۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="release_empty">ابھی تک کوئی ریلیز نوٹ دستیاب نہیں ہے۔ جب آپ منسلک ہوں تو GitHub کو چیک کریں۔</string>
+    <string name="release_later">اگلی لانچ پر دکھائیں۔</string>
+    <string name="release_no_body">اس ریلیز میں GitHub پر کوئی تحریری نوٹ نہیں ہے۔</string>
+    <string name="release_read">پڑھا ہوا نشان زد کریں۔</string>
+    <string name="theme_pixel">پکسل ورکشاپ</string>
+    <string name="welcome_description">ایک تھیم اور زبان کا انتخاب کریں۔ آپ انہیں کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</string>
+    <string name="welcome_start">نوٹیر کھولیں۔</string>
+    <string name="welcome_title">Notier میں خوش آمدید</string>
 </resources>

@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Wala pang matagumpay na pagsusuri</string>
     <string name="updates_offline">Offline. Mananatiling available ang huling resulta.</string>
     <string name="updates_rate_limited">Ang GitHub ay may limitadong mga kahilingan sa ngayon. Subukan ulit mamaya.</string>
+    <string name="release_empty">Wala pang available na mga tala sa paglabas. Suriin ang GitHub kapag nakakonekta ka.</string>
+    <string name="release_later">Ipakita sa susunod na paglulunsad</string>
+    <string name="release_no_body">Ang release na ito ay walang nakasulat na tala sa GitHub.</string>
+    <string name="release_read">Markahan bilang nabasa</string>
+    <string name="theme_pixel">Pixel workshop</string>
+    <string name="welcome_description">Pumili ng tema at wika. Maaari mong baguhin ang mga ito sa Mga Setting anumang oras.</string>
+    <string name="welcome_start">Buksan ang Notier</string>
+    <string name="welcome_title">Maligayang pagdating sa Notier</string>
 </resources>

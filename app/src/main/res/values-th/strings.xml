@@ -210,4 +210,12 @@
     <string name="updates_never_checked">ยังไม่มีการตรวจสอบที่สำเร็จ</string>
     <string name="updates_offline">ออฟไลน์ ผลลัพธ์สุดท้ายยังคงอยู่</string>
     <string name="updates_rate_limited">GitHub มีคำขอที่จำกัดในขณะนี้ ลองอีกครั้งในภายหลัง</string>
+    <string name="release_empty">ยังไม่มีบันทึกประจำรุ่น ตรวจสอบ GitHub เมื่อคุณเชื่อมต่อแล้ว</string>
+    <string name="release_later">แสดงในงานเปิดตัวครั้งต่อไป</string>
+    <string name="release_no_body">ข่าวประชาสัมพันธ์ฉบับนี้ไม่มีบันทึกย่อเป็นลายลักษณ์อักษรเกี่ยวกับ GitHub</string>
+    <string name="release_read">ทำเครื่องหมายว่าอ่านแล้ว</string>
+    <string name="theme_pixel">เวิร์คช็อปพิกเซล</string>
+    <string name="welcome_description">เลือกธีมและภาษา คุณสามารถเปลี่ยนสิ่งเหล่านี้ได้ในการตั้งค่าได้ตลอดเวลา</string>
+    <string name="welcome_start">เปิดโนติเยร์</string>
+    <string name="welcome_title">ยินดีต้อนรับสู่โนติเยร์</string>
 </resources>

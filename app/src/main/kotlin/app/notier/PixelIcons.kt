@@ -59,7 +59,7 @@ internal fun pixelIcon(resource: Int) = when (resource) {
 
 internal fun usesPixelColors(resource: Int) = when (resource) {
     R.drawable.ic_book_open, R.drawable.ic_cloud, R.drawable.ic_cloud_download, R.drawable.ic_eye,
-    R.drawable.ic_file_text, R.drawable.ic_folder_open, R.drawable.ic_hard_drive, R.drawable.ic_list,
+    R.drawable.ic_file_text, R.drawable.ic_folder_open, R.drawable.ic_folder_plus, R.drawable.ic_hard_drive, R.drawable.ic_list,
     R.drawable.ic_list_ordered, R.drawable.ic_pencil, R.drawable.ic_plus, R.drawable.ic_save,
     R.drawable.ic_search, R.drawable.ic_settings, R.drawable.ic_x -> true
     else -> false

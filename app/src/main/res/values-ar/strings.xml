@@ -220,4 +220,12 @@
     <string name="updates_never_checked">لا يوجد فحص ناجح حتى الآن</string>
     <string name="updates_offline">غير متصل. النتيجة الأخيرة تبقى متاحة.</string>
     <string name="updates_rate_limited">لدى GitHub طلبات محدودة في الوقت الحالي. حاول مرة أخرى لاحقًا.</string>
+    <string name="release_empty">لا توجد ملاحظات الإصدار المتاحة حتى الآن. تحقق من GitHub عندما تكون متصلاً.</string>
+    <string name="release_later">عرض في الإطلاق القادم</string>
+    <string name="release_no_body">لا يحتوي هذا الإصدار على ملاحظات مكتوبة على GitHub.</string>
+    <string name="release_read">وضع علامة كمقروءة</string>
+    <string name="theme_pixel">ورشة بكسل</string>
+    <string name="welcome_description">اختر الموضوع واللغة. يمكنك تغيير هذه الإعدادات في أي وقت.</string>
+    <string name="welcome_start">افتح نوتير</string>
+    <string name="welcome_title">مرحبا بكم في نوتير</string>
 </resources>

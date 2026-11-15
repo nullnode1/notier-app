@@ -214,4 +214,12 @@
     <string name="updates_never_checked">Vēl nav veiksmīgas pārbaudes</string>
     <string name="updates_offline">Bezsaistē. Pēdējais rezultāts paliek pieejams.</string>
     <string name="updates_rate_limited">GitHub pašlaik ir ierobežoti pieprasījumi. Vēlāk mēģiniet vēlreiz.</string>
+    <string name="release_empty">Pagaidām nav pieejamas piezīmes par laidienu. Pārbaudiet GitHub, kad ir izveidots savienojums.</string>
+    <string name="release_later">Parādīt nākamajā palaišanas reizē</string>
+    <string name="release_no_body">Šajā laidienā GitHub nav rakstisku piezīmju.</string>
+    <string name="release_read">Atzīmēt kā izlasītu</string>
+    <string name="theme_pixel">Pikseļu darbnīca</string>
+    <string name="welcome_description">Izvēlieties tēmu un valodu. Jebkurā laikā varat tos mainīt sadaļā Iestatījumi.</string>
+    <string name="welcome_start">Atveriet Notier</string>
+    <string name="welcome_title">Laipni lūdzam vietnē Notier</string>
 </resources>

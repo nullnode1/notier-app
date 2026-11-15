@@ -210,4 +210,12 @@
     <string name="updates_never_checked">Chưa kiểm tra thành công</string>
     <string name="updates_offline">Ngoại tuyến. Kết quả cuối cùng vẫn có sẵn.</string>
     <string name="updates_rate_limited">GitHub hiện có số lượng yêu cầu hạn chế. Hãy thử lại sau.</string>
+    <string name="release_empty">Chưa có ghi chú phát hành nào. Kiểm tra GitHub khi bạn kết nối.</string>
+    <string name="release_later">Hiển thị ở lần ra mắt tiếp theo</string>
+    <string name="release_no_body">Bản phát hành này không có ghi chú bằng văn bản trên GitHub.</string>
+    <string name="release_read">Đánh dấu là đã đọc</string>
+    <string name="theme_pixel">Xưởng pixel</string>
+    <string name="welcome_description">Chọn một chủ đề và ngôn ngữ. Bạn có thể thay đổi những điều này trong Cài đặt bất cứ lúc nào.</string>
+    <string name="welcome_start">Mở Notier</string>
+    <string name="welcome_title">Chào mừng đến với Notier</string>
 </resources>

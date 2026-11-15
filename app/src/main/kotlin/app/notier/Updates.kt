@@ -38,21 +38,38 @@ internal object Updates {
     private const val NOTIFICATIONS_ENABLED = "update_notifications"
     private const val LAST_NOTIFIED = "update_last_notified"
     private const val CACHE = "update_release_cache"
+    private const val ARCHIVE_SIZE = 20
+    const val FOREGROUND_INTERVAL = 60 * 60_000L
     private const val RETRY_AT = "update_retry_at"
     private const val CHANNEL = "releases"
     private const val JOB_ID = 42613
     private val requestLock = Any()
+    @Volatile private var memoizedCache: Pair<String, Cache?>? = null
 
-    data class Release(val tag: String, val url: String, val apk: String, val bytes: Long)
+    data class Release(
+        val tag: String, val url: String, val apk: String, val bytes: Long,
+        val title: String = tag, val body: String = "", val publishedAt: String = ""
+    ) {
+        val announcement get() = "$tag:${body.hashCode()}"
+    }
     enum class Issue { OFFLINE, RATE_LIMITED, UNAVAILABLE }
 
-    data class Check(val release: Release?, val checkedAt: Long = 0, val issue: Issue? = null) {
+    data class Check(val releases: List<Release>, val checkedAt: Long = 0, val issue: Issue? = null) {
+        val release get() = releases.firstOrNull()
+
+        fun announcement(installed: String): Release? {
+            val newest = release ?: return null
+            val seenVersion = Version.parse(installed) ?: return null
+            val latestVersion = Version.parse(newest.tag) ?: return null
+            return newest.takeIf { latestVersion >= seenVersion && (latestVersion > seenVersion || it.body.isNotBlank()) }
+        }
+
         fun available(installed: String): Release? =
             release?.takeIf { versionIsNewer(it.tag, installed) }
     }
 
-    private data class Cache(val release: Release?, val checkedAt: Long, val etag: String?) {
-        fun result(issue: Issue? = null) = Check(release, checkedAt, issue)
+    private data class Cache(val releases: List<Release>, val checkedAt: Long, val etag: String?) {
+        fun result(issue: Issue? = null) = Check(releases, checkedAt, issue)
     }
 
     fun installedVersion(context: Context) =
@@ -66,13 +83,13 @@ internal object Updates {
 
     fun cached(context: Context): Check {
         val issue = if (online(context)) null else Issue.OFFLINE
-        return readCache(context)?.result(issue) ?: Check(null, issue = issue)
+        return readCache(context)?.result(issue) ?: Check(emptyList(), issue = issue)
     }
 
     fun check(context: Context): Check = synchronized(requestLock) {
         val cached = readCache(context)
         val now = System.currentTimeMillis()
-        fun fallback(issue: Issue) = cached?.result(issue) ?: Check(null, issue = issue)
+        fun fallback(issue: Issue) = cached?.result(issue) ?: Check(emptyList(), issue = issue)
         if (!online(context)) return@synchronized fallback(Issue.OFFLINE)
         if (prefs(context).getLong(RETRY_AT, 0) > now) return@synchronized fallback(Issue.RATE_LIMITED)
         if (cached != null && now - cached.checkedAt in 0..15_000L) return@synchronized cached.result()
@@ -100,7 +117,7 @@ internal object Updates {
                             }
                             JSONArray(response.toString())
                         }
-                        Cache(newest(releases), now, connection.getHeaderField("ETag"))
+                        Cache(catalog(releases), now, connection.getHeaderField("ETag"))
                     }
                     HttpURLConnection.HTTP_NOT_MODIFIED -> cached?.copy(checkedAt = now)
                         ?: return@synchronized fallback(Issue.UNAVAILABLE)
@@ -124,7 +141,7 @@ internal object Updates {
         }
     }
 
-    internal fun newest(releases: JSONArray): Release? = (0 until releases.length()).asSequence().mapNotNull { index ->
+    internal fun catalog(releases: JSONArray): List<Release> = (0 until releases.length()).asSequence().mapNotNull { index ->
         val row = releases.optJSONObject(index) ?: return@mapNotNull null
         val tag = row.optString("tag_name")
         val version = Version.parse(tag) ?: return@mapNotNull null
@@ -139,31 +156,57 @@ internal object Updates {
             val bytes = asset.optLong("size")
             if (asset.optString("state") != "uploaded" || !name.endsWith(".apk", ignoreCase = true) ||
                 !apkUrl.startsWith("$RELEASES/download/$tag/") || bytes <= 0) return@asset null
-            Release(tag, url, apkUrl, bytes) to when {
+            Release(tag, url, apkUrl, bytes, row.optString("name", "").trim().take(220).ifBlank { tag },
+                row.optString("body", "").trim().take(20_000), row.optString("published_at", "")) to when {
                 name.equals("Notier-v${version.major}.${version.minor}.${version.patch}.apk", true) -> 0
                 name.equals("Notier.apk", true) -> 1
                 else -> 2
             }
         }.minByOrNull { it.second }?.first
         release?.let { version to it }
-    }.maxByOrNull { it.first }?.second
+    }.sortedByDescending { it.first }.distinctBy { it.first }.take(ARCHIVE_SIZE).map { it.second }.toList()
 
-    private fun readCache(context: Context): Cache? = runCatching {
-        val data = JSONObject(prefs(context).getString(CACHE, null) ?: return null)
+    private fun readCache(context: Context): Cache? {
+        val raw = prefs(context).getString(CACHE, null) ?: return null
+        memoizedCache?.let { if (it.first == raw) return it.second }
+        val cache = runCatching { decodeCache(raw) }.getOrNull()
+        memoizedCache = raw to cache
+        return cache
+    }
+
+    private fun decodeCache(raw: String): Cache {
+        val data = JSONObject(raw)
+        val entries = data.optJSONArray("releases")
+        // v1.0.4 cached only the download URL. Retain it offline and fetch the articles online.
+        if (entries == null) return Cache(listOfNotNull(cachedRelease(data)), 0, null)
+        val releases = (0 until entries.length().coerceAtMost(ARCHIVE_SIZE)).mapNotNull { index ->
+            entries.optJSONObject(index)?.let(::cachedRelease)
+        }
+        return Cache(releases, data.getLong("checked"), data.optString("etag").ifEmpty { null })
+    }
+
+    private fun cachedRelease(data: JSONObject): Release? {
         val tag = data.optString("tag")
         val url = data.optString("url")
         val apk = data.optString("apk")
-        val release = if (Version.parse(tag) != null && url == "$RELEASES/tag/$tag" &&
-            apk.startsWith("$RELEASES/download/$tag/")) Release(tag, url, apk, data.optLong("size")) else null
-        Cache(release, data.getLong("checked"), data.optString("etag").ifEmpty { null })
-    }.getOrNull()
+        val bytes = data.optLong("size")
+        if (Version.parse(tag) == null || url != "$RELEASES/tag/$tag" ||
+            !apk.startsWith("$RELEASES/download/$tag/") || bytes <= 0) return null
+        return Release(tag, url, apk, bytes, data.optString("title", tag),
+            data.optString("body", ""), data.optString("published", ""))
+    }
 
     private fun saveCache(context: Context, cache: Cache) {
-        val data = JSONObject().put("checked", cache.checkedAt).put("etag", cache.etag)
-        cache.release?.let {
-            data.put("tag", it.tag).put("url", it.url).put("apk", it.apk).put("size", it.bytes)
+        val releases = JSONArray()
+        for (release in cache.releases) {
+            releases.put(JSONObject().put("tag", release.tag).put("url", release.url).put("apk", release.apk)
+                .put("size", release.bytes).put("title", release.title).put("body", release.body)
+                .put("published", release.publishedAt))
         }
-        prefs(context).edit().putString(CACHE, data.toString()).remove(RETRY_AT).apply()
+        val data = JSONObject().put("checked", cache.checkedAt).put("etag", cache.etag).put("releases", releases)
+        val raw = data.toString()
+        prefs(context).edit().putString(CACHE, raw).remove(RETRY_AT).apply()
+        memoizedCache = raw to cache
     }
 
     internal fun versionIsNewer(candidate: String, installed: String): Boolean {

@@ -214,4 +214,12 @@
     <string name="updates_never_checked">Nicio verificare reușită încă</string>
     <string name="updates_offline">Offline. Ultimul rezultat rămâne disponibil.</string>
     <string name="updates_rate_limited">GitHub are cereri limitate pentru moment. Încercați din nou mai târziu.</string>
+    <string name="release_empty">Încă nu sunt disponibile note de lansare. Verificați GitHub când sunteți conectat.</string>
+    <string name="release_later">Afișați la următoarea lansare</string>
+    <string name="release_no_body">Această versiune nu are note scrise pe GitHub.</string>
+    <string name="release_read">Marcați ca citit</string>
+    <string name="theme_pixel">Atelier de pixeli</string>
+    <string name="welcome_description">Alegeți o temă și o limbă. Le puteți modifica oricând în Setări.</string>
+    <string name="welcome_start">Deschide Notier</string>
+    <string name="welcome_title">Bun venit la Notier</string>
 </resources>

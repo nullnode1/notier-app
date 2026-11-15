@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Edukat kontrolli veel pole</string>
     <string name="updates_offline">Võrguühenduseta. Viimane tulemus jääb kättesaadavaks.</string>
     <string name="updates_rate_limited">GitHubil on praegu piiratud taotlusi. Proovige hiljem uuesti.</string>
+    <string name="release_empty">Väljalaskemärkmeid pole veel saadaval. Kontrollige GitHubi, kui olete ühenduses.</string>
+    <string name="release_later">Näita järgmisel käivitamisel</string>
+    <string name="release_no_body">Sellel väljalasel pole GitHubi kohta kirjalikke märkmeid.</string>
+    <string name="release_read">Märgi loetuks</string>
+    <string name="theme_pixel">Piksli töötuba</string>
+    <string name="welcome_description">Valige teema ja keel. Saate neid seadetes igal ajal muuta.</string>
+    <string name="welcome_start">Avage Notier</string>
+    <string name="welcome_title">Tere tulemast Notierisse</string>
 </resources>

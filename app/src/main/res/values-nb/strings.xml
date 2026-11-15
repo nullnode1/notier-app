@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ingen vellykket sjekk ennå</string>
     <string name="updates_offline">Frakoblet. Det siste resultatet forblir tilgjengelig.</string>
     <string name="updates_rate_limited">GitHub har begrensede forespørsler foreløpig. Prøv igjen senere.</string>
+    <string name="release_empty">Ingen utgivelsesnotater tilgjengelig ennå. Sjekk GitHub når du er tilkoblet.</string>
+    <string name="release_later">Vises ved neste lansering</string>
+    <string name="release_no_body">Denne utgivelsen har ingen skriftlige merknader om GitHub.</string>
+    <string name="release_read">Merk som lest</string>
+    <string name="theme_pixel">Pixel-verksted</string>
+    <string name="welcome_description">Velg et tema og språk. Du kan endre disse i Innstillinger når som helst.</string>
+    <string name="welcome_start">Åpne Notier</string>
+    <string name="welcome_title">Velkommen til Notier</string>
 </resources>

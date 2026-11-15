@@ -214,4 +214,12 @@
     <string name="updates_never_checked">Dar nėra sėkmingo patikrinimo</string>
     <string name="updates_offline">Neprisijungus. Paskutinis rezultatas lieka prieinamas.</string>
     <string name="updates_rate_limited">„GitHub“ kol kas turi ribotas užklausas. Vėliau bandykite dar kartą.</string>
+    <string name="release_empty">Kol kas nėra išleidimo pastabų. Patikrinkite „GitHub“, kai esate prisijungę.</string>
+    <string name="release_later">Rodyti kito paleidimo metu</string>
+    <string name="release_no_body">Šiame leidime nėra jokių rašytinių pastabų apie „GitHub“.</string>
+    <string name="release_read">Pažymėti kaip skaitytą</string>
+    <string name="theme_pixel">Pikselių dirbtuvės</string>
+    <string name="welcome_description">Pasirinkite temą ir kalbą. Galite bet kada juos pakeisti nustatymuose.</string>
+    <string name="welcome_start">Atidarykite „Notier“.</string>
+    <string name="welcome_title">Sveiki atvykę į Notier</string>
 </resources>

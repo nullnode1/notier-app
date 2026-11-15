@@ -210,4 +210,12 @@
     <string name="updates_never_checked">아직 성공적인 확인이 없습니다.</string>
     <string name="updates_offline">오프라인. 마지막 결과는 계속 사용 가능합니다.</string>
     <string name="updates_rate_limited">GitHub는 현재 요청이 제한되어 있습니다. 나중에 다시 시도하세요.</string>
+    <string name="release_empty">아직 출시 노트가 없습니다. 연결되면 GitHub를 확인하세요.</string>
+    <string name="release_later">다음 출시 때 표시</string>
+    <string name="release_no_body">이 릴리스에는 GitHub에 작성된 메모가 없습니다.</string>
+    <string name="release_read">읽음으로 표시</string>
+    <string name="theme_pixel">픽셀 워크숍</string>
+    <string name="welcome_description">테마와 언어를 선택하세요. 언제든지 설정에서 변경할 수 있습니다.</string>
+    <string name="welcome_start">오픈 노티어</string>
+    <string name="welcome_title">노티어에 오신 것을 환영합니다</string>
 </resources>

@@ -2,6 +2,7 @@ package app.notier
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
@@ -12,7 +13,9 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.StateListDrawable
 import android.net.Uri
@@ -95,7 +98,8 @@ internal class MainActivity : Activity() {
     private var notierTheme = NotierTheme.LIGHT
     private val palette get() = notierTheme.palette
     private var noteFont = NoteFont.GEIST
-    private var iconStyle = IconStyle.LUCIDE
+    private var preferredIcons: IconStyle? = null
+    private val iconStyle get() = preferredIcons ?: if (notierTheme.pixel) IconStyle.PIXEL else IconStyle.LUCIDE
     private var textScale = 1f
     private var interfaceScale = 1f
     private var buttonScale = 1f
@@ -145,7 +149,8 @@ internal class MainActivity : Activity() {
     private var keepNoteAfterRecreate = false
     private var resumed = false
     private var pendingUpdates = false
-    private var launchNotesShown = false
+    private var shownDialog: AlertDialog? = null
+    private var lastForegroundAttempt: Long? = null
     private var pendingCopyUri: Uri? = null
     private var pendingCopyFlags = 0
     private var applyingEdit = false
@@ -206,7 +211,7 @@ internal class MainActivity : Activity() {
         pendingDriveAccount = state?.getString("pendingDriveAccount")
         driveFolderId = prefs.getString("drive_folder", "root") ?: "root"
         noteFont = NoteFont.from(prefs.getString("note_font", null))
-        iconStyle = IconStyle.from(prefs.getString("icon_style", null))
+        preferredIcons = prefs.getString("icon_style", null)?.let(IconStyle::from)
         loadScales()
         pinned = prefs.getStringSet("pinned", emptySet()).orEmpty().toSet()
         sortByTitle = prefs.getBoolean("sort_by_title", false)
@@ -257,6 +262,11 @@ internal class MainActivity : Activity() {
         if (!startLoading && draft == null && !busy) reloadNotes()
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && ::root.isInitialized) root.post { showLaunchPanel() }
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.action != Updates.OPEN_UPDATES) return
@@ -266,19 +276,83 @@ internal class MainActivity : Activity() {
 
     private fun showLaunchPanel() {
         if (!resumed || startLoading || pickerPending || isFinishing || isDestroyed) return
+        if (shownDialog?.isShowing == true) return
         if (pendingUpdates) {
             pendingUpdates = false
             showUpdates(fromSettings = false)
             return
         }
-        val version = Updates.installedVersion(this)
-        if (!launchNotesShown && prefs.getString("last_release_notes", null) != version) {
-            launchNotesShown = true
-            showReleaseNotes(version, onClose = {
-                if (!isChangingConfigurations && !isDestroyed)
-                    prefs.edit().putString("last_release_notes", version).apply()
+        if (!prefs.getBoolean("welcome_completed", false)) {
+            if (shownDialog?.isShowing != true && draft == null && !busy) showWelcome()
+            return
+        }
+        if (draft == null && !busy) {
+            val release = Updates.cached(this).announcement(Updates.installedVersion(this))
+            if (release != null && release.announcement !in deferredAnnouncements &&
+                prefs.getString("read_release_announcement", null) != release.announcement) {
+                deferredAnnouncements.add(release.announcement)
+                showReleaseNotes(release, automatic = true)
+            }
+        }
+        refreshReleaseAnnouncements()
+    }
+
+    private fun refreshReleaseAnnouncements() {
+        if (!Updates.online(this)) return
+        val now = android.os.SystemClock.elapsedRealtime()
+        if (lastForegroundAttempt?.let { now - it < 5 * 60_000L } == true) return
+        if (System.currentTimeMillis() - Updates.cached(this).checkedAt in 0 until Updates.FOREGROUND_INTERVAL) return
+        lastForegroundAttempt = now
+        fetchReleases { showLaunchPanel() }
+    }
+
+    private fun fetchReleases(deliver: (Updates.Check) -> Unit) {
+        val context = applicationContext
+        kotlin.concurrent.thread(name = "Notier GitHub releases") {
+            val result = Updates.check(context)
+            main.post { if (!isDestroyed && !isFinishing) deliver(result) }
+        }
+    }
+
+    private fun showWelcome() {
+        val rows = settingsColumn()
+        val dialog = settingsDialog(s(R.string.welcome_title), rows)
+        val welcome = label(s(R.string.welcome_description), 15f, palette.muted).apply {
+            setPaddingRelative(dp(6), dp(5), dp(6), dp(14))
+        }
+        rows.addView(welcome)
+        var childOpened = false
+        fun option(title: Int, icon: Int, detail: String = "", open: () -> Unit) {
+            rows.addView(settingsRow(s(title), detail, leading = icon, navigate = true).apply {
+                setOnClickListener {
+                    childOpened = true
+                    dialog.dismiss()
+                    open()
+                }
             })
         }
+        val language = currentLanguage()
+        option(R.string.theme, R.drawable.ic_sun_moon, s(notierTheme.title)) {
+            val themes = NotierTheme.entries
+            showChoices(R.string.theme, themes.map { s(it.title) }, themes.indexOf(notierTheme), ::showWelcome) {
+                changeTheme(themes[it])
+                showWelcome()
+            }
+        }
+        option(R.string.language, R.drawable.ic_languages, languages[language].second) {
+            chooseLanguage(::showWelcome)
+        }
+        option(R.string.release_notes, R.drawable.ic_book_open) { showReleaseNotes(up = ::showWelcome) }
+        option(R.string.check_updates, R.drawable.ic_cloud_download) { showUpdates(returnTo = ::showWelcome) }
+        rows.addView(dialogAction(R.string.welcome_start) { dialog.dismiss() })
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.setOnDismissListener {
+            if (!childOpened && !isChangingConfigurations && !isDestroyed && !isFinishing) {
+                prefs.edit().putBoolean("welcome_completed", true).apply()
+                root.post { showLaunchPanel() }
+            }
+        }
+        showDialog(dialog)
     }
 
     override fun onPause() {
@@ -312,7 +386,7 @@ internal class MainActivity : Activity() {
 
     @Suppress("DEPRECATION")
     private fun configureInsets() {
-        val isLight = notierTheme == NotierTheme.LIGHT
+        val isLight = notierTheme != NotierTheme.DARK
         window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(palette.paper))
         if (Build.VERSION.SDK_INT >= 29) {
             root.isForceDarkAllowed = false
@@ -349,6 +423,7 @@ internal class MainActivity : Activity() {
         root.removeAllViews()
         val home = FrameLayout(this)
         root.addView(home, frameMatch())
+        home.post { if (draft == null) showLaunchPanel() }
         val column = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         home.addView(column, frameMatch())
 
@@ -640,16 +715,8 @@ internal class MainActivity : Activity() {
         val general = settingsGroup(choices, R.string.general)
         if (driveScreen) row(general, R.string.drive_account, R.drawable.ic_cloud,
             s(if (driveApi == null) R.string.drive_connect else R.string.drive_connected)) { showDriveAccount() }
-        val currentLanguage = languages.indexOfFirst { it.first == prefs.getString("language", "tr") }.coerceAtLeast(0)
-        row(general, R.string.language, R.drawable.ic_languages, languages[currentLanguage].second) {
-            showChoices(R.string.language, languages.map { it.second }, currentLanguage) { pick ->
-                val target = languages[pick].first
-                if (languages[currentLanguage].first != target) {
-                    rememberSettingsState()
-                    prefs.edit().putString("language", target).apply()
-                    recreate()
-                } else showSettings()
-            }
+        row(general, R.string.language, R.drawable.ic_languages, languages[currentLanguage()].second) {
+            chooseLanguage(::showSettings)
         }
         row(general, R.string.about, R.drawable.ic_circle_help, "") { showAbout() }
         row(general, R.string.updates, R.drawable.ic_cloud_download, Updates.installedVersion(this)) { showUpdates() }
@@ -657,9 +724,24 @@ internal class MainActivity : Activity() {
         showDialog(dialog)
     }
 
-    private fun showUpdates(fromSettings: Boolean = true) {
+    private fun currentLanguage() =
+        languages.indexOfFirst { it.first == prefs.getString("language", "tr") }.coerceAtLeast(0)
+
+    private fun chooseLanguage(back: () -> Unit) {
+        val selected = currentLanguage()
+        showChoices(R.string.language, languages.map { it.second }, selected, back) { pick ->
+            if (pick == selected) back()
+            else {
+                rememberSettingsState()
+                prefs.edit().putString("language", languages[pick].first).apply()
+                recreate()
+            }
+        }
+    }
+
+    private fun showUpdates(fromSettings: Boolean = true, returnTo: () -> Unit = ::showSettings) {
         val rows = settingsColumn()
-        val dialog = settingsDialog(s(R.string.updates), rows, up = fromSettings)
+        val dialog = settingsDialog(s(R.string.updates), rows, up = fromSettings, onUp = returnTo)
         val version = Updates.installedVersion(this)
         val header = label(s(R.string.updates_installed, version), 15f, bold = true).apply {
             setPaddingRelative(dp(12), dp(5), dp(12), dp(5))
@@ -715,10 +797,8 @@ internal class MainActivity : Activity() {
             check.alpha = .55f
             message.visibility = View.VISIBLE
             message.text = s(R.string.updates_checking)
-            kotlin.concurrent.thread(name = "Notier manual update check") {
-                val refreshed = Updates.check(applicationContext)
-                main.post {
-                    if (isDestroyed || !dialog.isShowing) return@post
+            fetchReleases { refreshed ->
+                if (dialog.isShowing) {
                     check.isEnabled = true
                     check.alpha = 1f
                     result = refreshed
@@ -767,7 +847,7 @@ internal class MainActivity : Activity() {
         rows.addView(settingsRow(s(R.string.release_notes), "", leading = R.drawable.ic_book_open, navigate = true).apply {
             setOnClickListener {
                 dialog.dismiss()
-                showReleaseNotes(up = { showUpdates(fromSettings) })
+                showReleaseNotes(up = { showUpdates(fromSettings, returnTo) })
             }
         })
         rowProjectWebsite(rows)
@@ -782,74 +862,100 @@ internal class MainActivity : Activity() {
         })
     }
 
-    private fun releaseArticle(tag: String): Pair<String, String>? {
-        val path = "updates/$tag"
-        val file = if (appLocale.language == "tr") "$path.md" else "$path.en.md"
-        return runCatching {
-            assets.open(file).bufferedReader().use { it.readText() }.let { raw ->
-                raw.lineSequence().first().removePrefix("# ") to raw.substringAfter('\n').trim()
-            }
-        }.getOrNull()
-    }
+    private fun dialogAction(title: Int, primary: Boolean = true, action: () -> Unit) =
+        label(s(title), 14f, if (primary) palette.onAccent else palette.ink, bold = true).apply {
+            gravity = Gravity.CENTER
+            background = pressSurface(if (primary) palette.accent else palette.surface, 12)
+            minimumHeight = buttonDp(44)
+            setPaddingRelative(dp(10), dp(8), dp(10), dp(8))
+            setOnClickListener { action() }
+            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(6) }
+        }
 
-    private fun showReleaseNotes(tag: String = Updates.installedVersion(this), up: (() -> Unit)? = null,
-                                 onClose: (() -> Unit)? = null) {
-        val article = releaseArticle(tag) ?: return
+    private fun showReleaseNotes(release: Updates.Release? = null, up: (() -> Unit)? = null,
+                                 automatic: Boolean = false) {
+        if (release == null) {
+            showReleaseArchive(up)
+            return
+        }
         val rows = settingsColumn()
         val dialog = settingsDialog(s(R.string.release_notes), rows, up = up != null, onUp = { up?.invoke() })
         val hero = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPaddingRelative(dp(16), dp(16), dp(16), dp(16))
             background = rounded(palette.surface, 17, palette.line)
-            addView(label(tag, 13f, palette.muted, bold = true))
-            addView(label(article.first, 25f, bold = true).apply {
+            val version = if (Updates.versionIsNewer(release.tag, Updates.installedVersion(this@MainActivity)))
+                s(R.string.updates_available, release.tag) else release.tag
+            val date = runCatching { Date.from(java.time.Instant.parse(release.publishedAt)) }.getOrNull()
+            addView(label(listOfNotNull(version, date?.let(dateFormat::format)).joinToString(" · "),
+                13f, palette.muted, bold = true))
+            addView(label(release.title, 24f, bold = true).apply {
                 accessibilityHeadingIfSupported()
                 setPaddingRelative(0, dp(7), 0, 0)
             })
         }
         rows.addView(hero, LinearLayout.LayoutParams(MATCH, WRAP))
+        if (automatic) {
+            rows.addView(dialogAction(R.string.release_read) {
+                prefs.edit().putString("read_release_announcement", release.announcement).apply()
+                dialog.dismiss()
+            })
+            rows.addView(dialogAction(R.string.release_later, primary = false) { dialog.dismiss() })
+        }
         rows.addView(label("", 15f).apply {
-            textDirection = if (appLocale.language == "tr") View.TEXT_DIRECTION_LOCALE else View.TEXT_DIRECTION_LTR
+            textDirection = View.TEXT_DIRECTION_FIRST_STRONG
             setPaddingRelative(dp(5), dp(16), dp(5), dp(8))
             setLineSpacing(dp(3).toFloat(), 1f)
-            text = Html.fromHtml(Markdown.article(article.second), Html.FROM_HTML_MODE_LEGACY).trimEnd()
+            text = if (release.body.isBlank()) s(R.string.release_no_body) else
+                Html.fromHtml(Markdown.article(release.body), Html.FROM_HTML_MODE_LEGACY).trimEnd()
         })
-        rows.addView(settingsRow(s(R.string.release_archive), "", leading = R.drawable.ic_list, navigate = true).apply {
+        if (Updates.versionIsNewer(release.tag, Updates.installedVersion(this))) {
+            rows.addView(settingsRow(s(R.string.updates_download), "", leading = R.drawable.ic_file_down, navigate = true).apply {
+                setOnClickListener { openProjectLink(release.apk, onlineRequired = true) }
+            })
+        }
+        rows.addView(settingsRow(s(R.string.release_repository), "", leading = R.drawable.ic_code, navigate = true).apply {
+            setOnClickListener { openProjectLink(release.url, onlineRequired = true) }
+        })
+        if (automatic) rows.addView(settingsRow(s(R.string.release_archive), "", leading = R.drawable.ic_list, navigate = true).apply {
             setOnClickListener {
                 dialog.dismiss()
-                showReleaseArchive(tag, up)
+                showReleaseArchive(null)
             }
         })
-        rows.addView(settingsRow(s(R.string.release_repository), "", leading = R.drawable.ic_code, navigate = true).apply {
-            val suffix = if (appLocale.language == "tr") ".md" else ".en.md"
-            setOnClickListener { openProjectLink("${Updates.PROJECT}/blob/main/docs/updates/$tag$suffix", onlineRequired = true) }
-        })
-        dialog.setOnDismissListener { onClose?.invoke() }
         showDialog(dialog)
     }
 
-    private fun showReleaseArchive(current: String, up: (() -> Unit)?) {
+    private fun showReleaseArchive(up: (() -> Unit)?) {
         val rows = settingsColumn()
-        val back = { showReleaseNotes(current, up) }
-        val dialog = settingsDialog(s(R.string.release_archive), rows, up = true, onUp = back)
-        val versions = assets.list("updates").orEmpty().filter { filename -> releaseFile.matches(filename) }
-            .map { it.removeSuffix(".md") }.sortedWith { first, second ->
-                when {
-                    Updates.versionIsNewer(first, second) -> -1
-                    Updates.versionIsNewer(second, first) -> 1
-                    else -> 0
-                }
+        val dialog = settingsDialog(s(R.string.release_archive), rows, up = up != null, onUp = { up?.invoke() })
+        val initial = Updates.cached(this)
+        fun render(result: Updates.Check, checking: Boolean = false) {
+            rows.removeAllViews()
+            val message = when {
+                checking -> R.string.updates_checking
+                result.issue == Updates.Issue.OFFLINE -> R.string.updates_offline
+                result.issue == Updates.Issue.RATE_LIMITED -> R.string.updates_rate_limited
+                result.issue == Updates.Issue.UNAVAILABLE -> R.string.updates_failed
+                result.releases.isEmpty() -> R.string.release_empty
+                else -> null
             }
-        for (tag in versions) {
-            val title = releaseArticle(tag)?.first ?: continue
-            rows.addView(settingsRow(tag, title, leading = R.drawable.ic_book_open, navigate = true).apply {
-                setOnClickListener {
-                    dialog.dismiss()
-                    showReleaseNotes(tag, up = { showReleaseArchive(current, up) })
-                }
+            if (message != null) rows.addView(label(s(message), 14f, palette.muted).apply {
+                setPaddingRelative(dp(7), dp(5), dp(7), dp(9))
+                accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
             })
+            for (release in result.releases) {
+                rows.addView(settingsRow(release.title, release.tag, leading = R.drawable.ic_book_open, navigate = true).apply {
+                    setOnClickListener {
+                        dialog.dismiss()
+                        showReleaseNotes(release, up = { showReleaseArchive(up) })
+                    }
+                })
+            }
         }
+        render(initial, checking = initial.issue != Updates.Issue.OFFLINE)
         showDialog(dialog)
+        if (initial.issue != Updates.Issue.OFFLINE) fetchReleases { if (dialog.isShowing) render(it) }
     }
 
     private var updatePermissionResult: (() -> Unit)? = null
@@ -871,7 +977,7 @@ internal class MainActivity : Activity() {
                 leading = R.drawable.ic_folder_open, sampleIconStyle = style)
             row.setOnClickListener {
                 dialog.dismiss()
-                iconStyle = style
+                preferredIcons = style
                 prefs.edit().putString("icon_style", style.key).apply()
                 refreshScreen()
                 showSettings()
@@ -1077,9 +1183,9 @@ internal class MainActivity : Activity() {
         }
     }
 
-    private fun showChoices(title: Int, options: List<String>, selected: Int, picked: (Int) -> Unit) {
+    private fun showChoices(title: Int, options: List<String>, selected: Int, up: () -> Unit = ::showSettings, picked: (Int) -> Unit) {
         val rows = settingsColumn()
-        val dialog = settingsDialog(s(title), rows, up = true)
+        val dialog = settingsDialog(s(title), rows, up = true, onUp = up)
         options.forEachIndexed { index, label ->
             val item = settingsRow(label, "", index == selected)
             item.setOnClickListener { dialog.dismiss(); picked(index) }
@@ -1861,7 +1967,7 @@ internal class MainActivity : Activity() {
         }) { result ->
             busy = false
             result.onSuccess { text ->
-                showNote(Draft(file.uri, file.name, text, text, local = !driveScreen), edit = edit)
+                showNote(Draft(file.uri, file.name, text, text, local = !driveScreen), edit = edit, animate = true)
             }.onFailure { if (!driveError(it)) toast(s(R.string.note_open_error)) }
         }
     }
@@ -1932,7 +2038,17 @@ internal class MainActivity : Activity() {
             background = rounded(palette.paper, 20, palette.line)
             clipToOutline = true
         }
-        val width = dp(252).coerceAtMost(root.width - dp(28)).coerceAtLeast(dp(120))
+        val rootScreen = IntArray(2).also(root::getLocationOnScreen)
+        val rootWindow = IntArray(2).also(root::getLocationInWindow)
+        val anchorScreen = IntArray(2).also(anchor::getLocationOnScreen)
+        val visible = Rect().also(root::getWindowVisibleDisplayFrame)
+        val gap = px(8f)
+        val leftLimit = maxOf(visible.left, rootScreen[0] + root.paddingLeft) + gap
+        val rightLimit = minOf(visible.right, rootScreen[0] + root.width - root.paddingRight) - gap
+        val topLimit = maxOf(visible.top, rootScreen[1] + root.paddingTop) + gap
+        val bottomLimit = minOf(visible.bottom, rootScreen[1] + root.height - root.paddingBottom) - gap
+        if (rightLimit <= leftLimit || bottomLimit <= topLimit) return
+        val width = dp(252).coerceAtMost(rightLimit - leftLimit)
         val scroll = ScrollView(this).apply {
             background = rounded(palette.paper, 20)
             clipToOutline = true
@@ -1958,10 +2074,16 @@ internal class MainActivity : Activity() {
             surface.addView(row, LinearLayout.LayoutParams(MATCH, WRAP))
         }
         surface.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED)
-        popup.height = surface.measuredHeight.coerceAtMost(
-            popup.getMaxAvailableHeight(anchor, dp(5)).coerceAtLeast(dp(48))
-        )
-        popup.showAsDropDown(anchor, if (anchor.width >= width) -dp(4) else 0, dp(5), Gravity.END)
+        val below = (bottomLimit - anchorScreen[1] - anchor.height - gap).coerceAtLeast(0)
+        val above = (anchorScreen[1] - gap - topLimit).coerceAtLeast(0)
+        val openBelow = surface.measuredHeight <= below || below >= above
+        popup.height = surface.measuredHeight.coerceAtMost(if (openBelow) below else above).coerceAtLeast(1)
+        val preferredLeft = if (anchor.layoutDirection == View.LAYOUT_DIRECTION_RTL) anchorScreen[0]
+            else anchorScreen[0] + anchor.width - width
+        val left = preferredLeft.coerceIn(leftLimit, rightLimit - width)
+        val top = if (openBelow) bottomLimit - below else (anchorScreen[1] - gap - popup.height).coerceAtLeast(topLimit)
+        popup.showAtLocation(root, Gravity.TOP or Gravity.LEFT,
+            left - rootScreen[0] + rootWindow[0], top - rootScreen[1] + rootWindow[1])
     }
 
     private fun promptName(dialogTitle: Int, initial: String, hint: Int = R.string.file_name,
@@ -2136,7 +2258,8 @@ internal class MainActivity : Activity() {
         homeListOffset = homeList.getChildAt(0)?.top ?: 0
     }
 
-    private fun showNote(value: Draft, edit: Boolean, resetHistory: Boolean = true, previewOffset: Int = 0) {
+    private fun showNote(value: Draft, edit: Boolean, resetHistory: Boolean = true, previewOffset: Int = 0,
+                         animate: Boolean = false) {
         if (resetHistory) {
             undo.clear()
             redo.clear()
@@ -2145,6 +2268,12 @@ internal class MainActivity : Activity() {
         root.removeAllViews()
         val screen = FrameLayout(this)
         root.addView(screen, frameMatch())
+        if (animate && ValueAnimator.areAnimatorsEnabled()) {
+            screen.alpha = 0f
+            screen.translationY = dp(7).toFloat()
+            screen.animate().alpha(1f).translationY(0f).setDuration(175)
+                .setInterpolator(android.view.animation.DecelerateInterpolator()).start()
+        }
         val column = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         screen.addView(column, frameMatch())
 
@@ -2213,13 +2342,31 @@ internal class MainActivity : Activity() {
             }
         }
         titleField.minimumHeight = buttonDp(48)
-        modes.addView(titleField, LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginEnd = dp(4) })
+        val titleLayout = LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginEnd = dp(4) }
+        modes.addView(titleField, titleLayout)
+        val modeButtons = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL or Gravity.END }
         modeRead = icon(R.drawable.ic_eye, s(R.string.preview), 19) { switchMode(false) }
         modeEdit = icon(R.drawable.ic_pencil, s(R.string.edit), 19) { switchMode(true) }
         saveButton = icon(R.drawable.ic_save, s(R.string.save), 19) { saveNote() }
-        modes.addView(modeRead, buttonLayout())
-        modes.addView(modeEdit, buttonLayout())
-        modes.addView(saveButton, buttonLayout().apply { marginStart = dp(2) })
+        modeButtons.addView(modeRead, buttonLayout())
+        modeButtons.addView(modeEdit, buttonLayout())
+        modeButtons.addView(saveButton, buttonLayout().apply { marginStart = dp(2) })
+        modes.addView(modeButtons, LinearLayout.LayoutParams(WRAP, WRAP))
+        fun fitModes(width: Int) {
+            val stack = width - modes.paddingLeft - modes.paddingRight < buttonDp(48) * 3 + dp(112)
+            val target = if (stack) LinearLayout.VERTICAL else LinearLayout.HORIZONTAL
+            if (target == modes.orientation) return
+            modes.orientation = target
+            titleField.layoutParams = LinearLayout.LayoutParams(if (stack) MATCH else 0, WRAP, if (stack) 0f else 1f).apply {
+                marginEnd = if (stack) 0 else dp(4)
+                bottomMargin = if (stack) dp(3) else 0
+            }
+        }
+        val initialWidth = root.width.takeIf { it > 0 } ?: px(resources.configuration.screenWidthDp.toFloat())
+        fitModes(initialWidth)
+        modes.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
+            if (right - left != oldRight - oldLeft) fitModes(right - left)
+        }
         column.addView(modes, LinearLayout.LayoutParams(MATCH, WRAP))
         markdownBar = createMarkdownBar()
         column.addView(markdownBar, LinearLayout.LayoutParams(MATCH, WRAP).apply {
@@ -2310,8 +2457,7 @@ internal class MainActivity : Activity() {
                 gravity = Gravity.CENTER
                 maxLines = 1
                 contentDescription = description
-                tooltipText = description
-                isFocusable = true
+                    isFocusable = true
                 setOnClickListener { applyShortcut(shortcut) }
             }
             val horizontal = chip.paddingStart
@@ -2472,7 +2618,7 @@ internal class MainActivity : Activity() {
         val tree = folderUri.takeIf { value.local }
         val font = noteFont
         val themeCss = notierTheme.previewCss()
-        val curve = cornerScale
+        val curve = if (notierTheme.pixel) 0f else cornerScale
         val strings = PreviewStrings(appLocale.toLanguageTag()) { id, args -> s(id, *args) }
         background({
             val styles = "$themeCss\n:root{--curve:$curve;}\n$css\n${font.previewCss()}"
@@ -3174,6 +3320,7 @@ internal class MainActivity : Activity() {
 
     private fun showDialog(dialog: AlertDialog) {
         dialog.show()
+        shownDialog = dialog
         dialog.window?.let { window ->
             window.setBackgroundDrawable(InsetDrawable(rounded(palette.paper, 24, palette.line), dp(8)))
             applyScreenFonts(window.decorView)
@@ -3194,7 +3341,7 @@ internal class MainActivity : Activity() {
 
     private fun rounded(color: Int, radius: Int, border: Int? = null, curve: Float = cornerScale) = GradientDrawable().apply {
         setColor(color)
-        cornerRadius = dp(radius) * curve
+        cornerRadius = if (notierTheme.pixel) 0f else dp(radius) * curve
         if (border != null) setStroke(px(1f).coerceAtLeast(1), border)
     }
 
@@ -3204,11 +3351,21 @@ internal class MainActivity : Activity() {
         val accented = color == palette.accent
         val pressed = if (accented) palette.accentPressed else palette.pressed
         val hovered = if (accented) palette.accentHover else palette.hover
-        addState(intArrayOf(-android.R.attr.state_enabled), rounded(color, radius, border))
-        addState(intArrayOf(android.R.attr.state_pressed), rounded(pressed, radius, border))
-        addState(intArrayOf(android.R.attr.state_hovered), rounded(hovered, radius, border))
-        addState(intArrayOf(android.R.attr.state_focused), rounded(hovered, radius, palette.outline))
-        addState(intArrayOf(), rounded(color, radius, border))
+        fun face(fill: Int, edge: Int?, inset: Boolean = false): android.graphics.drawable.Drawable {
+            if (!notierTheme.pixel || !accented) return rounded(fill, radius, edge)
+            val light = Color.rgb(132, 159, 98)
+            val dark = Color.rgb(45, 58, 32)
+            val bevel = px(2f).coerceAtLeast(1)
+            return LayerDrawable(arrayOf(rounded(dark, 0), rounded(if (inset) dark else light, 0), rounded(fill, 0))).apply {
+                setLayerInset(1, bevel, bevel, bevel, bevel)
+                setLayerInset(2, bevel * 2, if (inset) bevel * 3 else bevel * 2, bevel * 2, bevel * 3)
+            }
+        }
+        addState(intArrayOf(-android.R.attr.state_enabled), face(color, border, true))
+        addState(intArrayOf(android.R.attr.state_pressed), face(pressed, border, true))
+        addState(intArrayOf(android.R.attr.state_hovered), face(hovered, border))
+        addState(intArrayOf(android.R.attr.state_focused), face(hovered, palette.outline))
+        addState(intArrayOf(), face(color, border))
     }
 
     private fun shouldTint(resource: Int, style: IconStyle) = resource != R.drawable.app_icon &&
@@ -3228,7 +3385,6 @@ internal class MainActivity : Activity() {
             scaleType = ImageView.ScaleType.FIT_CENTER
             val inset = px((if (size == 34) 15 else if (quiet && size <= 18) 11 else 12) * buttonScale)
             contentDescription = description
-            tooltipText = description
             background = pressSurface(if (quiet) Color.TRANSPARENT else palette.accent, if (size == 34) 19 else 13)
             setPadding(inset, inset, inset, inset)
             setOnClickListener(tapped)
@@ -3264,7 +3420,7 @@ internal class MainActivity : Activity() {
             "uz" to "Oʻzbekcha · Lotin (1995)", "uz-Latn-2026" to "Özbekça · Lotin (2026)",
             "uz-Latn-1993" to "Ōzbekça · Lotin (1993)", "uz-Cyrl" to "Ўзбекча · Кирилл",
             "tg" to "Тоҷикӣ", "fa-AF" to "دری", "ps" to "پښتو")
-        private val releaseFile = Regex("v[0-9]+(?:\\.[0-9]+){2}\\.md")
+        private val deferredAnnouncements = mutableSetOf<String>()
         private const val PICK_FOLDER = 11
         private const val SAVE_COPY = 12
         private const val PICK_DRIVE = 13

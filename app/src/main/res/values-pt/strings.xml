@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Nenhuma verificação bem-sucedida ainda</string>
     <string name="updates_offline">Off-line. O último resultado permanece disponível.</string>
     <string name="updates_rate_limited">O GitHub tem solicitações limitadas por enquanto. Tente novamente mais tarde.</string>
+    <string name="release_empty">Nenhuma nota de lançamento disponível ainda. Verifique o GitHub quando estiver conectado.</string>
+    <string name="release_later">Mostrar no próximo lançamento</string>
+    <string name="release_no_body">Esta versão não possui notas escritas no GitHub.</string>
+    <string name="release_read">Marcar como lido</string>
+    <string name="theme_pixel">Oficina de pixels</string>
+    <string name="welcome_description">Escolha um tema e idioma. Você pode alterá-los em Configurações a qualquer momento.</string>
+    <string name="welcome_start">Abra Notier</string>
+    <string name="welcome_title">Bem-vindo ao Notier</string>
 </resources>

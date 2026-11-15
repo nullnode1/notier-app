@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ingen lyckad kontroll ännu</string>
     <string name="updates_offline">Offline. Det sista resultatet förblir tillgängligt.</string>
     <string name="updates_rate_limited">GitHub har begränsade förfrågningar för tillfället. Försök igen senare.</string>
+    <string name="release_empty">Inga releasenotes tillgängliga ännu. Kontrollera GitHub när du är ansluten.</string>
+    <string name="release_later">Visas vid nästa lansering</string>
+    <string name="release_no_body">Den här utgåvan har inga skrivna anteckningar om GitHub.</string>
+    <string name="release_read">Markera som läst</string>
+    <string name="theme_pixel">Pixel workshop</string>
+    <string name="welcome_description">Välj ett tema och språk. Du kan ändra dessa i Inställningar när som helst.</string>
+    <string name="welcome_start">Öppna Notier</string>
+    <string name="welcome_title">Välkommen till Notier</string>
 </resources>

@@ -210,4 +210,12 @@
     <string name="updates_never_checked">Tiada semakan yang berjaya lagi</string>
     <string name="updates_offline">Luar talian. Keputusan terakhir kekal tersedia.</string>
     <string name="updates_rate_limited">GitHub mempunyai permintaan terhad buat masa ini. Cuba lagi nanti.</string>
+    <string name="release_empty">Tiada nota keluaran tersedia lagi. Semak GitHub apabila anda disambungkan.</string>
+    <string name="release_later">Tunjukkan pada pelancaran seterusnya</string>
+    <string name="release_no_body">Keluaran ini tidak mempunyai nota bertulis pada GitHub.</string>
+    <string name="release_read">Tandakan sebagai dibaca</string>
+    <string name="theme_pixel">Bengkel piksel</string>
+    <string name="welcome_description">Pilih tema dan bahasa. Anda boleh menukar ini dalam Tetapan pada bila-bila masa.</string>
+    <string name="welcome_start">Buka Notier</string>
+    <string name="welcome_title">Selamat datang ke Notier</string>
 </resources>

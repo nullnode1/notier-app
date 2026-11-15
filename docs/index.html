@@ -11,6 +11,7 @@
   <link rel="canonical" href="https://nullnode1.github.io/notier-app/">
   <link rel="icon" href="images/notier-oauth-logo.png" type="image/png">
   <link rel="stylesheet" href="notier.css">
+  <script src="releases.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#icerik">İçeriğe geç</a>
@@ -26,17 +27,20 @@
   <main id="icerik">
     <section class="shell hero" aria-labelledby="baslik">
       <div class="intro">
-        <p class="platform">Android 8 ve üzeri · Açık kaynak</p>
+        <div class="product-meta"><span>Android 8+ · Açık kaynak</span><span class="version-chip" data-release-version hidden></span></div>
         <h1 id="baslik">Notier</h1>
-        <p class="hero-subtitle">Dosyalarında yaşayan<br>Markdown notları.</p>
+        <p class="hero-subtitle">Dosyalarında yaşayan<br> Markdown notları.</p>
         <p class="lead">Bir klasör seç, notlarını yaz ve biçimlendirilmiş hâlini oku. Yerel dosyalarına çevrimdışı erişebilir veya Google Drive’daki Markdown klasörlerini açabilirsin.</p>
         <div class="actions">
-          <a class="button primary" href="https://github.com/nullnode1/notier-app/releases">Android APK’ları <span aria-hidden="true">↗</span></a>
+          <a class="button primary" data-release-download href="https://github.com/nullnode1/notier-app/releases"><span>Android APK’ları</span> <span aria-hidden="true">↗</span></a>
           <a class="button secondary" href="updates/">Yama notlarını oku</a>
         </div>
       </div>
       <figure class="showcase">
-        <img src="images/notier-site-overview.webp" alt="Solda renkli piksel simgeli not listesi, sağda koyu temada açık içindekiler menüsü" width="1080" height="640" fetchpriority="high">
+        <picture>
+          <source media="(max-width: 525px)" srcset="images/notier-overview-mobile.webp" width="540" height="640">
+          <img src="images/notier-site-overview.webp" alt="Notier’in not listesi ve içindekiler menüsü" width="1080" height="640" fetchpriority="high">
+        </picture>
         <figcaption>Notier arayüz çizimi</figcaption>
       </figure>
     </section>
@@ -51,19 +55,18 @@
         <article><h3>Markdown düzenleyici</h3><p>Başlık, bağlantı, liste ve kod kısayollarını kullan. Tabloları ve kod bloklarını önizlemede oku.</p></article>
         <article><h3>İçindekiler</h3><p>Uzun notlarda önizlemedeki listeden bir başlık seçerek doğrudan o bölüme geç.</p></article>
         <article><h3>Google Drive</h3><p>İzin verdiğinde Drive klasörlerine göz at, Markdown notlarını oluştur veya düzenle. <a href="privacy-tr.html#google-drive">Drive veri kullanımı</a></p></article>
-        <article><h3>Tema ve simgeler</h3><p>Açık ve koyu tema, 13 yazı tipi ve üç simge seti. Renkli piksel stilini Ayarlar’dan açabilirsin.</p></article>
+        <article><h3>Tema ve simgeler</h3><p>Açık, koyu ve Piksel Atölyesi temaları. Yazı tipini, simgeleri ve arayüz boyutunu ayrı ayrı seç.</p></article>
         <article><h3>GitHub güncellemeleri</h3><p>Kararlı Android sürümlerini denetle, APK’yı aç ve en son denetim sonucunu çevrimdışı gör.</p></article>
       </div>
     </section>
 
     <section class="shell section release-feature" aria-labelledby="yeni">
       <div>
-        <p class="platform">v1.0.4</p>
-        <h2 id="yeni">Yama notları cihazında</h2>
-        <p>Yeni bir sürümü ilk açtığında değişiklikleri kısa bir yazı olarak oku. İstediğin zaman menüden geri dön ve arşivde önceki sürümlere bak.</p>
-        <p><a class="button secondary" href="updates/#v1-0-4">v1.0.4 yama notlarını oku</a></p>
+        <h2 id="yeni">Piksel Atölyesi</h2>
+        <p>Köşeli kartlar, katmanlı düğmeler ve renkli piksel simgeleri. Bu temayı karşılama ekranında veya Ayarlar’dan seçebilirsin.</p>
+        <p><a class="button secondary" href="updates/">Son değişiklikleri oku</a></p>
       </div>
-      <img src="images/notier-whats-new.webp" alt="Notier v1.0.4 yama notları ekranı ve arşiv bağlantısı" width="780" height="570" loading="lazy">
+      <img src="images/notier-pixel-workshop.webp" alt="Piksel Atölyesi temasında karşılama ekranı ve köşeli yeşil düğme" width="720" height="540" loading="lazy">
     </section>
 
     <section class="shell section install" aria-labelledby="kurulum">
@@ -76,7 +79,7 @@
         <li><b>Klasörünü seç.</b> Notier’de klasör simgesine dokun ve notlarını tutacağın konumu seç.</li>
         <li><b>İlk notunu oluştur.</b> Artı simgesiyle yeni bir not aç ve Markdown yazmaya başla.</li>
       </ol>
-      <details><summary>İnternet olmadan ne çalışır?</summary><p>Yerel notlar, Markdown düzenleme ve önizleme, yama notları ve en son güncelleme sonucu. Yeni sürüm denetimi, Drive üzerinden dosya erişimi ve uzaktaki medya bağlantı gerektirir.</p></details>
+      <details><summary>İnternet olmadan ne çalışır?</summary><p>Yerel notlar, Markdown düzenleme ve önizleme, daha önce indirilen yama notları ve en son güncelleme sonucu. Yeni sürüm denetimi, Drive üzerinden dosya erişimi ve uzaktaki medya bağlantı gerektirir.</p></details>
       <details><summary>Kaynak kodu nerede?</summary><p>Android uygulaması Kotlin ile yazıldı ve GNU GPL v3 ile yayımlanıyor. <a href="https://github.com/nullnode1/notier-app">GitHub’da kaynak kodu ve Termux derleme adımlarını aç.</a></p></details>
     </section>
   </main>

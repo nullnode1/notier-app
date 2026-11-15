@@ -214,4 +214,12 @@
     <string name="updates_never_checked">עדיין אין בדיקה מוצלחת</string>
     <string name="updates_offline">לא מקוון. התוצאה האחרונה נשארת זמינה.</string>
     <string name="updates_rate_limited">ל-GitHub יש בקשות מוגבלות לעת עתה. נסה שוב מאוחר יותר.</string>
+    <string name="release_empty">אין עדיין הערות שחרור זמינות. בדוק את GitHub כאשר אתה מחובר.</string>
+    <string name="release_later">הצג בהשקה הבאה</string>
+    <string name="release_no_body">לגרסה זו אין הערות כתובות על GitHub.</string>
+    <string name="release_read">סמן כנקרא</string>
+    <string name="theme_pixel">סדנת פיקסל</string>
+    <string name="welcome_description">בחר נושא ושפה. אתה יכול לשנות את אלה בהגדרות בכל עת.</string>
+    <string name="welcome_start">פתח את Notier</string>
+    <string name="welcome_title">ברוכים הבאים ל-Notier</string>
 </resources>

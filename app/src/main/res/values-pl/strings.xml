@@ -216,4 +216,12 @@
     <string name="updates_never_checked">Nie udało się jeszcze sprawdzić</string>
     <string name="updates_offline">Nieaktywny. Ostatni wynik pozostaje dostępny.</string>
     <string name="updates_rate_limited">GitHub ma na razie ograniczoną liczbę żądań. Spróbuj ponownie później.</string>
+    <string name="release_empty">Nie są jeszcze dostępne żadne informacje o wydaniu. Sprawdź GitHub, gdy masz połączenie.</string>
+    <string name="release_later">Pokaż przy następnym uruchomieniu</string>
+    <string name="release_no_body">To wydanie nie zawiera żadnych pisemnych notatek w serwisie GitHub.</string>
+    <string name="release_read">Oznacz jako przeczytane</string>
+    <string name="theme_pixel">Warsztaty pikseli</string>
+    <string name="welcome_description">Wybierz motyw i język. Możesz je zmienić w dowolnym momencie w Ustawieniach.</string>
+    <string name="welcome_start">Otwórz Notiera</string>
+    <string name="welcome_title">Witamy w Notier</string>
 </resources>

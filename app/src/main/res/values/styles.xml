@@ -23,6 +23,12 @@
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowActionModeOverlay">true</item>
     </style>
+    <style name="NotierThemePixel" parent="NotierTheme">
+        <item name="android:windowBackground">#F7EFDC</item>
+        <item name="android:colorAccent">#55733E</item>
+        <item name="android:statusBarColor">#F7EFDC</item>
+        <item name="android:navigationBarColor">#F7EFDC</item>
+    </style>
     <style name="NotierDialogLight" parent="android:style/Theme.Material.Light.Dialog.Alert">
         <item name="android:colorAccent">#101010</item>
         <item name="android:colorControlHighlight">#14000000</item>

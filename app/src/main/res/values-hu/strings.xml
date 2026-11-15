@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Még nincs sikeres ellenőrzés</string>
     <string name="updates_offline">Offline. Az utolsó eredmény elérhető marad.</string>
     <string name="updates_rate_limited">A GitHub jelenleg korlátozott kérelmekkel rendelkezik. Próbálja újra később.</string>
+    <string name="release_empty">Még nem állnak rendelkezésre kiadási megjegyzések. Ellenőrizze a GitHubot, amikor csatlakozik.</string>
+    <string name="release_later">Megjelenítés a következő indításkor</string>
+    <string name="release_no_body">Ez a kiadás nem tartalmaz írásos megjegyzéseket a GitHubon.</string>
+    <string name="release_read">Megjelölés olvasottként</string>
+    <string name="theme_pixel">Pixel műhely</string>
+    <string name="welcome_description">Válasszon témát és nyelvet. Ezeket bármikor módosíthatja a Beállításokban.</string>
+    <string name="welcome_start">Nyissa meg a Notier-t</string>
+    <string name="welcome_title">Üdvözöljük a Notierben</string>
 </resources>

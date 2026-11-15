@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Hali muvaffaqiyatli tekshiruv yo\'q</string>
     <string name="updates_offline">Oflayn. Oxirgi natija mavjud bo\'lib qoladi.</string>
     <string name="updates_rate_limited">GitHub-da hozircha cheklangan so\'rovlar mavjud. Keyinroq qayta urining.</string>
+    <string name="release_empty">Reliz qaydlari hali mavjud emas. Ulanganingizda GitHub-ni tekshiring.</string>
+    <string name="release_later">Keyingi ishga tushirishda ko\'rsatish</string>
+    <string name="release_no_body">Ushbu nashrda GitHub-da yozma eslatmalar mavjud emas.</string>
+    <string name="release_read">O\'qilgan deb belgilang</string>
+    <string name="theme_pixel">Piksel ustaxonasi</string>
+    <string name="welcome_description">Mavzu va tilni tanlang. Bularni istalgan vaqtda Sozlamalar orqali o‘zgartirishingiz mumkin.</string>
+    <string name="welcome_start">Notier-ni oching</string>
+    <string name="welcome_title">Notierga xush kelibsiz</string>
 </resources>

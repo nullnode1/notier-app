@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Noch keine erfolgreiche Prüfung</string>
     <string name="updates_offline">Offline. Das letzte Ergebnis bleibt verfügbar.</string>
     <string name="updates_rate_limited">GitHub hat derzeit nur begrenzte Anfragen. Versuchen Sie es später noch einmal.</string>
+    <string name="release_empty">Noch keine Versionshinweise verfügbar. Überprüfen Sie GitHub, wenn Sie verbunden sind.</string>
+    <string name="release_later">Beim nächsten Start anzeigen</string>
+    <string name="release_no_body">Zu dieser Veröffentlichung gibt es keine schriftlichen Notizen auf GitHub.</string>
+    <string name="release_read">Als gelesen markieren</string>
+    <string name="theme_pixel">Pixel-Workshop</string>
+    <string name="welcome_description">Wählen Sie ein Thema und eine Sprache. Sie können diese jederzeit in den Einstellungen ändern.</string>
+    <string name="welcome_start">Öffnen Sie Notier</string>
+    <string name="welcome_title">Willkommen bei Notier</string>
 </resources>

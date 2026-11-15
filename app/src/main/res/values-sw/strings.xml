@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Bado hakuna ukaguzi uliofaulu</string>
     <string name="updates_offline">Nje ya mtandao. Matokeo ya mwisho yanaendelea kupatikana.</string>
     <string name="updates_rate_limited">GitHub ina maombi machache kwa sasa. Jaribu tena baadaye.</string>
+    <string name="release_empty">Bado hakuna madokezo kuhusu toleo yanayopatikana. Angalia GitHub wakati umeunganishwa.</string>
+    <string name="release_later">Onyesha katika uzinduzi unaofuata</string>
+    <string name="release_no_body">Toleo hili halina madokezo yaliyoandikwa kwenye GitHub.</string>
+    <string name="release_read">Weka alama kama imesomwa</string>
+    <string name="theme_pixel">Warsha ya Pixel</string>
+    <string name="welcome_description">Chagua mandhari na lugha. Unaweza kubadilisha haya katika Mipangilio wakati wowote.</string>
+    <string name="welcome_start">Fungua Noter</string>
+    <string name="welcome_title">Karibu kwa Notier</string>
 </resources>

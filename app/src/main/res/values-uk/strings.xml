@@ -216,4 +216,12 @@
     <string name="updates_never_checked">Ще немає успішної перевірки</string>
     <string name="updates_offline">Офлайн. Останній результат залишається доступним.</string>
     <string name="updates_rate_limited">GitHub наразі має обмежені запити. Повторіть спробу пізніше.</string>
+    <string name="release_empty">Приміток до випуску ще немає. Перевірте GitHub, коли підключитесь.</string>
+    <string name="release_later">Показати під час наступного запуску</string>
+    <string name="release_no_body">Цей випуск не має письмових приміток на GitHub.</string>
+    <string name="release_read">Позначити як прочитане</string>
+    <string name="theme_pixel">Піксельна майстерня</string>
+    <string name="welcome_description">Виберіть тему та мову. Ви можете будь-коли змінити це в налаштуваннях.</string>
+    <string name="welcome_start">Відкрийте Notier</string>
+    <string name="welcome_title">Ласкаво просимо до Notier</string>
 </resources>

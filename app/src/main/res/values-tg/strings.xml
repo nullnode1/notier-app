@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ҳанӯз тафтиши муваффақ нест</string>
     <string name="updates_offline">Офлайн. Натиҷаи охирин дастрас боқӣ мемонад.</string>
     <string name="updates_rate_limited">GitHub ҳоло дархостҳои маҳдуд дорад. Баъдтар бори дигар кӯшиш кунед.</string>
+    <string name="release_empty">Ҳанӯз қайдҳои нашр дастрас нестанд. Вақте ки шумо пайваст мешавед, GitHub-ро санҷед.</string>
+    <string name="release_later">Дар оғози оянда нишон диҳед</string>
+    <string name="release_no_body">Ин нашрия дар GitHub қайдҳои хаттӣ надорад.</string>
+    <string name="release_read">Ҳамчун хондан қайд кунед</string>
+    <string name="theme_pixel">Семинари пиксел</string>
+    <string name="welcome_description">Мавзӯъ ва забонро интихоб кунед. Шумо метавонед онҳоро дар Танзимот ҳар вақт иваз кунед.</string>
+    <string name="welcome_start">Нотиерро кушоед</string>
+    <string name="welcome_title">Хуш омадед ба Notier</string>
 </resources>

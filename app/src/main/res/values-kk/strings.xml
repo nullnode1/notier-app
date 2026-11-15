@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Әлі сәтті тексеру жоқ</string>
     <string name="updates_offline">Офлайн. Соңғы нәтиже қолжетімді болып қалады.</string>
     <string name="updates_rate_limited">GitHub-та әзірге шектеулі сұраулар бар. Әрекетті кейінірек қайталаңыз.</string>
+    <string name="release_empty">Әзірге шығарылым ескертпесі қолжетімді емес. Қосылған кезде GitHub тексеріңіз.</string>
+    <string name="release_later">Келесі іске қосуда көрсету</string>
+    <string name="release_no_body">Бұл шығарылымда GitHub-та жазбаша ескертпелер жоқ.</string>
+    <string name="release_read">Оқылған деп белгілеңіз</string>
+    <string name="theme_pixel">Пиксель шеберханасы</string>
+    <string name="welcome_description">Тақырып пен тілді таңдаңыз. Оларды кез келген уақытта \"Параметрлер\" бөлімінен өзгертуге болады.</string>
+    <string name="welcome_start">Хабарламаны ашыңыз</string>
+    <string name="welcome_title">Notier-ге қош келдіңіз</string>
 </resources>

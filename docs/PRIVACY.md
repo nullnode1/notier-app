@@ -28,7 +28,7 @@ Clearing Notier’s app data in Android settings removes local app settings, rem
 
 ## Checking for updates
 
-When you check for updates or enable update notifications, Notier requests public release information from the GitHub API. These requests can expose your IP address and standard connection information to GitHub. Update requests contain no notes, files, or Google account information. You can turn off background checks in Notier’s update settings. Notier keeps the last successful check time and public release metadata on your device, so you can read the result offline.
+When you open Notier, check for updates, or enable update notifications, Notier requests public release information from the GitHub API. These requests can expose your IP address and standard connection information to GitHub. Update requests contain no notes, files, or Google account information. You can turn off background checks in Notier’s update settings. Notier keeps the last successful check time and public release metadata and release notes on your device, so you can read the result offline.
 
 ## Contact
 

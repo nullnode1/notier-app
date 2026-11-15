@@ -214,4 +214,12 @@
     <string name="updates_never_checked">Još nema uspješne provjere</string>
     <string name="updates_offline">Izvan mreže. Zadnji rezultat ostaje dostupan.</string>
     <string name="updates_rate_limited">GitHub za sada ima ograničene zahtjeve. Pokušajte ponovno kasnije.</string>
+    <string name="release_empty">Još nema dostupnih napomena o izdanju. Provjerite GitHub kada ste povezani.</string>
+    <string name="release_later">Prikaži pri sljedećem pokretanju</string>
+    <string name="release_no_body">Ovo izdanje nema pisanih bilješki na GitHubu.</string>
+    <string name="release_read">Označi kao pročitano</string>
+    <string name="theme_pixel">Pixel radionica</string>
+    <string name="welcome_description">Odaberite temu i jezik. To možete promijeniti u Postavkama bilo kada.</string>
+    <string name="welcome_start">Otvorite Notier</string>
+    <string name="welcome_title">Dobrodošli u Notier</string>
 </resources>

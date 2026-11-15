@@ -216,4 +216,12 @@
     <string name="updates_never_checked">Пока нет успешной проверки</string>
     <string name="updates_offline">Офлайн. Последний результат остается доступным.</string>
     <string name="updates_rate_limited">GitHub на данный момент имеет ограниченное количество запросов. Повторите попытку позже.</string>
+    <string name="release_empty">Примечаний к выпуску пока нет. Проверьте GitHub, когда вы подключены.</string>
+    <string name="release_later">Показать при следующем запуске</string>
+    <string name="release_no_body">К этому выпуску нет письменных примечаний на GitHub.</string>
+    <string name="release_read">Отметить как прочитанное</string>
+    <string name="theme_pixel">Пиксельная мастерская</string>
+    <string name="welcome_description">Выберите тему и язык. Вы можете изменить их в настройках в любое время.</string>
+    <string name="welcome_start">Открыть уведомление</string>
+    <string name="welcome_title">Добро пожаловать в Нотье</string>
 </resources>

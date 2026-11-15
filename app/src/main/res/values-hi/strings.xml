@@ -212,4 +212,12 @@
     <string name="updates_never_checked">अभी तक कोई सफल जाँच नहीं हुई</string>
     <string name="updates_offline">ऑफ़लाइन. अंतिम परिणाम उपलब्ध रहता है.</string>
     <string name="updates_rate_limited">GitHub के पास अभी सीमित अनुरोध हैं। बाद में पुन: प्रयास।</string>
+    <string name="release_empty">अभी तक कोई रिलीज़ नोट उपलब्ध नहीं है. जब आप कनेक्ट हों तो GitHub की जाँच करें।</string>
+    <string name="release_later">अगले लॉन्च पर दिखाएं</string>
+    <string name="release_no_body">इस रिलीज़ में GitHub पर कोई लिखित नोट नहीं है।</string>
+    <string name="release_read">पढ़ा गया के रूप में चिह्नित करें</string>
+    <string name="theme_pixel">पिक्सेल कार्यशाला</string>
+    <string name="welcome_description">एक विषय और भाषा चुनें. आप इन्हें कभी भी सेटिंग में बदल सकते हैं.</string>
+    <string name="welcome_start">नोटियर खोलें</string>
+    <string name="welcome_title">नोटियर में आपका स्वागत है</string>
 </resources>

@@ -8,7 +8,13 @@ internal enum class NotierTheme(val key: String, val title: Int, val style: Int,
     DARK("dark", R.string.theme_dark, R.style.NotierThemeDark, Palette(
         0x101010, 0xe8e8e8, 0xb0b0b0, 0x1d1d1d, 0x353535, 0x787878, 0x272727,
         0x262626, 0x343434, 0x2d2d2d, 0xe0e0e0, 0x393939, 0x454545
+    )),
+    PIXEL("pixel", R.string.theme_pixel, R.style.NotierThemePixel, Palette(
+        0xf7efdc, 0x2a2017, 0x584936, 0xf1e3c2, 0xb39a71, 0x65513a, 0xa49173,
+        0xecdbb2, 0xdcc69a, 0x55733e, 0xffffff, 0x456230, 0x334d24
     ));
+
+    val pixel get() = this == PIXEL
 
     fun previewCss(): String = with(palette) {
         val scheme = if (this@NotierTheme == DARK) "dark" else "light"

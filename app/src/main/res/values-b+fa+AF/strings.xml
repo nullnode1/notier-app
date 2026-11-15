@@ -212,4 +212,12 @@
     <string name="updates_never_checked">هنوز چک موفق نشده است</string>
     <string name="updates_offline">آفلاین. آخرین نتیجه موجود میماند.</string>
     <string name="updates_rate_limited">GitHub در حال حاضر درخواست های محدود دارد. بعداً دوباره امتحان کنید.</string>
+    <string name="release_empty">هیچ یادداشت انتشار هنوز موجود نیست. زمانیکه وصل هستید GitHub را چک کنید.</string>
+    <string name="release_later">نمایش در راه اندازی بعدی</string>
+    <string name="release_no_body">این انتشار هیچ یادداشت نوشته شده در GitHub ندارد.</string>
+    <string name="release_read">به عنوان خوانده شده نشانی کنید</string>
+    <string name="theme_pixel">کارگاه پیکسل</string>
+    <string name="welcome_description">یک موضوع و زبان را انتخاب کنید. شما میتوانید اینها را در تنظیمات هر زمان تغییر دهید.</string>
+    <string name="welcome_start">نوتییر را باز کنید</string>
+    <string name="welcome_title">به نوتییر خوش آمدید</string>
 </resources>

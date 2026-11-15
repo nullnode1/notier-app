@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ийгиликтүү текшерүү жок</string>
     <string name="updates_offline">Оффлайн. Акыркы натыйжа жеткиликтүү бойдон калууда.</string>
     <string name="updates_rate_limited">GitHub азырынча чектелген өтүнүчкө ээ. Кийинчерээк кайра аракет кылыңыз.</string>
+    <string name="release_empty">Азырынча релиз эскертүүлөрү жок. Туташып турганыңызда GitHub текшериңиз.</string>
+    <string name="release_later">Кийинки ишке киргизүүдө көрсөтүү</string>
+    <string name="release_no_body">Бул релиздин GitHub боюнча эч кандай жазуусу жок.</string>
+    <string name="release_read">Окулган деп белгилөө</string>
+    <string name="theme_pixel">Пикселдик устакана</string>
+    <string name="welcome_description">Теманы жана тилди тандаңыз. Аларды каалаган убакта Жөндөөлөрдөн өзгөртө аласыз.</string>
+    <string name="welcome_start">Ачык Notier</string>
+    <string name="welcome_title">Notierге кош келиңиз</string>
 </resources>

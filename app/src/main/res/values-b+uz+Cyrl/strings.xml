@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Ҳали муваффақиятли текширув ёъқ</string>
     <string name="updates_offline">Офлайн. Охирги натижа мавжуд бўлиб қолади.</string>
     <string name="updates_rate_limited">GitHub-да ҳозирча чекланган сўровлар мавжуд. Кейинроқ қайта урининг.</string>
+    <string name="release_empty">Релиз қайдлари ҳали мавжуд эмас. Уланганингизда GitHub-ни текширинг.</string>
+    <string name="release_later">Кейинги ишга туширишда кўрсатиш</string>
+    <string name="release_no_body">Ушбу нашрда GitHub-да ёзма эслатмалар мавжуд эмас.</string>
+    <string name="release_read">Ўқилган деб белгиланг</string>
+    <string name="theme_pixel">Пиксел устахонаси</string>
+    <string name="welcome_description">Мавзу ва тилни танланг. Буларни исталган вақтда Созламалар орқали ўзгартиришингиз мумкин.</string>
+    <string name="welcome_start">Notier-ни очинг</string>
+    <string name="welcome_title">Notierга хуш келибсиз</string>
 </resources>

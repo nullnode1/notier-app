@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Hələ uğurlu yoxlama yoxdur</string>
     <string name="updates_offline">Oflayn. Son nəticə mövcud olaraq qalır.</string>
     <string name="updates_rate_limited">GitHub-da hələlik məhdud sorğular var. Daha sonra yenidən cəhd edin.</string>
+    <string name="release_empty">Hələlik buraxılış qeydləri yoxdur. Qoşulduğunuz zaman GitHub-ı yoxlayın.</string>
+    <string name="release_later">Növbəti buraxılışda göstərin</string>
+    <string name="release_no_body">Bu buraxılışın GitHub-da yazılı qeydləri yoxdur.</string>
+    <string name="release_read">Oxunmuş kimi qeyd edin</string>
+    <string name="theme_pixel">Piksel emalatxanası</string>
+    <string name="welcome_description">Mövzu və dil seçin. Bunları istənilən vaxt Ayarlarda dəyişə bilərsiniz.</string>
+    <string name="welcome_start">Notier-i açın</string>
+    <string name="welcome_title">Notier-ə xoş gəlmisiniz</string>
 </resources>

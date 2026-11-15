@@ -108,10 +108,9 @@ if [[ "${NOTIER_SIDE_BY_SIDE:-0}" == 1 ]]; then
     package_args=(--rename-manifest-package app.notier.standalone)
 fi
 printf '%s\n' 'Android kaynakları paketleniyor…'
-mkdir -p "$work/assets/legal" "$work/assets/updates"
+mkdir -p "$work/assets/legal"
 cp -R "$main/assets/." "$work/assets/"
 cp LICENSE NOTICE docs/PRIVACY.md docs/PRIVACY.tr.md docs/PRIVACY.ru.md "$work/assets/legal/"
-cp docs/updates/v[0-9]*.md "$work/assets/updates/"
 "$aapt2_command" compile --dir "$main/res" -o "$work/resources.zip"
 "$aapt2_command" link -I "$platform" --manifest "$manifest" "${package_args[@]}" \
     -A "$work/assets" --output-text-symbols "$work/R.txt" \

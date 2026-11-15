@@ -212,4 +212,12 @@
     <string name="updates_never_checked">Entek üstünlikli barlag ýok</string>
     <string name="updates_offline">Oflayn. Iň soňky netije elýeterli.</string>
     <string name="updates_rate_limited">GitHub-yň häzirlikçe çäkli haýyşlary bar. Soňrak synanyşyň.</string>
+    <string name="release_empty">Entek goýberiş bellikleri ýok. Birikeniňizde GitHub-ny barlaň.</string>
+    <string name="release_later">Indiki açylyşda görkeziň</string>
+    <string name="release_no_body">Bu goýberilişde GitHub-da ýazmaça bellikler ýok.</string>
+    <string name="release_read">Okalan ýaly belläň</string>
+    <string name="theme_pixel">Piksel ussahanasy</string>
+    <string name="welcome_description">Tema we dil saýlaň. Bulary Sazlamalarda islän wagtyňyz üýtgedip bilersiňiz.</string>
+    <string name="welcome_start">Noteri aç</string>
+    <string name="welcome_title">Notier-e hoş geldiňiz</string>
 </resources>

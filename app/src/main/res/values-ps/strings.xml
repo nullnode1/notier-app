@@ -212,4 +212,12 @@
     <string name="updates_never_checked">تر اوسه کومه بریالۍ چک نه دی شوی</string>
     <string name="updates_offline">آف لائن. وروستۍ پایله شتون لري.</string>
     <string name="updates_rate_limited">GitHub د اوس لپاره محدودې غوښتنې لري. وروسته بیا هڅه وکړئ.</string>
+    <string name="release_empty">تر اوسه د خوشې کولو کوم یادښتونه شتون نلري. GitHub چیک کړئ کله چې تاسو وصل یاست.</string>
+    <string name="release_later">په راتلونکي لانچ کې ښکاره کړئ</string>
+    <string name="release_no_body">دا خپرونه په GitHub کې هیڅ لیکل شوي یادداشتونه نلري.</string>
+    <string name="release_read">د لوستلو په توګه نښه کړئ</string>
+    <string name="theme_pixel">د پکسل ورکشاپ</string>
+    <string name="welcome_description">یوه موضوع او ژبه غوره کړئ. تاسو کولی شئ دا هر وخت په ترتیباتو کې بدل کړئ.</string>
+    <string name="welcome_start">نوټیر خلاص کړئ</string>
+    <string name="welcome_title">نوټیر ته ښه راغلاست</string>
 </resources>
