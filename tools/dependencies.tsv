@@ -1,0 +1,13 @@
+9588fa696ac5507af764fd5660df6894185e12704ec1bc3f5cb772af4987f295 kotlin-compiler-embeddable-2.2.21.jar https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.2.21/kotlin-compiler-embeddable-2.2.21.jar
+6558a3d233da56a20934b32159f9db5f86ed5816ef098f78a2c223dc6abb79dd kotlin-stdlib-2.2.21.jar https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.21/kotlin-stdlib-2.2.21.jar
+2b1519b427b514d1536c1b425674b03fe914af637924028e9959c6625442df51 kotlin-script-runtime-2.2.21.jar https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-script-runtime/2.2.21/kotlin-script-runtime-2.2.21.jar
+3277ac102ae17aad10a55abec75ff5696c8d109790396434b496e75087854203 kotlin-reflect-1.6.10.jar https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-reflect/1.6.10/kotlin-reflect-1.6.10.jar
+91c0673c22e44b054ae0314d323860ebe1f3aff3f0ebc74fff82c4733dde09be kotlin-daemon-embeddable-2.2.21.jar https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-daemon-embeddable/2.2.21/kotlin-daemon-embeddable-2.2.21.jar
+9860906a1937490bf5f3b06d2f0e10ef451e65b95b269f22daf68a3d1f5065c5 kotlinx-coroutines-core-jvm-1.8.0.jar https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.8.0/kotlinx-coroutines-core-jvm-1.8.0.jar
+2037be378980d3ba9333e97955f3b2cde392aa124d04ca73ce2eee6657199297 annotations-26.0.2.jar https://repo.maven.apache.org/maven2/org/jetbrains/annotations/26.0.2/annotations-26.0.2.jar
+679338e0b7fc15c02d275d598654b01a149893bc28a87992e90123c8d06af25b commonmark-0.24.0.jar https://repo.maven.apache.org/maven2/org/commonmark/commonmark/0.24.0/commonmark-0.24.0.jar
+b54dc332f931e6d07c2766144c087b08f3693677e368151a67020b4e95bb4b99 commonmark-ext-gfm-tables-0.24.0.jar https://repo.maven.apache.org/maven2/org/commonmark/commonmark-ext-gfm-tables/0.24.0/commonmark-ext-gfm-tables-0.24.0.jar
+7385cb637f04dc4cbda4ddca9c2fcd2af7ac536a50e4c8d2c77f4748bb14bf41 commonmark-ext-gfm-strikethrough-0.24.0.jar https://repo.maven.apache.org/maven2/org/commonmark/commonmark-ext-gfm-strikethrough/0.24.0/commonmark-ext-gfm-strikethrough-0.24.0.jar
+9705b53140c68f63136f183e6c90c834e376ae0780e84800f9ec2ea49ecab984 commonmark-ext-task-list-items-0.24.0.jar https://repo.maven.apache.org/maven2/org/commonmark/commonmark-ext-task-list-items/0.24.0/commonmark-ext-task-list-items-0.24.0.jar
+013ba4f3ba4850a1de35935d1501587c518f764331d279805da33473e79f5f33 commonmark-ext-autolink-0.24.0.jar https://repo.maven.apache.org/maven2/org/commonmark/commonmark-ext-autolink/0.24.0/commonmark-ext-autolink-0.24.0.jar
+39c6588948ab31b98ab1fea4a6abab37243f387cb48cb50ae599410effb70038 autolink-0.11.0.jar https://repo.maven.apache.org/maven2/org/nibor/autolink/autolink/0.11.0/autolink-0.11.0.jar

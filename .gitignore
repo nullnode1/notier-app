@@ -1,0 +1,7 @@
+/build/
+*.apk
+*.apks
+*.jks
+*.keystore
+*.p12
+local.properties

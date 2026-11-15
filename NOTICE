@@ -1,0 +1,20 @@
+Notier is distributed under the GNU General Public License, version 3 only.
+See LICENSE for the full license text.
+
+Additional permission under GNU GPL version 3, section 7
+
+The copyright holders of Notier grant permission to convey Notier combined
+with the Google Play services client libraries used by its optional Drive
+integration. This permission applies only to that combination. The GPL
+requirements continue to apply to the Notier portions, including the
+requirement to provide their Corresponding Source when conveying the combined
+work. The Google Play services libraries are distributed under the terms
+applicable to those libraries. Section 7 governs removal of this permission
+from modified copies.
+
+Third-party notices
+
+Kotlin, CommonMark, Autolink, Lucide and the bundled fonts have their own
+license notices in app/src/main/assets/. AndroidX and Google Play services
+dependencies used by the build are listed in tools/google-drive.tsv and retain
+their applicable terms.

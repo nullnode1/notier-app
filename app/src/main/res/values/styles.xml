@@ -1,0 +1,34 @@
+<resources>
+    <style name="NotierTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+        <item name="android:colorAccent">#111111</item>
+        <item name="android:colorControlHighlight">#14000000</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selection</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+    <style name="NotierThemeDark" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">#101010</item>
+        <item name="android:colorAccent">#C6C6C6</item>
+        <item name="android:colorControlHighlight">#24FFFFFF</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selection_dark</item>
+        <item name="android:statusBarColor">#101010</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">#101010</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+    <style name="NotierDialogLight" parent="android:style/Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorAccent">#101010</item>
+        <item name="android:colorControlHighlight">#14000000</item>
+    </style>
+    <style name="NotierDialogDark" parent="android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">#C6C6C6</item>
+        <item name="android:colorControlHighlight">#24FFFFFF</item>
+    </style>
+</resources>
