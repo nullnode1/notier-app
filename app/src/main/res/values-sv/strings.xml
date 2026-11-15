@@ -181,4 +181,11 @@
         <item quantity="one">%d mapp</item>
         <item quantity="other">%d mappar</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Juridisk information</string>
+    <string name="about_developer">Utvecklare</string>
+    <string name="about_source">GitHub-arkiv</string>
+    <string name="about_license">Licens</string>
+    <string name="about_privacy">Integritetspolicy</string>
+    <string name="about_notices">Tredjepartsmeddelanden</string>
 </resources>

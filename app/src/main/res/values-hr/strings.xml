@@ -183,4 +183,11 @@
         <item quantity="few">%d mape</item>
         <item quantity="other">%d mapa</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Pravne informacije</string>
+    <string name="about_developer">Razvojni programer</string>
+    <string name="about_source">GitHub repozitorij</string>
+    <string name="about_license">Licenca</string>
+    <string name="about_privacy">Pravila privatnosti</string>
+    <string name="about_notices">Obavijesti trećih strana</string>
 </resources>

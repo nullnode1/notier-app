@@ -100,7 +100,6 @@ internal class MainActivity : Activity() {
     private var cornerScale = 1f
     private var listLayout = 0
     private var pinned = setOf<String>()
-    private val worker = Executors.newSingleThreadExecutor()
     private val driveCountWorker = Executors.newSingleThreadExecutor()
     private var driveCountTask: Future<*>? = null
     private var driveCounts = emptyMap<String, Int>()
@@ -270,7 +269,6 @@ internal class MainActivity : Activity() {
     override fun onDestroy() {
         main.removeCallbacksAndMessages(null)
         destroyPreview()
-        worker.shutdown()
         driveCountWorker.shutdownNow()
         super.onDestroy()
     }
@@ -630,9 +628,78 @@ internal class MainActivity : Activity() {
         @Suppress("DEPRECATION")
         val version = packageManager.getPackageInfo(packageName, 0).versionName ?: "v1"
         rows.addView(settingsRow("Notier", s(R.string.about_version, version), leading = R.drawable.app_icon))
-        for (line in listOf(R.string.about_description, R.string.about_credits)) {
-            rows.addView(label(s(line), 14f, palette.muted).apply {
-                setPaddingRelative(dp(10), dp(10), dp(10), dp(6))
+        rows.addView(label(s(R.string.about_description), 14f, palette.muted).apply {
+            setPaddingRelative(dp(10), dp(10), dp(10), dp(6))
+        })
+        val project = settingsGroup(rows, R.string.about_project)
+        val legal = settingsGroup(rows, R.string.about_legal)
+
+        fun item(group: LinearLayout, title: Int, detail: String, glyph: Int, action: () -> Unit) {
+            group.addView(settingsRow(s(title), detail, leading = glyph, navigate = true, surface = Color.TRANSPARENT).apply {
+                setOnClickListener {
+                    dialog.dismiss()
+                    action()
+                }
+            })
+        }
+        item(project, R.string.about_developer, "@nullnode1", R.drawable.ic_code) {
+            openProjectLink("https://github.com/nullnode1")
+        }
+        item(project, R.string.about_source, "nullnode1/notier-app", R.drawable.ic_link_2) {
+            openProjectLink("https://github.com/nullnode1/notier-app")
+        }
+        item(legal, R.string.about_license, "GNU GPL v3", R.drawable.ic_file_text) {
+            showAboutDocument(R.string.about_license, "LICENSE")
+        }
+        item(legal, R.string.about_privacy, "", R.drawable.ic_eye) {
+            val file = when (appLocale.language) {
+                "tr" -> "PRIVACY.tr.md"
+                "ru" -> "PRIVACY.ru.md"
+                else -> "PRIVACY.md"
+            }
+            showAboutDocument(R.string.about_privacy, file)
+        }
+        item(legal, R.string.about_notices, "", R.drawable.ic_list) {
+            showAboutDocument(R.string.about_notices, "NOTICE")
+        }
+        showDialog(dialog)
+    }
+
+    private fun openProjectLink(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (_: ActivityNotFoundException) {
+            toast(s(R.string.open_link_error))
+            showAbout()
+        }
+    }
+
+    private fun showAboutDocument(title: Int, file: String) {
+        val rows = settingsColumn()
+        val dialog = settingsDialog(s(title), rows, up = true, onUp = ::showAbout)
+        val raw = runCatching { assets.open("legal/$file").bufferedReader().use { it.readText() } }.getOrNull()
+        if (raw == null) {
+            toast(s(R.string.note_open_error))
+            showAbout()
+            return
+        }
+        if (file.endsWith(".md")) {
+            for (paragraph in raw.trim().split("\n\n")) {
+                if (paragraph.startsWith("# ") || paragraph.startsWith("[English]")) continue
+                val heading = paragraph.startsWith('#')
+                val displayText = paragraph.trimStart('#', ' ')
+                    .replace(Regex("\\[([^]]+)]\\((https://[^)]+)\\)"), "$1 ($2)").replace("**", "").replace("`", "")
+                rows.addView(label(displayText, if (heading) 17f else 14f, bold = heading).apply {
+                    setPaddingRelative(dp(5), dp(7), dp(5), dp(7))
+                    if (heading) accessibilityHeadingIfSupported()
+                    android.text.util.Linkify.addLinks(this, android.text.util.Linkify.WEB_URLS)
+                })
+            }
+        } else {
+            rows.addView(label(raw, 13f).apply {
+                tag = NoteFont.MONO
+                textDirection = View.TEXT_DIRECTION_LTR
+                setPaddingRelative(dp(5), dp(7), dp(5), dp(7))
             })
         }
         showDialog(dialog)
@@ -658,7 +725,7 @@ internal class MainActivity : Activity() {
         return card
     }
 
-    private fun settingsDialog(title: String, rows: LinearLayout, up: Boolean = false): AlertDialog {
+    private fun settingsDialog(title: String, rows: LinearLayout, up: Boolean = false, onUp: () -> Unit = ::showSettings): AlertDialog {
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, dp(7), 0, dp(8))
@@ -677,7 +744,7 @@ internal class MainActivity : Activity() {
             s(if (up) R.string.back_to_settings else R.string.close), 18, quiet = true
         ) {
             dialog?.dismiss()
-            if (up) showSettings()
+            if (up) onUp()
         }, buttonLayout(44, 44))
         panel.addView(header, LinearLayout.LayoutParams(MATCH, WRAP))
         val scroll = ScrollView(this).apply {
@@ -688,7 +755,7 @@ internal class MainActivity : Activity() {
         panel.addView(scroll, LinearLayout.LayoutParams(MATCH, WRAP, 1f))
         return dialogBuilder().setView(panel).create().also {
             dialog = it
-            if (up) it.setOnCancelListener { showSettings() }
+            if (up) it.setOnCancelListener { onUp() }
         }
     }
 
@@ -1149,7 +1216,10 @@ internal class MainActivity : Activity() {
                 driveFolder = if (driveFolderId == rootFolder.id) rootFolder else driveFolder?.takeIf { it.id == driveFolderId }
                 driveUnavailable = 0
                 if (driveScreen && draft == null) refreshDriveFolder(knownFolder = rootFolder.takeIf { it.id == driveFolderId })
-            }.onFailure { driveAuthorizationFailed(true) }
+            }.onFailure {
+                driveAuthorizationFailed(false)
+                toast(s(R.string.drive_api_failed))
+            }
         }
     }
 
@@ -1633,7 +1703,7 @@ internal class MainActivity : Activity() {
         val direct = DriveApi.id(file.uri)
         val initial = if (file.isFolder) file.name else title(file.name)
         promptName(R.string.rename, initial, if (file.isFolder) R.string.folder_name else R.string.file_name) { raw ->
-            val name = (if (file.isFolder) validFolderName(raw) else normalizedName(raw)) ?: return@promptName false
+            val name = (if (file.isFolder) validFolderName(raw) else normalizedName(raw, file.name)) ?: return@promptName false
             rememberListPosition()
             busy = true
             background({
@@ -2249,7 +2319,7 @@ internal class MainActivity : Activity() {
         noteSubtitle.text = when {
             busy -> s(R.string.saving)
             value.dirty || value.uri == null -> s(R.string.unsaved)
-            else -> ".md"
+            else -> if (value.name.isMarkdownName()) ".${value.name.substringAfterLast('.')}" else ".md"
         }
     }
 
@@ -2257,7 +2327,7 @@ internal class MainActivity : Activity() {
         val value = draft ?: return
         if (busy) return
         val typed = value.heading
-        val enteredName = if (typed == null) null else normalizedName(typed)
+        val enteredName = typed?.let { normalizedName(it, value.name) }
         if (typed != null && enteredName == null) {
             leavingAfterSave = false
             switchMode(true)
@@ -2359,7 +2429,8 @@ internal class MainActivity : Activity() {
             putExtra(Intent.EXTRA_TITLE, normalizedName(suggestedName(active)) ?: "Not.md")
             addFlags(DOCUMENT_GRANTS)
             if (driveScreen) {
-                val initial = active.uri?.takeIf(DriveDocuments::isDrive) ?: driveFiles.firstOrNull()?.uri
+                val initial = active.uri?.takeIf(DriveDocuments::isDrive)
+                    ?: driveFiles.firstOrNull { DriveDocuments.isDrive(it.uri) }?.uri
                 initial?.let { putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
             }
         }
@@ -2429,25 +2500,19 @@ internal class MainActivity : Activity() {
         runSave({
             var destination = uri
             var name = runCatching { notes.displayName(uri) }.getOrNull()
-            try {
-                if (name != null && !name.endsWith(".md", true)) {
-                    val corrected = normalizedName(name) ?: "Not.md"
-                    destination = DocumentsContract.renameDocument(contentResolver, uri, corrected)
-                        ?: error(".md uzantısı eklenemedi.")
-                    name = runCatching { notes.displayName(destination) }.getOrNull() ?: corrected
-                }
-                notes.write(destination, value.text)
-                if (DriveDocuments.isDrive(destination)) {
-                    val registered = runCatching { drive.remember(destination, flags) }.isSuccess
-                    if (!registered) main.post { toast(s(R.string.drive_bookmark_error)) }
-                } else if (!copyOnly) runCatching { contentResolver.takePersistableUriPermission(destination, flags) }
-                if (expectedDrive && !DriveDocuments.isDrive(destination)) {
-                    main.post { toast(s(R.string.drive_saved_elsewhere)) }
-                }
-            } catch (error: Exception) {
-                runCatching { DocumentsContract.deleteDocument(contentResolver, destination) }
-                if (!copyOnly) releaseGrant(destination)
-                throw error
+            if (name != null && !name.isMarkdownName()) {
+                val corrected = normalizedName(name) ?: "Not.md"
+                destination = DocumentsContract.renameDocument(contentResolver, uri, corrected)
+                    ?: error(".md uzantısı eklenemedi.")
+                name = runCatching { notes.displayName(destination) }.getOrNull() ?: corrected
+            }
+            notes.write(destination, value.text)
+            if (DriveDocuments.isDrive(destination)) {
+                val registered = runCatching { drive.remember(destination, flags) }.isSuccess
+                if (!registered) main.post { toast(s(R.string.drive_bookmark_error)) }
+            } else if (!copyOnly) runCatching { contentResolver.takePersistableUriPermission(destination, flags) }
+            if (expectedDrive && !DriveDocuments.isDrive(destination)) {
+                main.post { toast(s(R.string.drive_saved_elsewhere)) }
             }
             if (copyOnly) return@runSave value
             val filename = name ?: normalizedName(suggestedName(value)) ?: "Not.md"
@@ -2471,6 +2536,7 @@ internal class MainActivity : Activity() {
         titleField.isEnabled = false
         updateSaveState()
         background({
+            runCatching { drafts.store(snapshot, keepClean = true) }
             try {
                 val saved = work()
                 runCatching { drafts.store(if (copyOnly) snapshot else null) }
@@ -2484,7 +2550,7 @@ internal class MainActivity : Activity() {
             editor.isEnabled = true
             titleField.isEnabled = true
             result.onSuccess { saved ->
-                if (saved.uri?.let(DriveApi::id) != null || snapshot?.driveParent != null) {
+                if (driveScreen && driveApi != null) {
                     invalidateDrivePages()
                 }
                 toast(if (copyOnly) s(R.string.copy_saved) else s(R.string.note_saved))
@@ -2591,7 +2657,7 @@ internal class MainActivity : Activity() {
     }
 
     private fun persistDraft() {
-        if (startLoading || busy || worker.isShutdown) return
+        if (startLoading || busy) return
         val snapshot = draft
         val keepClean = pickerPending || keepNoteAfterRecreate
         worker.execute {
@@ -2606,14 +2672,8 @@ internal class MainActivity : Activity() {
         return runCatching { contentResolver.releasePersistableUriPermission(uri, flags) }.isSuccess
     }
 
-    private fun normalizedName(raw: String): String? {
-        val name = raw.trim().replace(Regex("(?i)\\.(?:md|markdown)$"), "").trim().trimEnd('.')
-        if (name.isEmpty() || name.toByteArray(Charsets.UTF_8).size > 220 || name.any { it.isISOControl() || it in "/\\:*?\"<>|" }) return null
-        return "$name.md"
-    }
-
     private fun suggestedName(value: Draft): String {
-        value.heading?.let(::normalizedName)?.let { return it }
+        value.heading?.let { normalizedName(it, value.name) }?.let { return it }
         if (value.uri != null) return value.name
         val heading = value.text.lineSequence().firstOrNull { it.isNotBlank() }
             ?.trim()?.trimStart('#')?.trim()?.take(65)
@@ -2857,6 +2917,8 @@ internal class MainActivity : Activity() {
     }
 
     companion object {
+        // Activity recreation must queue draft recovery after the old activity's writes.
+        private val worker = Executors.newSingleThreadExecutor()
         private val languages = listOf("tr" to "Türkçe", "en" to "English", "de" to "Deutsch",
             "es" to "Español", "fr" to "Français", "it" to "Italiano", "pt" to "Português",
             "ru" to "Русский", "ar" to "العربية", "ja" to "日本語", "ko" to "한국어", "zh" to "简体中文",

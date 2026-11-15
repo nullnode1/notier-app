@@ -181,4 +181,11 @@
     <string name="drive_signed_out">Saiu do Drive.</string>
     <string name="drive_signout_local">Desconectado deste dispositivo. O Google não conseguiu revogar o acesso.</string>
     <string name="choose_google_account">Escolha uma conta Google</string>
+    <string name="about_project">Projeto</string>
+    <string name="about_legal">Informações legais</string>
+    <string name="about_developer">Desenvolvedor</string>
+    <string name="about_source">Repositório no GitHub</string>
+    <string name="about_license">Licença</string>
+    <string name="about_privacy">Política de privacidade</string>
+    <string name="about_notices">Avisos de terceiros</string>
 </resources>

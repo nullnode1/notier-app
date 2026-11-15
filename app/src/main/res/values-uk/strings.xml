@@ -185,4 +185,11 @@
         <item quantity="many">%d папок</item>
         <item quantity="other">%d папок</item>
     </plurals>
+    <string name="about_project">Проєкт</string>
+    <string name="about_legal">Правова інформація</string>
+    <string name="about_developer">Розробник</string>
+    <string name="about_source">Репозиторій GitHub</string>
+    <string name="about_license">Ліцензія</string>
+    <string name="about_privacy">Політика конфіденційності</string>
+    <string name="about_notices">Повідомлення третіх сторін</string>
 </resources>

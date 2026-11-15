@@ -185,4 +185,11 @@
         <item quantity="many">%d folderów</item>
         <item quantity="other">%d folderów</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Informacje prawne</string>
+    <string name="about_developer">Programista</string>
+    <string name="about_source">Repozytorium GitHub</string>
+    <string name="about_license">Licencja</string>
+    <string name="about_privacy">Polityka prywatności</string>
+    <string name="about_notices">Informacje o licencjach zewnętrznych</string>
 </resources>

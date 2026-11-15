@@ -181,4 +181,11 @@
         <item quantity="one">%d φάκελος</item>
         <item quantity="other">%d φάκελοι</item>
     </plurals>
+    <string name="about_project">Έργο</string>
+    <string name="about_legal">Νομικές πληροφορίες</string>
+    <string name="about_developer">Προγραμματιστής</string>
+    <string name="about_source">Αποθετήριο GitHub</string>
+    <string name="about_license">Άδεια χρήσης</string>
+    <string name="about_privacy">Πολιτική απορρήτου</string>
+    <string name="about_notices">Ειδοποιήσεις τρίτων</string>
 </resources>

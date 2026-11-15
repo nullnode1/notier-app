@@ -59,5 +59,3 @@ internal class DriveDocuments(private val resolver: ContentResolver, private val
     }
 }
 
-internal fun String.isMarkdownName(): Boolean =
-    endsWith(".md", ignoreCase = true) || endsWith(".markdown", ignoreCase = true)

@@ -181,4 +181,11 @@
         <item quantity="one">%d map</item>
         <item quantity="other">%d mappen</item>
     </plurals>
+    <string name="about_project">Project</string>
+    <string name="about_legal">Juridische informatie</string>
+    <string name="about_developer">Ontwikkelaar</string>
+    <string name="about_source">GitHub-repository</string>
+    <string name="about_license">Licentie</string>
+    <string name="about_privacy">Privacybeleid</string>
+    <string name="about_notices">Kennisgevingen van derden</string>
 </resources>

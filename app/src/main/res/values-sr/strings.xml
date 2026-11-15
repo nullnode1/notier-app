@@ -183,4 +183,11 @@
         <item quantity="few">%d folders</item>
         <item quantity="other">%d folders</item>
     </plurals>
+    <string name="about_project">Пројекат</string>
+    <string name="about_legal">Правне информације</string>
+    <string name="about_developer">Програмер</string>
+    <string name="about_source">GitHub репозиторијум</string>
+    <string name="about_license">Лиценца</string>
+    <string name="about_privacy">Политика приватности</string>
+    <string name="about_notices">Обавештења трећих страна</string>
 </resources>

@@ -181,4 +181,11 @@
         <item quantity="one">%d mappa</item>
         <item quantity="other">%d mappa</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Jogi információk</string>
+    <string name="about_developer">Fejlesztő</string>
+    <string name="about_source">GitHub-tárhely</string>
+    <string name="about_license">Licenc</string>
+    <string name="about_privacy">Adatvédelmi irányelvek</string>
+    <string name="about_notices">Harmadik felek közleményei</string>
 </resources>

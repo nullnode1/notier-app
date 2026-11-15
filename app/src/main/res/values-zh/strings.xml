@@ -179,4 +179,11 @@
     <string name="drive_signed_out">已退出云端硬盘。</string>
     <string name="drive_signout_local">已在此设备上注销。 Google 无法撤销访问权限。</string>
     <string name="choose_google_account">选择 Google 帐户</string>
+    <string name="about_project">项目</string>
+    <string name="about_legal">法律信息</string>
+    <string name="about_developer">开发者</string>
+    <string name="about_source">GitHub 仓库</string>
+    <string name="about_license">许可证</string>
+    <string name="about_privacy">隐私政策</string>
+    <string name="about_notices">第三方声明</string>
 </resources>

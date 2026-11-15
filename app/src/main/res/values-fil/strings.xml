@@ -181,4 +181,11 @@
         <item quantity="one">%d folder</item>
         <item quantity="other">%d na folder</item>
     </plurals>
+    <string name="about_project">Proyekto</string>
+    <string name="about_legal">Legal na impormasyon</string>
+    <string name="about_developer">Developer</string>
+    <string name="about_source">Repository sa GitHub</string>
+    <string name="about_license">Lisensya</string>
+    <string name="about_privacy">Patakaran sa privacy</string>
+    <string name="about_notices">Mga abiso ng third party</string>
 </resources>

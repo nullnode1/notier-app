@@ -181,4 +181,11 @@
     <string name="drive_signed_out">Saliste de Drive.</string>
     <string name="drive_signout_local">Cerró sesión en este dispositivo. Google no pudo revocar el acceso.</string>
     <string name="choose_google_account">Elija una cuenta de Google</string>
+    <string name="about_project">Proyecto</string>
+    <string name="about_legal">Información legal</string>
+    <string name="about_developer">Desarrollador</string>
+    <string name="about_source">Repositorio de GitHub</string>
+    <string name="about_license">Licencia</string>
+    <string name="about_privacy">Política de privacidad</string>
+    <string name="about_notices">Avisos de terceros</string>
 </resources>

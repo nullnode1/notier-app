@@ -179,4 +179,11 @@
     <string name="drive_signed_out">ドライブからログアウトしました。</string>
     <string name="drive_signout_local">このデバイスではサインアウトしました。 Google はアクセスを取り消すことができませんでした。</string>
     <string name="choose_google_account">Google アカウントを選択</string>
+    <string name="about_project">プロジェクト</string>
+    <string name="about_legal">法的情報</string>
+    <string name="about_developer">開発者</string>
+    <string name="about_source">GitHub リポジトリ</string>
+    <string name="about_license">ライセンス</string>
+    <string name="about_privacy">プライバシーポリシー</string>
+    <string name="about_notices">第三者のライセンス情報</string>
 </resources>

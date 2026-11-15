@@ -181,4 +181,11 @@
     <string name="drive_signed_out">Déconnecté de Drive.</string>
     <string name="drive_signout_local">Déconnecté sur cet appareil. Google n\'a pas pu révoquer l\'accès.</string>
     <string name="choose_google_account">Choisissez un compte Google</string>
+    <string name="about_project">Projet</string>
+    <string name="about_legal">Mentions légales</string>
+    <string name="about_developer">Développeur</string>
+    <string name="about_source">Dépôt GitHub</string>
+    <string name="about_license">Licence</string>
+    <string name="about_privacy">Politique de confidentialité</string>
+    <string name="about_notices">Mentions des tiers</string>
 </resources>

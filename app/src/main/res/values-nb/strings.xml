@@ -181,4 +181,11 @@
         <item quantity="one">%d mappe</item>
         <item quantity="other">%d mapper</item>
     </plurals>
+    <string name="about_project">Prosjekt</string>
+    <string name="about_legal">Juridisk informasjon</string>
+    <string name="about_developer">Utvikler</string>
+    <string name="about_source">GitHub-repositorium</string>
+    <string name="about_license">Lisens</string>
+    <string name="about_privacy">Personvernerklæring</string>
+    <string name="about_notices">Tredjepartsmerknader</string>
 </resources>

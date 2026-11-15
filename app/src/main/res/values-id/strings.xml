@@ -179,4 +179,11 @@
     <plurals name="folders_total">
         <item quantity="other">%d folder</item>
     </plurals>
+    <string name="about_project">Proyek</string>
+    <string name="about_legal">Informasi hukum</string>
+    <string name="about_developer">Pengembang</string>
+    <string name="about_source">Repositori GitHub</string>
+    <string name="about_license">Lisensi</string>
+    <string name="about_privacy">Kebijakan privasi</string>
+    <string name="about_notices">Pemberitahuan pihak ketiga</string>
 </resources>

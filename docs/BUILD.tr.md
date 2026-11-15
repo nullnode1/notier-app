@@ -5,7 +5,7 @@ Notier, seçtiğin Android klasöründeki UTF-8 Markdown notlarını açan ve d�
 ## Kullanım
 
 1. Sol üstteki **klasör** simgesine dokun. Android dosya seçicisinde örneğin `Belgeler/Notier` klasörünü seç. Android 11 ve sonrasında doğrudan İndirilenler klasörü seçilemeyebilir. Bir alt klasör seçebilirsin.
-2. Seçili klasördeki `.md` dosyaları son değişiklik tarihine göre sıralanır. Üstteki arama alanı dosya adlarını yazdıkça filtreler. **×** aramayı temizler. Sağ alttaki **+** yeni not açar.
+2. Seçili klasördeki `.md` ve `.markdown` dosyaları son değişiklik tarihine göre sıralanır. Üstteki arama alanı dosya adlarını yazdıkça filtreler. **×** aramayı temizler. Sağ alttaki **+** yeni not açar.
 3. Var olan bir not **Görünüm** ile açılır. Göz ikonu görünümü açar, kalem ham Markdown metnini düzenler, disket dosyayı kaydeder. Çerçeveli düğme etkin modu gösterir. Düğmelerin solundaki **Not başlığı** alanı, kaydederken `.md` dosyasının adını belirler.
 4. Sağ üstteki **üç nokta → Farklı kaydet** ile ayrı bir `.md` dosyası oluşturabilirsin. Mevcut not üzerinde düzenleme yaparken bu seçenek kopyayı yazar ve orijinal notun düzenleyicisini açık bırakır.
 5. Kaydedilmemiş değişiklikler, uygulama kapanırsa geri yüklenmek üzere cihazda taslak olarak tutulur.
@@ -39,7 +39,7 @@ Google, Android uygulamasının paket adını ve imzasını tanıyan bir OAuth i
 4. **Clients → Create client → Android** ile istemci oluştur. Hazır APK için aşağıdaki paket adını ve SHA-1 değerini kullan. APK içine istemci sırrı girmen gerekmez.
 5. Notier’de **Google Drive’a bağlan** ile Google izin ekranını aç.
 
-Hazır Notier v1.0.1 APK için kayıt değerleri
+Hazır Notier v1.0.2 APK için kayıt değerleri
 
 | Alan | Değer |
 | --- | --- |
@@ -89,7 +89,7 @@ ZIP dosyasını İndirilenler'e kaydet. İlk derlemede Maven Central ve Google M
 pkg install openjdk-21 aapt2 d8 apksigner python curl unzip
 termux-setup-storage
 cd ~
-unzip -o ~/storage/downloads/Notier-GitHub-v1.0.1.zip
+unzip -o ~/storage/downloads/Notier-GitHub-v1.0.2.zip
 cd Notier
 bash derle.sh
 cp build/Notier.apk ~/storage/downloads/Notier.apk
@@ -99,7 +99,7 @@ APK'yi İndirilenler'den açarak yükleyebilirsin. Betik, Termux'un yerel AAPT2 
 
 Derleme anahtarı `~/.notier-signing/debug.p12` altında tutulur. Paket kimliği ve imzalama anahtarı aynı olan sürümler birbirinin üzerine kurulabilir.
 
-Hazır Notier v1.0.1 APK, hazır v1 sürümünün üzerine kurulabilir. Android sürüm kodu 11’dir. Aynı paket ve imza kullanıldığı için mevcut Google Cloud Android OAuth kaydı da geçerlidir. Termux'ta normal `bash derle.sh` komutu `app.notier` paketini kullanır. Hazır APK'nın paket kimliğiyle derlemek için `NOTIER_SIDE_BY_SIDE=1 bash derle.sh` komutunu kullan. Kurulu sürümü güncellemek için imzalama anahtarının da eşleşmesi gerekir.
+Hazır Notier v1.0.2 APK, hazır v1.0.1 sürümünün üzerine kurulabilir. Android sürüm kodu 12’dir. Aynı paket ve imza kullanıldığı için mevcut Google Cloud Android OAuth kaydı da geçerlidir. Termux'ta normal `bash derle.sh` komutu `app.notier` paketini kullanır. Hazır APK'nın paket kimliğiyle derlemek için `NOTIER_SIDE_BY_SIDE=1 bash derle.sh` komutunu kullan. Kurulu sürümü güncellemek için imzalama anahtarının da eşleşmesi gerekir.
 
 ## Kaynak kodu
 

@@ -181,4 +181,11 @@
         <item quantity="one">%d پوشه</item>
         <item quantity="other">%d پوشه</item>
     </plurals>
+    <string name="about_project">پروژه</string>
+    <string name="about_legal">اطلاعات حقوقی</string>
+    <string name="about_developer">توسعه‌دهنده</string>
+    <string name="about_source">مخزن GitHub</string>
+    <string name="about_license">مجوز</string>
+    <string name="about_privacy">سیاست حریم خصوصی</string>
+    <string name="about_notices">اطلاعیه‌های اشخاص ثالث</string>
 </resources>

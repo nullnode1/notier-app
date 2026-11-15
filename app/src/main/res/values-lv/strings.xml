@@ -183,4 +183,11 @@
         <item quantity="one">%d mape</item>
         <item quantity="other">%d mapes</item>
     </plurals>
+    <string name="about_project">Projekts</string>
+    <string name="about_legal">Juridiskā informācija</string>
+    <string name="about_developer">Izstrādātājs</string>
+    <string name="about_source">GitHub repozitorijs</string>
+    <string name="about_license">Licence</string>
+    <string name="about_privacy">Privātuma politika</string>
+    <string name="about_notices">Trešo pušu paziņojumi</string>
 </resources>

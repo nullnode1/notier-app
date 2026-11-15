@@ -183,4 +183,11 @@
         <item quantity="two">%d תיקיות</item>
         <item quantity="other">%d תיקיות</item>
     </plurals>
+    <string name="about_project">פרויקט</string>
+    <string name="about_legal">מידע משפטי</string>
+    <string name="about_developer">מפתח</string>
+    <string name="about_source">מאגר GitHub</string>
+    <string name="about_license">רישיון</string>
+    <string name="about_privacy">מדיניות פרטיות</string>
+    <string name="about_notices">הודעות צד שלישי</string>
 </resources>

@@ -181,4 +181,11 @@
         <item quantity="one">%d ফোল্ডার</item>
         <item quantity="other">%d ফোল্ডার</item>
     </plurals>
+    <string name="about_project">প্রকল্প</string>
+    <string name="about_legal">আইনি তথ্য</string>
+    <string name="about_developer">ডেভেলপার</string>
+    <string name="about_source">GitHub রিপোজিটরি</string>
+    <string name="about_license">লাইসেন্স</string>
+    <string name="about_privacy">গোপনীয়তা নীতি</string>
+    <string name="about_notices">তৃতীয় পক্ষের বিজ্ঞপ্তি</string>
 </resources>

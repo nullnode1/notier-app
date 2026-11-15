@@ -35,7 +35,7 @@ internal class Notes(private val resolver: ContentResolver) {
                     hasSubfolders = true
                     continue
                 }
-                if (!filename.endsWith(".md", true)) continue
+                if (!filename.isMarkdownName()) continue
                 val uri = DocumentsContract.buildDocumentUriUsingTree(tree, it.getString(0))
                 files += NoteFile(uri, filename, if (it.isNull(3)) 0 else it.getLong(3))
             }

@@ -183,4 +183,11 @@
         <item quantity="few">%d foldere</item>
         <item quantity="other">%d de dosare</item>
     </plurals>
+    <string name="about_project">Proiect</string>
+    <string name="about_legal">Informații juridice</string>
+    <string name="about_developer">Dezvoltator</string>
+    <string name="about_source">Depozit GitHub</string>
+    <string name="about_license">Licență</string>
+    <string name="about_privacy">Politică de confidențialitate</string>
+    <string name="about_notices">Notificări ale terților</string>
 </resources>

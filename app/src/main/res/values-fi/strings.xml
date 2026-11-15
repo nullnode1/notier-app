@@ -181,4 +181,11 @@
         <item quantity="one">%d kansio</item>
         <item quantity="other">%d kansiota</item>
     </plurals>
+    <string name="about_project">Projekti</string>
+    <string name="about_legal">Oikeudelliset tiedot</string>
+    <string name="about_developer">Kehittäjä</string>
+    <string name="about_source">GitHub-tietovarasto</string>
+    <string name="about_license">Lisenssi</string>
+    <string name="about_privacy">Tietosuojakäytäntö</string>
+    <string name="about_notices">Kolmansien osapuolten ilmoitukset</string>
 </resources>

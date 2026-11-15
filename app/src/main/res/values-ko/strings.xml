@@ -179,4 +179,11 @@
     <string name="drive_signed_out">드라이브에서 로그아웃되었습니다.</string>
     <string name="drive_signout_local">이 기기에서 로그아웃되었습니다. Google에서 액세스 권한을 취소할 수 없습니다.</string>
     <string name="choose_google_account">Google 계정을 선택하세요</string>
+    <string name="about_project">프로젝트</string>
+    <string name="about_legal">법적 정보</string>
+    <string name="about_developer">개발자</string>
+    <string name="about_source">GitHub 저장소</string>
+    <string name="about_license">라이선스</string>
+    <string name="about_privacy">개인정보 처리방침</string>
+    <string name="about_notices">타사 고지</string>
 </resources>

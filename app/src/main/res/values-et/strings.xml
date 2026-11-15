@@ -181,4 +181,11 @@
         <item quantity="one">%d kaust</item>
         <item quantity="other">%d kausta</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Õigusteave</string>
+    <string name="about_developer">Arendaja</string>
+    <string name="about_source">GitHubi hoidla</string>
+    <string name="about_license">Litsents</string>
+    <string name="about_privacy">Privaatsuspoliitika</string>
+    <string name="about_notices">Kolmandate osapoolte teatised</string>
 </resources>

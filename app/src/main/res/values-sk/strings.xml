@@ -183,4 +183,11 @@
         <item quantity="few">%d priečinky</item>
         <item quantity="other">%d priečinkov</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Právne informácie</string>
+    <string name="about_developer">Vývojár</string>
+    <string name="about_source">Repozitár na GitHube</string>
+    <string name="about_license">Licencia</string>
+    <string name="about_privacy">Zásady ochrany osobných údajov</string>
+    <string name="about_notices">Oznámenia tretích strán</string>
 </resources>

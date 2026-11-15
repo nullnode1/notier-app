@@ -183,4 +183,11 @@
         <item quantity="few">%d aplankai</item>
         <item quantity="other">%d aplankų</item>
     </plurals>
+    <string name="about_project">Projektas</string>
+    <string name="about_legal">Teisinė informacija</string>
+    <string name="about_developer">Kūrėjas</string>
+    <string name="about_source">GitHub saugykla</string>
+    <string name="about_license">Licencija</string>
+    <string name="about_privacy">Privatumo politika</string>
+    <string name="about_notices">Trečiųjų šalių pranešimai</string>
 </resources>

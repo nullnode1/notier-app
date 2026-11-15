@@ -183,4 +183,11 @@
         <item quantity="few">%d složky</item>
         <item quantity="other">%d složek</item>
     </plurals>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Právní informace</string>
+    <string name="about_developer">Vývojář</string>
+    <string name="about_source">Repozitář na GitHubu</string>
+    <string name="about_license">Licence</string>
+    <string name="about_privacy">Zásady ochrany osobních údajů</string>
+    <string name="about_notices">Oznámení třetích stran</string>
 </resources>

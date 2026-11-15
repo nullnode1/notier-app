@@ -181,4 +181,11 @@
         <item quantity="one">folda %d</item>
         <item quantity="other">%d folda</item>
     </plurals>
+    <string name="about_project">Mradi</string>
+    <string name="about_legal">Taarifa za kisheria</string>
+    <string name="about_developer">Msanidi programu</string>
+    <string name="about_source">Hazina ya GitHub</string>
+    <string name="about_license">Leseni</string>
+    <string name="about_privacy">Sera ya faragha</string>
+    <string name="about_notices">Notisi za wahusika wengine</string>
 </resources>

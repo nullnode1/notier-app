@@ -181,4 +181,11 @@
     <string name="drive_signed_out">Aus Drive abgemeldet.</string>
     <string name="drive_signout_local">Auf diesem Gerät abgemeldet. Google konnte den Zugriff nicht widerrufen.</string>
     <string name="choose_google_account">Wählen Sie ein Google-Konto</string>
+    <string name="about_project">Projekt</string>
+    <string name="about_legal">Rechtliches</string>
+    <string name="about_developer">Entwickler</string>
+    <string name="about_source">GitHub-Repository</string>
+    <string name="about_license">Lizenz</string>
+    <string name="about_privacy">Datenschutzerklärung</string>
+    <string name="about_notices">Hinweise zu Drittanbietern</string>
 </resources>

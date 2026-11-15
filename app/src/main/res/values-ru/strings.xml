@@ -185,4 +185,11 @@
     <string name="drive_signed_out">Вышел из Диска.</string>
     <string name="drive_signout_local">Вы вышли из аккаунта на этом устройстве. Google не смог отозвать доступ.</string>
     <string name="choose_google_account">Выберите учетную запись Google</string>
+    <string name="about_project">Проект</string>
+    <string name="about_legal">Правовая информация</string>
+    <string name="about_developer">Разработчик</string>
+    <string name="about_source">Репозиторий GitHub</string>
+    <string name="about_license">Лицензия</string>
+    <string name="about_privacy">Политика конфиденциальности</string>
+    <string name="about_notices">Уведомления сторонних разработчиков</string>
 </resources>

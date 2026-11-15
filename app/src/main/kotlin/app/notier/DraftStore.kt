@@ -15,7 +15,7 @@ internal data class Draft(
     val heading: String? = null,
     val driveParent: String? = null
 ) {
-    val dirty get() = (if (uri == null) text.isNotBlank() else text != original) || heading != null
+    val dirty get() = text != original || heading != null
 }
 
 internal class DraftStore(directory: File) {

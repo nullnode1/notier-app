@@ -181,4 +181,11 @@
     <string name="drive_signed_out">Drive oturumu kapatıldı.</string>
     <string name="drive_signout_local">Bu cihazdaki oturum kapatıldı. Google erişim iznini geri alamadı.</string>
     <string name="choose_google_account">Google hesabı seç</string>
+    <string name="about_project">Proje</string>
+    <string name="about_legal">Yasal bilgiler</string>
+    <string name="about_developer">Geliştirici</string>
+    <string name="about_source">GitHub deposu</string>
+    <string name="about_license">Lisans</string>
+    <string name="about_privacy">Gizlilik politikası</string>
+    <string name="about_notices">Üçüncü taraf bildirimleri</string>
 </resources>

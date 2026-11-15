@@ -181,4 +181,11 @@
         <item quantity="one">%d فولڈر</item>
         <item quantity="other">%d فولڈرز</item>
     </plurals>
+    <string name="about_project">منصوبہ</string>
+    <string name="about_legal">قانونی معلومات</string>
+    <string name="about_developer">ڈیولپر</string>
+    <string name="about_source">GitHub ریپوزٹری</string>
+    <string name="about_license">لائسنس</string>
+    <string name="about_privacy">رازداری کی پالیسی</string>
+    <string name="about_notices">تیسرے فریق کے نوٹس</string>
 </resources>
