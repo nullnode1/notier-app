@@ -224,4 +224,5 @@
     <string name="welcome_description">Виберіть тему та мову. Ви можете будь-коли змінити це в налаштуваннях.</string>
     <string name="welcome_start">Відкрийте Notier</string>
     <string name="welcome_title">Ласкаво просимо до Notier</string>
+    <string name="release_auto_show">Автоматично показувати примітки до випуску</string>
 </resources>

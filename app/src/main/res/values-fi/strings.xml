@@ -220,4 +220,5 @@
     <string name="welcome_description">Valitse teema ja kieli. Voit muuttaa näitä milloin tahansa asetuksista.</string>
     <string name="welcome_start">Avaa Notier</string>
     <string name="welcome_title">Tervetuloa Noieriin</string>
+    <string name="release_auto_show">Näytä julkaisutiedot automaattisesti</string>
 </resources>

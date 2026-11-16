@@ -224,4 +224,5 @@
     <string name="welcome_description">Выберите тему и язык. Вы можете изменить их в настройках в любое время.</string>
     <string name="welcome_start">Открыть уведомление</string>
     <string name="welcome_title">Добро пожаловать в Нотье</string>
+    <string name="release_auto_show">Показывать примечания к выпуску автоматически</string>
 </resources>

@@ -220,4 +220,5 @@
     <string name="welcome_description">یوه موضوع او ژبه غوره کړئ. تاسو کولی شئ دا هر وخت په ترتیباتو کې بدل کړئ.</string>
     <string name="welcome_start">نوټیر خلاص کړئ</string>
     <string name="welcome_title">نوټیر ته ښه راغلاست</string>
+    <string name="release_auto_show">د نسخې یادښتونه په اتومات ډول ښکاره کړئ</string>
 </resources>

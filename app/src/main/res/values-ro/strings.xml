@@ -222,4 +222,5 @@
     <string name="welcome_description">Alegeți o temă și o limbă. Le puteți modifica oricând în Setări.</string>
     <string name="welcome_start">Deschide Notier</string>
     <string name="welcome_title">Bun venit la Notier</string>
+    <string name="release_auto_show">Afișează automat notele de versiune</string>
 </resources>

@@ -220,4 +220,5 @@
     <string name="welcome_description">Taqyryp pen tıldı tañdañyz. Olardy kez kelgen uaqytta \"Parametrler\" bölımınen özgertuge bolady.</string>
     <string name="welcome_start">Habarlamany aşyñyz</string>
     <string name="welcome_title">Notier-ge qoş keldıñız</string>
+    <string name="release_auto_show">Şyğarylym jazbalaryn avtomatty türde körsetu</string>
 </resources>

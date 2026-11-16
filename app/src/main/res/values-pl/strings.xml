@@ -224,4 +224,5 @@
     <string name="welcome_description">Wybierz motyw i język. Możesz je zmienić w dowolnym momencie w Ustawieniach.</string>
     <string name="welcome_start">Otwórz Notiera</string>
     <string name="welcome_title">Witamy w Notier</string>
+    <string name="release_auto_show">Automatycznie pokazuj informacje o wydaniu</string>
 </resources>

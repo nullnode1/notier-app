@@ -220,4 +220,5 @@
     <string name="welcome_description">Tema we dil saýlaň. Bulary Sazlamalarda islän wagtyňyz üýtgedip bilersiňiz.</string>
     <string name="welcome_start">Noteri aç</string>
     <string name="welcome_title">Notier-e hoş geldiňiz</string>
+    <string name="release_auto_show">Wersiýa belliklerini awtomatiki görkez</string>
 </resources>

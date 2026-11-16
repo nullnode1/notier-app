@@ -218,4 +218,5 @@
     <string name="welcome_description">เลือกธีมและภาษา คุณสามารถเปลี่ยนสิ่งเหล่านี้ได้ในการตั้งค่าได้ตลอดเวลา</string>
     <string name="welcome_start">เปิดโนติเยร์</string>
     <string name="welcome_title">ยินดีต้อนรับสู่โนติเยร์</string>
+    <string name="release_auto_show">แสดงบันทึกประจำรุ่นโดยอัตโนมัติ</string>
 </resources>

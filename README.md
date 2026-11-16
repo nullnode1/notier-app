@@ -27,11 +27,12 @@
 
 | Sürüm | Değişiklikler |
 | --- | --- |
+| [v1.0.6](docs/updates/v1.0.6.md) | GitHub ile ortak Markdown yama notları, otomatik gösterim kutusu ve mobil site |
 | [v1.0.5](docs/updates/v1.0.5.md) | GitHub’dan yama notları, karşılama ekranı, Piksel Atölyesi ve mobil site |
 | [v1.0.4](docs/updates/v1.0.4.md) | Çevrimdışı güncelleme sonucu, renkli piksel simgeleri ve uygulama içi yama notları |
 | [v1.0.3](docs/updates/v1.0.3.md) | Markdown içindekiler ve yeni dil ve alfabe seçenekleri |
 
-![Piksel Atölyesi karşılama ekranı](docs/images/notier-pixel-workshop.svg)
+![Android’de Markdown yama notları](docs/images/notier-whats-new.svg)
 
 ## İlk notunu yaz
 
@@ -63,7 +64,7 @@
 
 Bu deponun **Releases** bölümündeki imzalı APK’yı Android cihazında aç. İlk kullanımda sol üstteki klasör düğmesine dokun ve notlarını saklayacağın klasörü seç. Drive isteğe bağlıdır. Bulut ekranından Google hesabını seçip erişim verebilirsin.
 
-Yeni Android sürümü için GitHub’da `v1.0.5` gibi bir etiketle kararlı bir Release yayımla ve imzalı APK’yı sürüm dosyası olarak yükle. Notier, yayımlanmış APK içeren sürümleri denetler. Bildirim zamanını Android belirler. Yama notlarını Release açıklamasına ekle. Notier, bu açıklamayı GitHub’dan indirir ve çevrimdışı okuma için cihazda saklar.
+Yeni Android sürümü için GitHub’da `v1.0.6` gibi bir etiketle kararlı bir Release yayımla ve imzalı APK’yı sürüm dosyası olarak yükle. Notier, yayımlanmış APK içeren sürümleri denetler. Bildirim zamanını Android belirler. Yama notlarını Release açıklamasına ekle. Notier, bu açıklamayı GitHub’dan indirir ve çevrimdışı okuma için cihazda saklar.
 
 ## Termux’ta derleme
 

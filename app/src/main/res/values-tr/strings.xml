@@ -220,4 +220,5 @@
     <string name="release_later">Bir sonraki açılışta göster</string>
     <string name="release_empty">Henüz sürüm notu yok. Bağlantın olduğunda GitHub’dan denetle.</string>
     <string name="release_no_body">GitHub’da bu sürüm için yazılı not yok.</string>
+    <string name="release_auto_show">Yeni yama notlarını otomatik göster</string>
 </resources>

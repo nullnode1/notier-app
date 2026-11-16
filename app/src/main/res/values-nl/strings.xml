@@ -220,4 +220,5 @@
     <string name="welcome_description">Kies een thema en taal. Je kunt deze op elk gewenst moment wijzigen in Instellingen.</string>
     <string name="welcome_start">Notier openen</string>
     <string name="welcome_title">Welkom bij Notier</string>
+    <string name="release_auto_show">Releaseopmerkingen automatisch tonen</string>
 </resources>

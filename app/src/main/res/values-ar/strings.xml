@@ -228,4 +228,5 @@
     <string name="welcome_description">اختر الموضوع واللغة. يمكنك تغيير هذه الإعدادات في أي وقت.</string>
     <string name="welcome_start">افتح نوتير</string>
     <string name="welcome_title">مرحبا بكم في نوتير</string>
+    <string name="release_auto_show">عرض ملاحظات الإصدار تلقائيًا</string>
 </resources>

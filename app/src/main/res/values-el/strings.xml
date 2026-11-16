@@ -220,4 +220,5 @@
     <string name="welcome_description">Επιλέξτε θέμα και γλώσσα. Μπορείτε να τις αλλάξετε στις Ρυθμίσεις ανά πάσα στιγμή.</string>
     <string name="welcome_start">Ανοίξτε το Notier</string>
     <string name="welcome_title">Καλώς ήρθατε στο Notier</string>
+    <string name="release_auto_show">Αυτόματη εμφάνιση σημειώσεων έκδοσης</string>
 </resources>

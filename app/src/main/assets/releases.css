@@ -1,0 +1,16 @@
+body { padding: 2px 16px 14px; font-size: 16px; line-height: 1.58; }
+.release-heading { background: var(--surface); border: 1px solid var(--line); border-radius: calc(14px * var(--curve, 1)); margin: 0 0 17px; padding: 12px 14px; }
+.release-heading p { margin: 0 0 5px; font-size: .82em; font-weight: 600; color: var(--muted); }
+.release-heading h1 { margin: 0; font-size: 1.45em; overflow-wrap: anywhere; }
+.release-body h1 { font-size: 1.45em; }
+.release-body h2 { font-size: 1.3em; }
+.release-body h3 { font-size: 1.15em; }
+.release-body :is(ul, ol) { padding-inline-start: 1.55em; padding-inline-end: 0; }
+.release-body li p { margin-block-end: .45em; }
+.release-body pre, .release-body table { max-width: 100%; }
+.release-links { margin-top: 7px; border-top: 1px solid var(--line); padding-top: 10px; }
+.release-links a { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: calc(9px * var(--curve, 1)); margin-top: 6px; min-height: 44px; padding: 10px; font-size: .9em; font-weight: 650; text-decoration: none; }
+.release-links a:focus-visible { outline: 2px solid var(--outline); outline-offset: -2px; }
+.pixel .release-heading, .pixel .release-links a {
+  clip-path: polygon(6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 4px) 2px,calc(100% - 4px) 4px,calc(100% - 2px) 4px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 4px),calc(100% - 4px) calc(100% - 4px),calc(100% - 4px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),4px calc(100% - 2px),4px calc(100% - 4px),2px calc(100% - 4px),2px calc(100% - 6px),0 calc(100% - 6px),0 6px,2px 6px,2px 4px,4px 4px,4px 2px,6px 2px);
+}

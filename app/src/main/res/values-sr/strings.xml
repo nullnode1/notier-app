@@ -222,4 +222,5 @@
     <string name="welcome_description">Изаберите тему и језик. Можете их променити у подешавањима у било ком тренутку.</string>
     <string name="welcome_start">Отвори Нотиер</string>
     <string name="welcome_title">Добродошли у Нотиер</string>
+    <string name="release_auto_show">Аутоматски приказуј белешке о издању</string>
 </resources>

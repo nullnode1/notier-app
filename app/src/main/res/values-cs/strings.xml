@@ -222,4 +222,5 @@
     <string name="welcome_description">Vyberte si téma a jazyk. Ty můžete kdykoli změnit v Nastavení.</string>
     <string name="welcome_start">Otevřete Notier</string>
     <string name="welcome_title">Vítejte v destinaci Notier</string>
+    <string name="release_auto_show">Automaticky zobrazovat poznámky k vydání</string>
 </resources>

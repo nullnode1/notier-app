@@ -220,4 +220,5 @@
     <string name="welcome_description">Мавзӯъ ва забонро интихоб кунед. Шумо метавонед онҳоро дар Танзимот ҳар вақт иваз кунед.</string>
     <string name="welcome_start">Нотиерро кушоед</string>
     <string name="welcome_title">Хуш омадед ба Notier</string>
+    <string name="release_auto_show">Ёддоштҳои нашрро ба таври худкор нишон диҳед</string>
 </resources>

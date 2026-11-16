@@ -220,4 +220,5 @@
     <string name="welcome_description">Pumili ng tema at wika. Maaari mong baguhin ang mga ito sa Mga Setting anumang oras.</string>
     <string name="welcome_start">Buksan ang Notier</string>
     <string name="welcome_title">Maligayang pagdating sa Notier</string>
+    <string name="release_auto_show">Awtomatikong ipakita ang mga tala ng bersyon</string>
 </resources>

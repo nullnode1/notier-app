@@ -222,4 +222,5 @@
     <string name="welcome_description">Odaberite temu i jezik. To možete promijeniti u Postavkama bilo kada.</string>
     <string name="welcome_start">Otvorite Notier</string>
     <string name="welcome_title">Dobrodošli u Notier</string>
+    <string name="release_auto_show">Automatski prikaži bilješke o izdanju</string>
 </resources>

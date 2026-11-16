@@ -27,11 +27,12 @@
 
 | Version | Changes |
 | --- | --- |
+| [v1.0.6](docs/updates/v1.0.6.en.md) | Shared GitHub Markdown release notes, automatic display checkbox, and mobile layout |
 | [v1.0.5](docs/updates/v1.0.5.en.md) | Live release notes, the welcome screen, Pixel Workshop, and the mobile site |
 | [v1.0.4](docs/updates/v1.0.4.en.md) | Offline update results, color pixel icons, and in-app release notes |
 | [v1.0.3](docs/updates/v1.0.3.en.md) | Table of contents and new languages and scripts |
 
-![Pixel Workshop welcome screen](docs/images/notier-pixel-workshop.svg)
+![Markdown release notes on Android](docs/images/notier-whats-new.svg)
 
 ## Write your first note
 

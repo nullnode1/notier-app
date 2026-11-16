@@ -218,4 +218,5 @@
     <string name="welcome_description">選擇主題和語言。您可以隨時在「設定」中變更這些內容。</string>
     <string name="welcome_start">打開諾蒂爾</string>
     <string name="welcome_title">歡迎來到諾蒂埃</string>
+    <string name="release_auto_show">自動顯示版本資訊</string>
 </resources>

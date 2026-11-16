@@ -222,4 +222,5 @@
     <string name="welcome_description">Izvēlieties tēmu un valodu. Jebkurā laikā varat tos mainīt sadaļā Iestatījumi.</string>
     <string name="welcome_start">Atveriet Notier</string>
     <string name="welcome_title">Laipni lūdzam vietnē Notier</string>
+    <string name="release_auto_show">Automātiski rādīt laidiena piezīmes</string>
 </resources>

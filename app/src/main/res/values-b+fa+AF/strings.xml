@@ -220,4 +220,5 @@
     <string name="welcome_description">یک موضوع و زبان را انتخاب کنید. شما میتوانید اینها را در تنظیمات هر زمان تغییر دهید.</string>
     <string name="welcome_start">نوتییر را باز کنید</string>
     <string name="welcome_title">به نوتییر خوش آمدید</string>
+    <string name="release_auto_show">نمایش خودکار یادداشت‌های نشر</string>
 </resources>

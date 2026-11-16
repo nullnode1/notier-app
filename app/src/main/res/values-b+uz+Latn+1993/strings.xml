@@ -220,4 +220,5 @@
     <string name="welcome_description">Mavzu va tilni tanlañ. Bularni istalgan vaqtda Sozlamalar orqali ōzgartirişiñiz mumkin.</string>
     <string name="welcome_start">Notier-ni oçiñ</string>
     <string name="welcome_title">Notierga xuş kelibsiz</string>
+    <string name="release_auto_show">Naşr qaydlarini avtomatik kōrsatiş</string>
 </resources>

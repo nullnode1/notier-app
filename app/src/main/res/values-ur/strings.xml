@@ -220,4 +220,5 @@
     <string name="welcome_description">ایک تھیم اور زبان کا انتخاب کریں۔ آپ انہیں کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</string>
     <string name="welcome_start">نوٹیر کھولیں۔</string>
     <string name="welcome_title">Notier میں خوش آمدید</string>
+    <string name="release_auto_show">ریلیز نوٹس خود بخود دکھائیں</string>
 </resources>

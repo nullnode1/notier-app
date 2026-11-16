@@ -220,4 +220,5 @@
     <string name="welcome_description">Chagua mandhari na lugha. Unaweza kubadilisha haya katika Mipangilio wakati wowote.</string>
     <string name="welcome_start">Fungua Noter</string>
     <string name="welcome_title">Karibu kwa Notier</string>
+    <string name="release_auto_show">Onyesha madokezo ya toleo kiotomatiki</string>
 </resources>

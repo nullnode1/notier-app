@@ -220,4 +220,5 @@
     <string name="welcome_description">Теманы жана тилди тандаңыз. Аларды каалаган убакта Жөндөөлөрдөн өзгөртө аласыз.</string>
     <string name="welcome_start">Ачык Notier</string>
     <string name="welcome_title">Notierге кош келиңиз</string>
+    <string name="release_auto_show">Чыгарылыш маалыматын автоматтык түрдө көрсөтүү</string>
 </resources>

@@ -79,6 +79,33 @@ internal object Markdown {
     fun article(markdown: String): String =
         renderer(emptyMap()).render(parser.parse(markdown.removePrefix("\uFEFF")))
 
+    fun releasePage(
+        title: String, metadata: String, body: String, empty: String,
+        language: String, css: String, pixel: Boolean, links: List<Pair<String, String>>
+    ): String {
+        val actions = links.joinToString("") { (label, url) ->
+            "<a href=\"${escape(url)}\">${escape(label)}</a>"
+        }
+        val article = if (body.isBlank()) "<p>${escape(empty)}</p>" else article(body)
+        return """
+            <!doctype html>
+            <html lang="${escape(language)}">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src 'self'; base-uri 'none'; form-action 'none'">
+              <style>$css</style>
+            </head>
+            <body class="${if (pixel) "pixel" else ""}">
+              <article dir="auto">
+                <header class="release-heading"><p>${escape(metadata)}</p><h1>${escape(title)}</h1></header>
+                <section class="release-body">$article</section>
+                <footer class="release-links">$actions</footer>
+              </article>
+            </body></html>
+        """.trimIndent()
+    }
+
     fun render(markdown: String, css: String, localMedia: Boolean, copyIcon: String, copyScript: String, strings: PreviewStrings): Preview {
         val tree = parser.parse(markdown.removePrefix("\uFEFF"))
         val localImages = linkedMapOf<String, List<String>>()

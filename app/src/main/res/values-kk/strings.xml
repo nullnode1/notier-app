@@ -220,4 +220,5 @@
     <string name="welcome_description">Тақырып пен тілді таңдаңыз. Оларды кез келген уақытта \"Параметрлер\" бөлімінен өзгертуге болады.</string>
     <string name="welcome_start">Хабарламаны ашыңыз</string>
     <string name="welcome_title">Notier-ге қош келдіңіз</string>
+    <string name="release_auto_show">Шығарылым жазбаларын автоматты түрде көрсету</string>
 </resources>

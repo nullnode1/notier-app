@@ -220,4 +220,5 @@
     <string name="welcome_description">یک موضوع و زبان انتخاب کنید. هر زمان خواستید می‌توانید این موارد را در تنظیمات تغییر دهید.</string>
     <string name="welcome_start">Notier را باز کنید</string>
     <string name="welcome_title">به Notier خوش آمدید</string>
+    <string name="release_auto_show">نمایش خودکار یادداشت‌های انتشار</string>
 </resources>

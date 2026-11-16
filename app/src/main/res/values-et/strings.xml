@@ -220,4 +220,5 @@
     <string name="welcome_description">Valige teema ja keel. Saate neid seadetes igal ajal muuta.</string>
     <string name="welcome_start">Avage Notier</string>
     <string name="welcome_title">Tere tulemast Notierisse</string>
+    <string name="release_auto_show">Kuva väljalaskemärkmeid automaatselt</string>
 </resources>

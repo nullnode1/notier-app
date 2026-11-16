@@ -218,4 +218,5 @@
     <string name="welcome_description">Chọn một chủ đề và ngôn ngữ. Bạn có thể thay đổi những điều này trong Cài đặt bất cứ lúc nào.</string>
     <string name="welcome_start">Mở Notier</string>
     <string name="welcome_title">Chào mừng đến với Notier</string>
+    <string name="release_auto_show">Tự động hiển thị ghi chú phát hành</string>
 </resources>

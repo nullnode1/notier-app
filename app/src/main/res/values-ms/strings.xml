@@ -218,4 +218,5 @@
     <string name="welcome_description">Pilih tema dan bahasa. Anda boleh menukar ini dalam Tetapan pada bila-bila masa.</string>
     <string name="welcome_start">Buka Notier</string>
     <string name="welcome_title">Selamat datang ke Notier</string>
+    <string name="release_auto_show">Tunjukkan nota keluaran secara automatik</string>
 </resources>

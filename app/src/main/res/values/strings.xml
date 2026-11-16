@@ -220,4 +220,5 @@
     <string name="release_later">Show at next launch</string>
     <string name="release_empty">No release notes available yet. Check GitHub when you’re connected.</string>
     <string name="release_no_body">This release has no written notes on GitHub.</string>
+    <string name="release_auto_show">Show new release notes automatically</string>
 </resources>

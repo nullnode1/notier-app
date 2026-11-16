@@ -220,4 +220,5 @@
     <string name="welcome_description">Mövzu və dil seçin. Bunları istənilən vaxt Ayarlarda dəyişə bilərsiniz.</string>
     <string name="welcome_start">Notier-i açın</string>
     <string name="welcome_title">Notier-ə xoş gəlmisiniz</string>
+    <string name="release_auto_show">Buraxılış qeydlərini avtomatik göstər</string>
 </resources>

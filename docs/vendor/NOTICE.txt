@@ -1,0 +1,7 @@
+Marked 18.2.0. MIT license.
+Source: https://github.com/markedjs/marked/tree/v18.2.0
+
+DOMPurify 3.4.18. Apache License 2.0 or Mozilla Public License 2.0.
+Source: https://github.com/cure53/DOMPurify/tree/3.4.18
+
+The browser distributions are bundled locally for the GitHub Pages release archive.

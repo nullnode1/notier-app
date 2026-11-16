@@ -14,6 +14,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.InsetDrawable
@@ -47,6 +48,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.BaseAdapter
+import android.widget.CheckBox
 import android.widget.AbsListView
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -87,6 +89,7 @@ internal class MainActivity : Activity() {
     private val drive by lazy { DriveDocuments(contentResolver, notes) }
     private val drafts by lazy { DraftStore(filesDir) }
     private val css by lazy { assets.open("preview.css").bufferedReader().use { it.readText() } }
+    private val releaseCss by lazy { assets.open("releases.css").bufferedReader().use { it.readText() } }
     private val copyIcon by lazy { assets.open("copy.svg").bufferedReader().use { it.readText() } }
     private val copyScript by lazy { assets.open("copy.js").bufferedReader().use { it.readText() } }
     private val fonts = mutableMapOf<NoteFont, Typeface>()
@@ -286,7 +289,7 @@ internal class MainActivity : Activity() {
             if (shownDialog?.isShowing != true && draft == null && !busy) showWelcome()
             return
         }
-        if (draft == null && !busy) {
+        if (draft == null && !busy && prefs.getBoolean(AUTO_RELEASE_NOTES, true)) {
             val release = Updates.cached(this).announcement(Updates.installedVersion(this))
             if (release != null && release.announcement !in deferredAnnouncements &&
                 prefs.getString("read_release_announcement", null) != release.announcement) {
@@ -451,7 +454,7 @@ internal class MainActivity : Activity() {
                 MenuAction(R.string.about_source, R.drawable.ic_code) { openProjectLink(Updates.PROJECT, onlineRequired = true) },
                 MenuAction(R.string.project_site, R.drawable.ic_link_2) { openProjectLink(Updates.SITE, onlineRequired = true) }
             ))
-        }, buttonLayout())
+        }, buttonLayout().apply { marginEnd = dp(8) })
         top.addView(icon(R.drawable.ic_settings, s(R.string.settings), 21) { showSettings() }, buttonLayout())
         column.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
 
@@ -878,52 +881,96 @@ internal class MainActivity : Activity() {
             showReleaseArchive(up)
             return
         }
-        val rows = settingsColumn()
-        val dialog = settingsDialog(s(R.string.release_notes), rows, up = up != null, onUp = { up?.invoke() })
-        val hero = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPaddingRelative(dp(16), dp(16), dp(16), dp(16))
-            background = rounded(palette.surface, 17, palette.line)
-            val version = if (Updates.versionIsNewer(release.tag, Updates.installedVersion(this@MainActivity)))
-                s(R.string.updates_available, release.tag) else release.tag
-            val date = runCatching { Date.from(java.time.Instant.parse(release.publishedAt)) }.getOrNull()
-            addView(label(listOfNotNull(version, date?.let(dateFormat::format)).joinToString(" · "),
-                13f, palette.muted, bold = true))
-            addView(label(release.title, 24f, bold = true).apply {
-                accessibilityHeadingIfSupported()
-                setPaddingRelative(0, dp(7), 0, 0)
-            })
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val dialog = contentDialog(s(R.string.release_notes), content, up = up != null, fillBody = true,
+            onUp = { up?.invoke() })
+        val newer = Updates.versionIsNewer(release.tag, Updates.installedVersion(this))
+        val version = if (newer) s(R.string.updates_available, release.tag) else release.tag
+        val date = runCatching { Date.from(java.time.Instant.parse(release.publishedAt)) }.getOrNull()
+        val metadata = listOfNotNull(version, date?.let(dateFormat::format)).joinToString(" · ")
+        val links = buildList {
+            if (newer) add(s(R.string.updates_download) to release.apk)
+            add(s(R.string.release_repository) to release.url)
+            if (automatic) add(s(R.string.release_archive) to RELEASE_ARCHIVE_LINK)
         }
-        rows.addView(hero, LinearLayout.LayoutParams(MATCH, WRAP))
-        if (automatic) {
-            rows.addView(dialogAction(R.string.release_read) {
+        fun follow(url: String) {
+            if (url == RELEASE_ARCHIVE_LINK) {
+                dialog.dismiss()
+                showReleaseArchive(null)
+            } else openProjectLink(url, onlineRequired = true)
+        }
+
+        val web = runCatching { WebView(this) }.getOrNull()
+        if (web == null) {
+            val rows = settingsColumn()
+            rows.addView(label(metadata, 13f, palette.muted))
+            rows.addView(label(release.title, 21f, bold = true))
+            rows.addView(label("", 15f).apply {
+                text = if (release.body.isBlank()) s(R.string.release_no_body) else
+                    Html.fromHtml(Markdown.article(release.body), Html.FROM_HTML_MODE_COMPACT).trimEnd()
+            })
+            for ((title, url) in links) {
+                rows.addView(settingsRow(title, "", navigate = true).apply { setOnClickListener { follow(url) } })
+            }
+            content.addView(ScrollView(this).apply { addView(rows) }, LinearLayout.LayoutParams(MATCH, 0, 1f))
+        } else {
+            val font = noteFont
+            val curve = if (notierTheme.pixel) 0f else cornerScale
+            val style = "${notierTheme.previewCss()}\n:root{--curve:$curve;}\n$css\n$releaseCss\n${font.previewCss()}"
+            web.setBackgroundColor(palette.paper)
+            if (Build.VERSION.SDK_INT >= 29) web.isForceDarkAllowed = false
+            web.settings.allowFileAccess = false
+            web.settings.allowContentAccess = false
+            web.settings.textZoom = (textScale * resources.configuration.fontScale * 100).roundToInt()
+            web.webViewClient = object : WebViewClient() {
+                override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+                    val url = request.url
+                    if (url.scheme == "https" && url.host == "github.com" && url.encodedPath == font.previewPath) {
+                        font.asset?.let { return WebResourceResponse("font/ttf", null, assets.open(it)) }
+                    }
+                    return WebResourceResponse("text/plain", "UTF-8", ByteArrayInputStream(byteArrayOf()))
+                }
+
+                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                    val url = request.url
+                    if (request.isForMainFrame && (url.scheme == "https" || url.scheme == "http")) follow(url.toString())
+                    return true
+                }
+            }
+            content.addView(web, LinearLayout.LayoutParams(MATCH, 0, 1f))
+            web.loadDataWithBaseURL(release.url, Markdown.releasePage(release.title, metadata, release.body,
+                s(R.string.release_no_body), appLocale.toLanguageTag(), style, notierTheme.pixel, links),
+                "text/html", "UTF-8", null)
+            dialog.setOnDismissListener {
+                content.removeView(web)
+                web.destroy()
+            }
+        }
+        val controls = settingsColumn().apply {
+            setPaddingRelative(dp(16), 0, dp(16), 0)
+            if (automatic) addView(dialogAction(R.string.release_read) {
                 prefs.edit().putString("read_release_announcement", release.announcement).apply()
                 dialog.dismiss()
             })
-            rows.addView(dialogAction(R.string.release_later, primary = false) { dialog.dismiss() })
+            addView(CheckBox(this@MainActivity).apply {
+                text = s(R.string.release_auto_show)
+                textSize = 14f * textScale
+                setTextColor(palette.ink)
+                buttonTintList = ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                    intArrayOf(palette.accent, palette.muted)
+                )
+                minHeight = dp(44)
+                isChecked = prefs.getBoolean(AUTO_RELEASE_NOTES, true)
+                setOnCheckedChangeListener { _, checked ->
+                    prefs.edit().putBoolean(AUTO_RELEASE_NOTES, checked).apply()
+                }
+            }, LinearLayout.LayoutParams(MATCH, WRAP))
         }
-        rows.addView(label("", 15f).apply {
-            textDirection = View.TEXT_DIRECTION_FIRST_STRONG
-            setPaddingRelative(dp(5), dp(16), dp(5), dp(8))
-            setLineSpacing(dp(3).toFloat(), 1f)
-            text = if (release.body.isBlank()) s(R.string.release_no_body) else
-                Html.fromHtml(Markdown.article(release.body), Html.FROM_HTML_MODE_LEGACY).trimEnd()
-        })
-        if (Updates.versionIsNewer(release.tag, Updates.installedVersion(this))) {
-            rows.addView(settingsRow(s(R.string.updates_download), "", leading = R.drawable.ic_file_down, navigate = true).apply {
-                setOnClickListener { openProjectLink(release.apk, onlineRequired = true) }
-            })
-        }
-        rows.addView(settingsRow(s(R.string.release_repository), "", leading = R.drawable.ic_code, navigate = true).apply {
-            setOnClickListener { openProjectLink(release.url, onlineRequired = true) }
-        })
-        if (automatic) rows.addView(settingsRow(s(R.string.release_archive), "", leading = R.drawable.ic_list, navigate = true).apply {
-            setOnClickListener {
-                dialog.dismiss()
-                showReleaseArchive(null)
-            }
-        })
+        content.addView(controls, LinearLayout.LayoutParams(MATCH, WRAP))
         showDialog(dialog)
+        val height = px((resources.configuration.screenHeightDp * .92f).coerceAtMost(720f))
+        dialog.window?.setLayout(MATCH, height)
     }
 
     private fun showReleaseArchive(up: (() -> Unit)?) {
@@ -1111,6 +1158,16 @@ internal class MainActivity : Activity() {
     }
 
     private fun settingsDialog(title: String, rows: LinearLayout, up: Boolean = false, onUp: () -> Unit = ::showSettings): AlertDialog {
+        val scroll = ScrollView(this).apply {
+            isVerticalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+            addView(rows)
+        }
+        return contentDialog(title, scroll, up, onUp = onUp)
+    }
+
+    private fun contentDialog(title: String, body: View, up: Boolean, fillBody: Boolean = false,
+                              onUp: () -> Unit): AlertDialog {
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, dp(7), 0, dp(8))
@@ -1132,12 +1189,7 @@ internal class MainActivity : Activity() {
             if (up) onUp()
         }, buttonLayout(44, 44))
         panel.addView(header, LinearLayout.LayoutParams(MATCH, WRAP))
-        val scroll = ScrollView(this).apply {
-            isVerticalScrollBarEnabled = false
-            overScrollMode = View.OVER_SCROLL_NEVER
-            addView(rows)
-        }
-        panel.addView(scroll, LinearLayout.LayoutParams(MATCH, WRAP, 1f))
+        panel.addView(body, LinearLayout.LayoutParams(MATCH, if (fillBody) 0 else WRAP, 1f))
         return dialogBuilder().setView(panel).create().also {
             dialog = it
             if (up) it.setOnCancelListener { onUp() }
@@ -3339,10 +3391,17 @@ internal class MainActivity : Activity() {
         }
     }
 
-    private fun rounded(color: Int, radius: Int, border: Int? = null, curve: Float = cornerScale) = GradientDrawable().apply {
-        setColor(color)
-        cornerRadius = if (notierTheme.pixel) 0f else dp(radius) * curve
-        if (border != null) setStroke(px(1f).coerceAtLeast(1), border)
+    private fun rounded(color: Int, radius: Int, border: Int? = null, curve: Float = cornerScale): Drawable {
+        val stroke = px(1f).coerceAtLeast(1)
+        if (notierTheme.pixel) {
+            val step = px(if (radius >= 16) 3f else 2f).coerceAtLeast(1)
+            return PixelSurface(color, border, step, stroke)
+        }
+        return GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = dp(radius) * curve
+            if (border != null) setStroke(stroke, border)
+        }
     }
 
     private fun searchSurface(focused: Boolean) = rounded(palette.surface, 15, if (focused) palette.muted else palette.line)
@@ -3421,6 +3480,8 @@ internal class MainActivity : Activity() {
             "uz-Latn-1993" to "Ōzbekça · Lotin (1993)", "uz-Cyrl" to "Ўзбекча · Кирилл",
             "tg" to "Тоҷикӣ", "fa-AF" to "دری", "ps" to "پښتو")
         private val deferredAnnouncements = mutableSetOf<String>()
+        private const val AUTO_RELEASE_NOTES = "auto_release_notes"
+        private const val RELEASE_ARCHIVE_LINK = "https://app.notier/release-archive"
         private const val PICK_FOLDER = 11
         private const val SAVE_COPY = 12
         private const val PICK_DRIVE = 13

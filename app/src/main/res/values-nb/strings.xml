@@ -220,4 +220,5 @@
     <string name="welcome_description">Velg et tema og språk. Du kan endre disse i Innstillinger når som helst.</string>
     <string name="welcome_start">Åpne Notier</string>
     <string name="welcome_title">Velkommen til Notier</string>
+    <string name="release_auto_show">Vis versjonsmerknader automatisk</string>
 </resources>

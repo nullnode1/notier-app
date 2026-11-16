@@ -222,4 +222,5 @@
     <string name="welcome_description">Pasirinkite temą ir kalbą. Galite bet kada juos pakeisti nustatymuose.</string>
     <string name="welcome_start">Atidarykite „Notier“.</string>
     <string name="welcome_title">Sveiki atvykę į Notier</string>
+    <string name="release_auto_show">Automatiškai rodyti leidimo pastabas</string>
 </resources>
