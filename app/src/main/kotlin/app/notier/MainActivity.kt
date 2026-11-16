@@ -5,6 +5,7 @@ import android.accounts.AccountManager
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -35,6 +36,7 @@ import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.inputmethod.EditorInfo
@@ -43,6 +45,8 @@ import android.webkit.MimeTypeMap
 import android.webkit.WebChromeClient
 import android.webkit.WebMessage
 import android.webkit.WebMessagePort
+import android.webkit.RenderProcessGoneDetail
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -152,7 +156,7 @@ internal class MainActivity : Activity() {
     private var keepNoteAfterRecreate = false
     private var resumed = false
     private var pendingUpdates = false
-    private var shownDialog: AlertDialog? = null
+    private var shownDialog: Dialog? = null
     private var lastForegroundAttempt: Long? = null
     private var pendingCopyUri: Uri? = null
     private var pendingCopyFlags = 0
@@ -881,9 +885,19 @@ internal class MainActivity : Activity() {
             showReleaseArchive(up)
             return
         }
-        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        val dialog = contentDialog(s(R.string.release_notes), content, up = up != null, fillBody = true,
-            onUp = { up?.invoke() })
+        val dialog = Dialog(this, dialogTheme()).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setCanceledOnTouchOutside(true)
+            if (up != null) setOnCancelListener { up() }
+        }
+        val panel = dialogPanel(s(R.string.release_notes), up != null) {
+            dialog.dismiss()
+            up?.invoke()
+        }
+        val article = FrameLayout(this)
+        panel.addView(article, LinearLayout.LayoutParams(MATCH, 0, 1f))
+        dialog.setContentView(panel, frameMatch())
+
         val newer = Updates.versionIsNewer(release.tag, Updates.installedVersion(this))
         val version = if (newer) s(R.string.updates_available, release.tag) else release.tag
         val date = runCatching { Date.from(java.time.Instant.parse(release.publishedAt)) }.getOrNull()
@@ -900,52 +914,23 @@ internal class MainActivity : Activity() {
             } else openProjectLink(url, onlineRequired = true)
         }
 
-        val web = runCatching { WebView(this) }.getOrNull()
-        if (web == null) {
-            val rows = settingsColumn()
-            rows.addView(label(metadata, 13f, palette.muted))
-            rows.addView(label(release.title, 21f, bold = true))
-            rows.addView(label("", 15f).apply {
-                text = if (release.body.isBlank()) s(R.string.release_no_body) else
-                    Html.fromHtml(Markdown.article(release.body), Html.FROM_HTML_MODE_COMPACT).trimEnd()
-            })
-            for ((title, url) in links) {
-                rows.addView(settingsRow(title, "", navigate = true).apply { setOnClickListener { follow(url) } })
-            }
-            content.addView(ScrollView(this).apply { addView(rows) }, LinearLayout.LayoutParams(MATCH, 0, 1f))
-        } else {
-            val font = noteFont
-            val curve = if (notierTheme.pixel) 0f else cornerScale
-            val style = "${notierTheme.previewCss()}\n:root{--curve:$curve;}\n$css\n$releaseCss\n${font.previewCss()}"
-            web.setBackgroundColor(palette.paper)
-            if (Build.VERSION.SDK_INT >= 29) web.isForceDarkAllowed = false
-            web.settings.allowFileAccess = false
-            web.settings.allowContentAccess = false
-            web.settings.textZoom = (textScale * resources.configuration.fontScale * 100).roundToInt()
-            web.webViewClient = object : WebViewClient() {
-                override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
-                    val url = request.url
-                    if (url.scheme == "https" && url.host == "github.com" && url.encodedPath == font.previewPath) {
-                        font.asset?.let { return WebResourceResponse("font/ttf", null, assets.open(it)) }
-                    }
-                    return WebResourceResponse("text/plain", "UTF-8", ByteArrayInputStream(byteArrayOf()))
-                }
-
-                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                    val url = request.url
-                    if (request.isForMainFrame && (url.scheme == "https" || url.scheme == "http")) follow(url.toString())
-                    return true
-                }
-            }
-            content.addView(web, LinearLayout.LayoutParams(MATCH, 0, 1f))
-            web.loadDataWithBaseURL(release.url, Markdown.releasePage(release.title, metadata, release.body,
-                s(R.string.release_no_body), appLocale.toLanguageTag(), style, notierTheme.pixel, links),
-                "text/html", "UTF-8", null)
-            dialog.setOnDismissListener {
-                content.removeView(web)
-                web.destroy()
-            }
+        val nativeRows = settingsColumn()
+        nativeRows.addView(label(metadata, 13f, palette.muted))
+        nativeRows.addView(label(release.title, 21f, bold = true).apply { accessibilityHeadingIfSupported() })
+        nativeRows.addView(label("", 15f).apply {
+            setPaddingRelative(0, dp(8), 0, dp(8))
+            text = if (release.body.isBlank()) s(R.string.release_no_body) else
+                Html.fromHtml(Markdown.article(release.body), Html.FROM_HTML_MODE_COMPACT).trimEnd()
+        })
+        for ((title, url) in links) {
+            nativeRows.addView(settingsRow(title, "", navigate = true).apply { setOnClickListener { follow(url) } })
         }
+        val fallback = ScrollView(this).apply {
+            setBackgroundColor(palette.paper)
+            addView(nativeRows)
+        }
+        article.addView(fallback, frameMatch())
+
         val controls = settingsColumn().apply {
             setPaddingRelative(dp(16), 0, dp(16), 0)
             if (automatic) addView(dialogAction(R.string.release_read) {
@@ -967,10 +952,66 @@ internal class MainActivity : Activity() {
                 }
             }, LinearLayout.LayoutParams(MATCH, WRAP))
         }
-        content.addView(controls, LinearLayout.LayoutParams(MATCH, WRAP))
-        showDialog(dialog)
+        panel.addView(controls, LinearLayout.LayoutParams(MATCH, WRAP))
+        showDialogWindow(dialog)
         val height = px((resources.configuration.screenHeightDp * .92f).coerceAtMost(720f))
         dialog.window?.setLayout(MATCH, height)
+
+        val web = runCatching { WebView(this) }.getOrNull() ?: return
+        val font = noteFont
+        val curve = if (notierTheme.pixel) 0f else cornerScale
+        val style = "${notierTheme.previewCss()}\n:root{--curve:$curve;}\n$css\n$releaseCss\n${font.previewCss()}"
+        fun removeWebView() {
+            if (web.parent === article) {
+                article.removeView(web)
+                web.destroy()
+            }
+        }
+        web.setBackgroundColor(palette.paper)
+        if (Build.VERSION.SDK_INT >= 29) web.isForceDarkAllowed = false
+        web.settings.allowFileAccess = false
+        web.settings.allowContentAccess = false
+        web.settings.textZoom = (textScale * resources.configuration.fontScale * 100).roundToInt()
+        web.webViewClient = object : WebViewClient() {
+            override fun onPageCommitVisible(view: WebView, url: String) {
+                if (url == release.url && dialog.isShowing && web.parent === article) {
+                    fallback.visibility = View.GONE
+                }
+            }
+
+            override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+                if (request.isForMainFrame) {
+                    fallback.visibility = View.VISIBLE
+                    removeWebView()
+                }
+            }
+
+            override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
+                fallback.visibility = View.VISIBLE
+                removeWebView()
+                return true
+            }
+
+            override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+                if (request.isForMainFrame) return null
+                val url = request.url
+                if (url.scheme == "https" && url.host == "github.com" && url.encodedPath == font.previewPath) {
+                    font.asset?.let { return WebResourceResponse("font/ttf", null, assets.open(it)) }
+                }
+                return WebResourceResponse("text/plain", "UTF-8", ByteArrayInputStream(byteArrayOf()))
+            }
+
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                val url = request.url
+                if (request.isForMainFrame && (url.scheme == "https" || url.scheme == "http")) follow(url.toString())
+                return true
+            }
+        }
+        article.addView(web, 0, frameMatch())
+        dialog.setOnDismissListener { removeWebView() }
+        web.loadDataWithBaseURL(release.url, Markdown.releasePage(release.title, metadata, release.body,
+            s(R.string.release_no_body), appLocale.toLanguageTag(), style, notierTheme.pixel, links),
+            "text/html", "UTF-8", release.url)
     }
 
     private fun showReleaseArchive(up: (() -> Unit)?) {
@@ -1158,16 +1199,24 @@ internal class MainActivity : Activity() {
     }
 
     private fun settingsDialog(title: String, rows: LinearLayout, up: Boolean = false, onUp: () -> Unit = ::showSettings): AlertDialog {
+        var dialog: AlertDialog? = null
+        val panel = dialogPanel(title, up) {
+            dialog?.dismiss()
+            if (up) onUp()
+        }
         val scroll = ScrollView(this).apply {
             isVerticalScrollBarEnabled = false
             overScrollMode = View.OVER_SCROLL_NEVER
             addView(rows)
         }
-        return contentDialog(title, scroll, up, onUp = onUp)
+        panel.addView(scroll, LinearLayout.LayoutParams(MATCH, WRAP, 1f))
+        return dialogBuilder().setView(panel).create().also {
+            dialog = it
+            if (up) it.setOnCancelListener { onUp() }
+        }
     }
 
-    private fun contentDialog(title: String, body: View, up: Boolean, fillBody: Boolean = false,
-                              onUp: () -> Unit): AlertDialog {
+    private fun dialogPanel(title: String, up: Boolean, close: () -> Unit): LinearLayout {
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, dp(7), 0, dp(8))
@@ -1180,20 +1229,12 @@ internal class MainActivity : Activity() {
             setPaddingRelative(dp(5), 0, dp(4), 0)
             accessibilityHeadingIfSupported()
         }, LinearLayout.LayoutParams(0, WRAP, 1f))
-        var dialog: AlertDialog? = null
         header.addView(icon(
             if (up) R.drawable.ic_arrow_left else R.drawable.ic_x,
             s(if (up) R.string.back_to_settings else R.string.close), 18, quiet = true
-        ) {
-            dialog?.dismiss()
-            if (up) onUp()
-        }, buttonLayout(44, 44))
+        ) { close() }, buttonLayout(44, 44))
         panel.addView(header, LinearLayout.LayoutParams(MATCH, WRAP))
-        panel.addView(body, LinearLayout.LayoutParams(MATCH, if (fillBody) 0 else WRAP, 1f))
-        return dialogBuilder().setView(panel).create().also {
-            dialog = it
-            if (up) it.setOnCancelListener { onUp() }
-        }
+        return panel
     }
 
     private fun settingsRow(
@@ -3367,16 +3408,21 @@ internal class MainActivity : Activity() {
         }
     }
 
-    private fun dialogBuilder() = AlertDialog.Builder(this, if (notierTheme == NotierTheme.DARK)
-        R.style.NotierDialogDark else R.style.NotierDialogLight)
+    private fun dialogTheme() = if (notierTheme == NotierTheme.DARK) R.style.NotierDialogDark else R.style.NotierDialogLight
 
-    private fun showDialog(dialog: AlertDialog) {
+    private fun dialogBuilder() = AlertDialog.Builder(this, dialogTheme())
+
+    private fun showDialogWindow(dialog: Dialog) {
         dialog.show()
         shownDialog = dialog
         dialog.window?.let { window ->
             window.setBackgroundDrawable(InsetDrawable(rounded(palette.paper, 24, palette.line), dp(8)))
             applyScreenFonts(window.decorView)
         }
+    }
+
+    private fun showDialog(dialog: AlertDialog) {
+        showDialogWindow(dialog)
         for (which in listOf(AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_NEUTRAL)) {
             dialog.getButton(which)?.apply {
                 val primary = which == AlertDialog.BUTTON_POSITIVE
