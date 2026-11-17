@@ -2,11 +2,15 @@
 
 [English](PRIVACY.md) · [Türkçe](PRIVACY.tr.md) · [Русский](PRIVACY.ru.md)
 
-Son güncelleme 15 Kasım 2026.
+Son güncelleme 17 Kasım 2026.
 
 ## Cihazındaki notlar
 
 Notier, Android için bir Markdown editörüdür. Android’in dosya seçicisinde seçtiğin klasördeki notları açar. Klasörü veya tek tek dosyaları yeniden açabilmen için Android erişim izinlerini saklayabilir. Notier, ayarları, sabitlenen notların kayıtlarını ve varsa kaydedilmemiş taslağı cihazındaki özel uygulama alanında tutar. Yerel dosyaları kullanmak için Google hesabı gerekmez.
+
+## Görsel galeri
+
+Cihaz galerisi için bir klasör seçtiğinde Notier, görselleri listelemek ve önizlemek için Android’in verdiği okuma iznini saklar. Drive galerisi seçildiğinde klasör ve hesap ilişkisinin kimlikleri cihazda saklanır. Klasör listesi, küçük resimler ve önizlemede kullanılan görseller Google Drive’dan cihazına okunur. Notta görselin dosya adı veya Drive dosya kimliği bulunur.
 
 ## Google Drive
 

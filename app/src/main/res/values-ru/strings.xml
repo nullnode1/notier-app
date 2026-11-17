@@ -225,4 +225,22 @@
     <string name="welcome_start">Открыть уведомление</string>
     <string name="welcome_title">Добро пожаловать в Нотье</string>
     <string name="release_auto_show">Показывать примечания к выпуску автоматически</string>
+    <string name="gallery">Галерея</string>
+    <string name="gallery_choose">Выбрать папку галереи</string>
+    <string name="gallery_no_folder">Папка галереи не выбрана</string>
+    <string name="gallery_refresh">Обновить галерею</string>
+    <string name="gallery_search">Поиск изображений</string>
+    <string name="gallery_loading">Загрузка галереи…</string>
+    <string name="gallery_empty">Здесь появятся изображения, добавленные в эту папку.</string>
+    <string name="gallery_no_matches">По запросу ничего не найдено.</string>
+    <string name="gallery_unavailable">Нет доступа к папке галереи. Выберите её заново или укажите другую папку.</string>
+    <string name="gallery_url">Вставить изображение по URL</string>
+    <string name="gallery_prompt">Выберите папку на устройстве. Добавляйте изображения через файловый менеджер.</string>
+    <string name="gallery_device">На устройстве</string>
+    <string name="gallery_drive">Google Диск</string>
+    <string name="gallery_insert">Вставить из галереи</string>
+    <string name="gallery_choose_drive">Выбрать папку галереи на Диске</string>
+    <string name="gallery_use_folder">Использовать эту папку</string>
+    <string name="gallery_drive_connect">Коснитесь значка папки, чтобы подключить Google Диск и выбрать папку галереи.</string>
+    <string name="gallery_drive_prompt">Выберите папку на Диске. Добавляйте изображения через Google Диск.</string>
 </resources>

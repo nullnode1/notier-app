@@ -221,4 +221,22 @@
     <string name="release_empty">No release notes available yet. Check GitHub when you’re connected.</string>
     <string name="release_no_body">This release has no written notes on GitHub.</string>
     <string name="release_auto_show">Show new release notes automatically</string>
+    <string name="gallery">Gallery</string>
+    <string name="gallery_choose">Choose gallery folder</string>
+    <string name="gallery_no_folder">Gallery folder required</string>
+    <string name="gallery_refresh">Refresh gallery</string>
+    <string name="gallery_search">Search images</string>
+    <string name="gallery_loading">Loading gallery…</string>
+    <string name="gallery_empty">Images will appear here when you add them to this folder.</string>
+    <string name="gallery_no_matches">No images match your search.</string>
+    <string name="gallery_unavailable">Could not access the gallery folder. Choose it again or select another folder.</string>
+    <string name="gallery_url">Insert image URL</string>
+    <string name="gallery_prompt">Choose a folder on this device. Add images to it with your file manager.</string>
+    <string name="gallery_device">On device</string>
+    <string name="gallery_drive">Google Drive</string>
+    <string name="gallery_insert">Insert from gallery</string>
+    <string name="gallery_choose_drive">Choose a Drive gallery folder</string>
+    <string name="gallery_use_folder">Use this folder</string>
+    <string name="gallery_drive_connect">Tap the folder icon to connect Google Drive and choose a gallery folder.</string>
+    <string name="gallery_drive_prompt">Choose a folder in Drive. Add images to it with the Google Drive app.</string>
 </resources>

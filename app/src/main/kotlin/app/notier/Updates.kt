@@ -39,12 +39,16 @@ internal object Updates {
     private const val LAST_NOTIFIED = "update_last_notified"
     private const val CACHE = "update_release_cache"
     private const val ARCHIVE_SIZE = 20
-    const val FOREGROUND_INTERVAL = 60 * 60_000L
+    private val automaticInterval = TimeUnit.HOURS.toMillis(12)
+    private val retryInterval = TimeUnit.MINUTES.toMillis(15)
+    private val manualInterval = TimeUnit.MINUTES.toMillis(1)
+    private const val LAST_ATTEMPT = "update_last_attempt"
     private const val RETRY_AT = "update_retry_at"
     private const val CHANNEL = "releases"
     private const val JOB_ID = 42613
     private val requestLock = Any()
     @Volatile private var memoizedCache: Pair<String, Cache?>? = null
+    @Volatile private var lastIssue: Issue? = null
 
     data class Release(
         val tag: String, val url: String, val apk: String, val bytes: Long,
@@ -82,17 +86,40 @@ internal object Updates {
     }
 
     fun cached(context: Context): Check {
-        val issue = if (online(context)) null else Issue.OFFLINE
+        val issue = when {
+            !online(context) -> Issue.OFFLINE
+            prefs(context).getLong(RETRY_AT, 0) > System.currentTimeMillis() -> Issue.RATE_LIMITED
+            else -> lastIssue
+        }
         return readCache(context)?.result(issue) ?: Check(emptyList(), issue = issue)
     }
 
-    fun check(context: Context): Check = synchronized(requestLock) {
+    fun shouldCheck(context: Context): Boolean {
+        val now = System.currentTimeMillis()
+        return online(context) && prefs(context).getLong(RETRY_AT, 0) <= now &&
+            !recent(readCache(context)?.checkedAt ?: 0, now, automaticInterval) &&
+            !recent(prefs(context).getLong(LAST_ATTEMPT, 0), now, retryInterval)
+    }
+
+    private fun recent(at: Long, now: Long, interval: Long): Boolean = at > 0 && now - at in 0 until interval
+
+    fun check(context: Context, manual: Boolean = false): Check = synchronized(requestLock) {
         val cached = readCache(context)
         val now = System.currentTimeMillis()
-        fun fallback(issue: Issue) = cached?.result(issue) ?: Check(emptyList(), issue = issue)
-        if (!online(context)) return@synchronized fallback(Issue.OFFLINE)
-        if (prefs(context).getLong(RETRY_AT, 0) > now) return@synchronized fallback(Issue.RATE_LIMITED)
-        if (cached != null && now - cached.checkedAt in 0..15_000L) return@synchronized cached.result()
+        fun snapshot(issue: Issue? = null) = cached?.result(issue) ?: Check(emptyList(), issue = issue)
+        fun failure(issue: Issue): Check {
+            lastIssue = issue.takeUnless { it == Issue.OFFLINE }
+            return snapshot(issue)
+        }
+        if (!online(context)) return@synchronized snapshot(Issue.OFFLINE)
+        val preferences = prefs(context)
+        if (preferences.getLong(RETRY_AT, 0) > now) return@synchronized snapshot(Issue.RATE_LIMITED)
+        if (!manual && cached != null && recent(cached.checkedAt, now, automaticInterval))
+            return@synchronized cached.result()
+        val interval = if (manual) manualInterval else retryInterval
+        if (recent(preferences.getLong(LAST_ATTEMPT, 0), now, interval))
+            return@synchronized snapshot(lastIssue)
+        preferences.edit().putLong(LAST_ATTEMPT, now).apply()
 
         try {
             val connection = URL(ENDPOINT).openConnection() as HttpsURLConnection
@@ -120,7 +147,7 @@ internal object Updates {
                         Cache(catalog(releases), now, connection.getHeaderField("ETag"))
                     }
                     HttpURLConnection.HTTP_NOT_MODIFIED -> cached?.copy(checkedAt = now)
-                        ?: return@synchronized fallback(Issue.UNAVAILABLE)
+                        ?: return@synchronized failure(Issue.UNAVAILABLE)
                     else -> {
                         val retry = connection.getHeaderField("Retry-After")?.toLongOrNull()
                         val remaining = connection.getHeaderField("X-RateLimit-Remaining")
@@ -128,16 +155,19 @@ internal object Updates {
                             val reset = connection.getHeaderField("X-RateLimit-Reset")?.toLongOrNull()?.times(1000)
                             val delay = if (retry != null) retry * 1000 else reset?.minus(now) ?: 60_000
                             prefs(context).edit().putLong(RETRY_AT, now + delay.coerceIn(60_000, 86_400_000)).apply()
-                            return@synchronized fallback(Issue.RATE_LIMITED)
+                            return@synchronized failure(Issue.RATE_LIMITED)
                         }
-                        return@synchronized fallback(Issue.UNAVAILABLE)
+                        return@synchronized failure(Issue.UNAVAILABLE)
                     }
-                }.also { saveCache(context, it) }.result()
+                }.also {
+                    saveCache(context, it)
+                    lastIssue = null
+                }.result()
             } finally {
                 connection.disconnect()
             }
         } catch (_: Exception) {
-            fallback(if (online(context)) Issue.UNAVAILABLE else Issue.OFFLINE)
+            failure(if (online(context)) Issue.UNAVAILABLE else Issue.OFFLINE)
         }
     }
 

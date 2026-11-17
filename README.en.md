@@ -18,6 +18,7 @@
 
 - **Work from a folder.** Pick a folder on your device, search your notes, and sort by title or date. Choose a classic list, compact list, or two-column grid.
 - **Write and read Markdown.** Switch between source and preview. Use shortcuts for headings, tasks, links, and code, then copy a code block with one tap in preview.
+- **Browse your image galleries.** Choose a device folder and a Google Drive folder, find images by filename, and insert them into the same note.
 - **Browse Drive folders.** With your permission, Notier opens existing folders and lets you create, move, or trash Markdown notes. Folder cards count Markdown notes.
 - **Make it yours.** Choose a light, dark, or Pixel Workshop theme, 13 typefaces, and Lucide, crisp pixel, or bold icons. Adjust text, interface, and button sizes separately. Choose from 54 interface language and script options.
 - **Jump to a section.** Open the table of contents in preview and select a heading. Section links such as `[Heading](#heading)` work within the note.
@@ -27,6 +28,8 @@
 
 | Version | Changes |
 | --- | --- |
+| [v1.1.0](docs/updates/v1.1.0.en.md) | Device and Drive galleries, Pixel Workshop refinements, and cached GitHub release notes |
+| [v1.0.7](docs/updates/v1.0.7.en.md) | Release notes layout and basic Markdown fallback on Android |
 | [v1.0.6](docs/updates/v1.0.6.en.md) | Shared GitHub Markdown release notes, automatic display checkbox, and mobile layout |
 | [v1.0.5](docs/updates/v1.0.5.en.md) | Live release notes, the welcome screen, Pixel Workshop, and the mobile site |
 | [v1.0.4](docs/updates/v1.0.4.en.md) | Offline update results, color pixel icons, and in-app release notes |
@@ -49,6 +52,10 @@
 
 > Keep short notes here.
 ~~~
+
+### Insert an image from the gallery
+
+Choose folders in **Settings → Gallery** under **On device** and **Google Drive**. Put images in the folders using your file manager or Google Drive, then refresh the gallery. In the editor, tap the image tool, choose **Insert from gallery**, and tap a thumbnail. Use **Insert image URL** for an online link.
 
 ### Local folders and Google Drive
 

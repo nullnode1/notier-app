@@ -221,4 +221,22 @@
     <string name="release_empty">Henüz sürüm notu yok. Bağlantın olduğunda GitHub’dan denetle.</string>
     <string name="release_no_body">GitHub’da bu sürüm için yazılı not yok.</string>
     <string name="release_auto_show">Yeni yama notlarını otomatik göster</string>
+    <string name="gallery">Galeri</string>
+    <string name="gallery_choose">Galeri klasörü seç</string>
+    <string name="gallery_no_folder">Galeri klasörü seçilmedi</string>
+    <string name="gallery_refresh">Galeriyi yenile</string>
+    <string name="gallery_search">Görselleri ara</string>
+    <string name="gallery_loading">Galeri yükleniyor…</string>
+    <string name="gallery_empty">Bu klasöre görsel eklediğinde burada görünecek.</string>
+    <string name="gallery_no_matches">Aramana uyan görsel bulunamadı.</string>
+    <string name="gallery_unavailable">Galeri klasörü açılamadı. Klasörü yeniden seç veya başka bir klasör kullan.</string>
+    <string name="gallery_url">URL ile görsel ekle</string>
+    <string name="gallery_prompt">Cihazından bir klasör seç. Görselleri dosya yöneticisiyle bu klasöre ekle.</string>
+    <string name="gallery_device">Cihaz</string>
+    <string name="gallery_drive">Google Drive</string>
+    <string name="gallery_insert">Galeriden görsel ekle</string>
+    <string name="gallery_choose_drive">Drive galeri klasörünü seç</string>
+    <string name="gallery_use_folder">Bu klasörü kullan</string>
+    <string name="gallery_drive_connect">Klasör simgesine dokunarak Google Drive’a bağlan ve bir galeri klasörü seç.</string>
+    <string name="gallery_drive_prompt">Drive’dan bir klasör seç. Görselleri Google Drive uygulamasından o klasöre ekle.</string>
 </resources>

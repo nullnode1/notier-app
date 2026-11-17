@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="Notier, Android için açık kaynak bir Markdown not uygulaması. Yerel dosyaları çevrimdışı düzenle, Google Drive klasörlerini aç ve notlarında başlıktan başlığa geç.">
+  <meta name="description" content="Notier, Android için açık kaynak bir Markdown not uygulaması. Yerel notlarını düzenle, klasör galerisinden görsel ekle ve Google Drive klasörlerini aç.">
   <meta property="og:title" content="Notier · Android için Markdown notları">
-  <meta property="og:description" content="Yerel Markdown notları, Google Drive ve kişiselleştirilebilir Android arayüzü.">
+  <meta property="og:description" content="Yerel Markdown notları, klasör tabanlı görsel galeri ve Google Drive.">
   <meta property="og:image" content="https://nullnode1.github.io/notier-app/images/notier-site-overview.webp">
   <title>Notier · Android için Markdown notları</title>
   <link rel="canonical" href="https://nullnode1.github.io/notier-app/">
   <link rel="icon" href="images/notier-oauth-logo.png" type="image/png">
-  <link rel="stylesheet" href="notier.css?v=1.0.6">
-  <script src="releases.js?v=1.0.6" defer></script>
+  <link rel="stylesheet" href="notier.css?v=1.1.0">
+  <script src="releases.js?v=1.1.0" defer></script>
 </head>
 <body>
   <a class="skip" href="#icerik">İçeriğe geç</a>
@@ -20,6 +20,7 @@
     <a class="brand" href="./"><img src="images/notier-oauth-logo.png" alt="" width="32" height="32">Notier</a>
     <nav aria-label="Üst menü">
       <a href="#ozellikler">Özellikler</a>
+      <a href="#galeri">Galeri</a>
       <a href="updates/">Yama notları</a>
       <a href="privacy-tr.html">Gizlilik</a>
       <a href="https://github.com/nullnode1/notier-app">GitHub</a>
@@ -30,8 +31,8 @@
       <div class="intro">
         <div class="product-meta"><span>Android 8+ · Açık kaynak</span><span class="version-chip" data-release-version hidden></span></div>
         <h1 id="baslik">Notier</h1>
-        <p class="hero-subtitle">Dosyalarında yaşayan<br> Markdown notları.</p>
-        <p class="lead">Bir klasör seç, notlarını yaz ve biçimlendirilmiş hâlini oku. Yerel dosyalarına çevrimdışı erişebilir veya Google Drive’daki Markdown klasörlerini açabilirsin.</p>
+        <p class="hero-subtitle">Dosyalarında yaşayan Markdown notları.</p>
+        <p class="lead">Markdown notlarını yaz, galerinden görsel ekle ve biçimlendirilmiş hâlini oku. Yerel klasörler ve Google Drive ile çalış.</p>
         <div class="actions">
           <a class="button primary" data-release-download href="https://github.com/nullnode1/notier-app/releases"><span>Android APK’ları</span> <span aria-hidden="true">↗</span></a>
           <a class="button secondary" href="updates/">Yama notlarını oku</a>
@@ -56,15 +57,27 @@
         <article><h3>Markdown düzenleyici</h3><p>Başlık, bağlantı, liste ve kod kısayollarını kullan. Tabloları ve kod bloklarını önizlemede oku.</p></article>
         <article><h3>İçindekiler</h3><p>Uzun notlarda önizlemedeki listeden bir başlık seçerek doğrudan o bölüme geç.</p></article>
         <article><h3>Google Drive</h3><p>İzin verdiğinde Drive klasörlerine göz at, Markdown notlarını oluştur veya düzenle. <a href="privacy-tr.html#google-drive">Drive veri kullanımı</a></p></article>
-        <article><h3>Tema ve simgeler</h3><p>Açık, koyu ve Piksel Atölyesi temaları. Yazı tipini, simgeleri ve arayüz boyutunu ayrı ayrı seç.</p></article>
+        <article><h3>Görsel galeri</h3><p>Cihaz ve Google Drive klasörlerindeki görselleri aynı nota ekle. <a href="#galeri">Galeriyi kur</a></p></article>
         <article><h3>GitHub güncellemeleri</h3><p>Kararlı Android sürümlerini denetle, APK’yı aç ve en son denetim sonucunu çevrimdışı gör.</p></article>
       </div>
+    </section>
+
+    <section class="shell section gallery-section" id="galeri" aria-labelledby="galeri-baslik">
+      <div class="section-heading">
+        <h2 id="galeri-baslik">Görsel galerini kur</h2>
+        <p>Notlarında kullanacağın görseller için cihazında ve Google Drive’da birer klasör seç.</p>
+      </div>
+      <ol class="gallery-steps">
+        <li><h3>Klasörü seç</h3><p><strong>Ayarlar → Galeri</strong> yolunda <strong>Cihaz</strong> veya <strong>Google Drive</strong> sekmesinden klasörünü seç.</p></li>
+        <li><h3>Görselleri ekle</h3><p>Dosya yöneticisi veya Google Drive ile görselleri ilgili klasöre koy. Notier’de galeriyi yenile.</p></li>
+        <li><h3>Notuna yerleştir</h3><p>Editörde görsel simgesinden <strong>Galeriden görsel ekle</strong> veya <strong>URL ile görsel ekle</strong> seçeneğini aç.</p></li>
+      </ol>
     </section>
 
     <section class="shell section release-feature" aria-labelledby="yeni">
       <div>
         <h2 id="yeni">Piksel Atölyesi</h2>
-        <p>Basamaklı köşeler, katmanlı düğmeler ve renkli piksel simgeleri. Bu temayı karşılama ekranında veya Ayarlar’dan seçebilirsin.</p>
+        <p>Dört basamaklı köşeler, katmanlı düğmeler ve renkli piksel simgeleri. Temayı, yazı tipini ve simge tarzını Ayarlar’dan seçebilirsin.</p>
         <p><a class="button secondary" href="updates/">Son değişiklikleri oku</a></p>
       </div>
       <img src="images/notier-pixel-workshop.webp" alt="Piksel Atölyesi temasında basamaklı kartlar ve katmanlı yeşil düğme" width="720" height="540" loading="lazy">
@@ -80,7 +93,7 @@
         <li><b>Klasörünü seç.</b> Notier’de klasör simgesine dokun ve notlarını tutacağın konumu seç.</li>
         <li><b>İlk notunu oluştur.</b> Artı simgesiyle yeni bir not aç ve Markdown yazmaya başla.</li>
       </ol>
-      <details><summary>İnternet olmadan ne çalışır?</summary><p>Yerel notlar, Markdown düzenleme ve önizleme, daha önce indirilen yama notları ve en son güncelleme sonucu. Yeni sürüm denetimi, Drive üzerinden dosya erişimi ve uzaktaki medya bağlantı gerektirir.</p></details>
+      <details><summary>İnternet olmadan ne çalışır?</summary><p>Yerel notlar, cihazdaki galeri, Markdown önizlemesi, daha önce GitHub’dan alınan yama notları ve son güncelleme sonucu. Yeni sürüm denetimi, Drive üzerinden dosya erişimi ve uzaktaki medya bağlantı gerektirir.</p></details>
       <details><summary>Kaynak kodu nerede?</summary><p>Android uygulaması Kotlin ile yazıldı ve GNU GPL v3 ile yayımlanıyor. <a href="https://github.com/nullnode1/notier-app">GitHub’da kaynak kodu ve Termux derleme adımlarını aç.</a></p></details>
     </section>
   </main>

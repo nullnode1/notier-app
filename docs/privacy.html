@@ -23,9 +23,11 @@
       <a href="privacy-tr.html" lang="tr">Türkçe</a>
       <a href="privacy-ru.html" lang="ru">Русский</a>
     </nav>
-    <p>Last updated 15 November 2026.</p>
+    <p>Last updated 17 November 2026.</p>
     <h2 id="notes-on-your-device">Notes on your device</h2>
     <p>Notier is a Markdown editor for Android. It opens notes in the folder you choose through Android’s file picker. Android may remember this folder or individual file permissions so you can open them again. Notier keeps settings, pinned-note references, and any unsaved draft in its private app storage on your device. The app can be used with local files without a Google account.</p>
+    <h2 id="gallery">Image gallery</h2>
+    <p>For a device gallery, Notier retains the Android read permission for the selected folder to list and preview images. When you select a Drive gallery, Notier stores the folder and account association on the device. Folder listings, thumbnails, and previewed images are read from Google Drive on your device. Notes reference gallery images by filename or Drive file ID.</p>
     <h2 id="google-drive">Google Drive</h2>
     <p>Drive is optional. If you connect it, Google handles account selection and authorization. Notier uses the <code>https://www.googleapis.com/auth/drive</code> scope to browse existing folders, identify Markdown notes, open and save them, and perform changes you request, such as moving a note or sending it to Trash. Notier reads file and folder metadata, such as names, types, identifiers, modification dates, and capabilities, to build the list and count notes. It reads Markdown content when you open a Drive note.</p>
     <p>To restore a session, Notier can keep the selected Google account name and last Drive folder identifier in private app storage. The access token used by the app and its short-lived listing cache are held in memory. Google Play services manages authorization on the device. If you open notes through Android’s file picker instead, Notier may retain the grants and references Android provides for the files you selected.</p>

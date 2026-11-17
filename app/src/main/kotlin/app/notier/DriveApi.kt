@@ -4,7 +4,9 @@ import android.net.Uri
 import android.provider.DocumentsContract.Document
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.FilterInputStream
 import java.io.IOException
+import java.io.InputStream
 import java.io.InterruptedIOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -35,6 +37,64 @@ internal class DriveApi(internal val accessToken: String) {
             }
         }
         return items.sortedWith(compareByDescending<NoteFile> { it.isFolder }.thenByDescending { it.modified }.thenBy { it.name })
+    }
+
+    fun folders(id: String): List<DriveItem> {
+        val items = mutableListOf<DriveItem>()
+        listFiles("${parentFilter(id)} and trashed = false and mimeType = '$FOLDER'", FIELDS) { items += json(it) }
+        return items.sortedBy { it.name }
+    }
+
+    fun images(id: String): List<GalleryImage> {
+        val items = mutableListOf<GalleryImage>()
+        listFiles("${parentFilter(id)} and trashed = false", "$IMAGE_FIELDS,thumbnailLink") { row ->
+            galleryImage(row)?.let(items::add)
+        }
+        return items.sortedWith(compareByDescending<GalleryImage> { it.modified }.thenBy { it.name })
+    }
+
+    fun galleryImage(id: String, folder: String): GalleryImage? {
+        val row = JSONObject(request("/drive/v3/files/${encode(id)}",
+            query("fields" to "$IMAGE_FIELDS,parents,trashed", "supportsAllDrives" to "true")))
+        if (row.optBoolean("trashed") || row.optJSONArray("parents")?.optString(0) != folder) return null
+        return galleryImage(row)
+    }
+
+    private fun galleryImage(row: JSONObject): GalleryImage? {
+        if (row.optJSONObject("capabilities")?.optBoolean("canDownload", true) == false) return null
+        val name = row.optString("name").takeIf(String::isNotBlank) ?: return null
+        val mime = Gallery.imageMime(name, row.optString("mimeType")) ?: return null
+        val id = row.optString("id").takeIf(String::isNotBlank) ?: return null
+        val modified = runCatching { Instant.parse(row.optString("modifiedTime")).toEpochMilli() }.getOrDefault(0)
+        return GalleryImage(uri(id), name, mime, modified,
+            driveThumbnail = row.optString("thumbnailLink").takeIf(String::isNotBlank))
+    }
+
+    fun openGalleryImage(id: String): InputStream =
+        openStream(fileUrl("/drive/v3/files/${encode(id)}", query("alt" to "media", "supportsAllDrives" to "true")))
+
+    fun openGalleryThumbnail(link: String): InputStream? {
+        val url = URL(link)
+        if (url.protocol != "https" || url.userInfo != null || url.port !in setOf(-1, 443)) return null
+        val host = url.host.lowercase(java.util.Locale.ROOT)
+        if (host != "www.googleapis.com" && !host.endsWith(".googleusercontent.com")) return null
+        return openStream(url)
+    }
+
+    private fun openStream(url: URL): InputStream {
+        val connection = connect(url)
+        try {
+            val status = connection.responseCode
+            if (status !in 200..299) throw DriveRequestFailed(status)
+            return object : FilterInputStream(connection.inputStream) {
+                override fun close() {
+                    try { super.close() } finally { connection.disconnect() }
+                }
+            }
+        } catch (error: Exception) {
+            connection.disconnect()
+            throw error
+        }
     }
 
     fun childCounts(folderIds: List<String>): Map<String, Int> {
@@ -139,14 +199,19 @@ internal class DriveApi(internal val accessToken: String) {
             if (id == null) "POST" else "PATCH", "multipart/related; boundary=$boundary", body.toByteArray()))
     }
 
+    private fun fileUrl(path: String, query: String) = URL("https://www.googleapis.com$path?$query")
+
+    private fun connect(url: URL) = (url.openConnection() as HttpURLConnection).apply {
+        connectTimeout = 12_000
+        readTimeout = 25_000
+        instanceFollowRedirects = false
+        setRequestProperty("Authorization", "Bearer $accessToken")
+    }
+
     private fun request(path: String, query: String, method: String = "GET", contentType: String? = null, body: ByteArray? = null): String {
-        val connection = URL("https://www.googleapis.com$path?$query").openConnection() as HttpURLConnection
+        val connection = connect(fileUrl(path, query))
         try {
-            connection.connectTimeout = 12_000
-            connection.readTimeout = 25_000
-            connection.instanceFollowRedirects = false
             connection.requestMethod = method
-            connection.setRequestProperty("Authorization", "Bearer $accessToken")
             if (body != null) {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", contentType)
@@ -185,6 +250,7 @@ internal class DriveApi(internal val accessToken: String) {
         private const val FOLDER = "application/vnd.google-apps.folder"
         private const val LIST_FIELDS = "id,name,mimeType,modifiedTime,capabilities(canEdit,canRename,canTrash,canAddChildren,canMoveItemWithinDrive)"
         private const val FIELDS = "$LIST_FIELDS,parents"
+        private const val IMAGE_FIELDS = "id,name,mimeType,modifiedTime,capabilities(canDownload)"
         const val CAN_MOVE = 1 shl 28
         const val SCOPE = "https://www.googleapis.com/auth/drive"
         fun uri(id: String): Uri = Uri.Builder().scheme("notier-drive").authority("file").appendPath(id).build()

@@ -2,11 +2,15 @@
 
 [English](PRIVACY.md) · [Türkçe](PRIVACY.tr.md) · [Русский](PRIVACY.ru.md)
 
-Last updated 15 November 2026.
+Last updated 17 November 2026.
 
 ## Notes on your device
 
 Notier is a Markdown editor for Android. It opens notes in the folder you choose through Android’s file picker. Android may remember this folder or individual file permissions so you can open them again. Notier keeps settings, pinned-note references, and any unsaved draft in its private app storage on your device. The app can be used with local files without a Google account.
+
+## Image gallery
+
+For a device gallery, Notier retains the Android read permission for the selected folder to list and preview images. When you select a Drive gallery, Notier stores the folder and account association on the device. Folder listings, thumbnails, and previewed images are read from Google Drive on your device. Notes reference gallery images by filename or Drive file ID.
 
 ## Google Drive
 

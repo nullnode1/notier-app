@@ -25,7 +25,8 @@ import java.util.Locale
 import java.util.UUID
 
 internal data class Preview(val html: String, val localImages: Map<String, List<String>>,
-    val hasFrames: Boolean, val codeBlocks: List<String>, val outline: List<OutlineHeading>)
+    val hasFrames: Boolean, val codeBlocks: List<String>, val outline: List<OutlineHeading>,
+    val galleryImages: Map<String, String>, val driveImages: Map<String, String>)
 
 internal data class OutlineHeading(val id: String, val title: String, val level: Int)
 
@@ -37,6 +38,10 @@ internal object Markdown {
     const val HOST = "app.notier"
     const val ORIGIN = "https://app.notier/"
     const val IMAGE_PATH = "/_notier/image/"
+    const val GALLERY_PATH = "/_notier/gallery/"
+    private const val GALLERY_SCHEME = "notier-gallery"
+    private const val DRIVE_GALLERY_SCHEME = "notier-drive-image"
+    private val driveImageId = Regex("[A-Za-z0-9_-]{1,256}")
     val imageTypes = setOf("png", "jpg", "jpeg", "webp", "gif", "avif", "svg", "bmp", "ico")
     private val videoTypes = mapOf(
         "mp4" to "video/mp4", "m4v" to "video/mp4", "webm" to "video/webm",
@@ -109,12 +114,23 @@ internal object Markdown {
     fun render(markdown: String, css: String, localMedia: Boolean, copyIcon: String, copyScript: String, strings: PreviewStrings): Preview {
         val tree = parser.parse(markdown.removePrefix("\uFEFF"))
         val localImages = linkedMapOf<String, List<String>>()
+        val galleryImages = linkedMapOf<String, String>()
+        val driveImages = linkedMapOf<String, String>()
         val codeBlocks = mutableListOf<String>()
         val headings = linkedMapOf<Heading, OutlineHeading>()
         val headingIds = mutableSetOf<String>()
         var hasFrames = false
 
         fun replaceImage(node: Image) {
+            val galleryName = galleryImageName(node.destination, GALLERY_SCHEME)
+            val driveId = galleryImageName(node.destination, DRIVE_GALLERY_SCHEME)?.takeIf(driveImageId::matches)
+            if (galleryName != null || driveId != null) {
+                val key = UUID.randomUUID().toString()
+                if (galleryName != null) galleryImages[key] = galleryName
+                if (driveId != null) driveImages[key] = driveId
+                node.destination = ORIGIN.trimEnd('/') + GALLERY_PATH + key
+                return
+            }
             val embedded = embed(node.destination, strings)
             if (embedded != null && !embedded.html.startsWith("<img")) {
                 node.insertBefore(embedded)
@@ -212,7 +228,7 @@ internal object Markdown {
             <style>$css</style>
             </head><body><article dir="auto">$body</article>$bridge</body></html>
         """.trimIndent()
-        return Preview(html, localImages, hasFrames, codeBlocks, headings.values.toList())
+        return Preview(html, localImages, hasFrames, codeBlocks, headings.values.toList(), galleryImages, driveImages)
     }
 
     private fun StringBuilder.appendHeadingText(node: Node) {
@@ -281,6 +297,23 @@ internal object Markdown {
         val input = if (value.startsWith("www.", true)) "https://$value" else value
         val uri = runCatching { URI(input.replace(" ", "%20")) }.getOrNull() ?: return null
         return uri.takeIf { it.scheme.equals("https", true) && it.host != null && it.userInfo == null }
+    }
+
+    fun galleryLink(name: String, alt: String, driveId: String? = null): String {
+        val label = alt.replace(Regex("\\s+"), " ").trim()
+            .replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+        val scheme = if (driveId == null) GALLERY_SCHEME else DRIVE_GALLERY_SCHEME
+        val path = URI(scheme, null, "/${driveId ?: name}", null).toASCIIString().replace("&", "%26")
+        return "![$label](<$path>)"
+    }
+
+    private fun galleryImageName(destination: String, scheme: String): String? {
+        val uri = runCatching { URI(destination) }.getOrNull() ?: return null
+        if (uri.scheme != scheme || uri.rawAuthority != null || uri.rawQuery != null ||
+            uri.rawFragment != null) return null
+        val name = uri.path?.takeIf { it.startsWith('/') }?.substring(1) ?: return null
+        return name.takeIf { it.isNotBlank() && it != "." && it != ".." &&
+            it.none { char -> char == '/' || char == '\\' || char.isISOControl() } }
     }
 
     private fun relativeImage(value: String): List<String>? {

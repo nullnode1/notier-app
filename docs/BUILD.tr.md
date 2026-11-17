@@ -13,9 +13,21 @@ Notier, seçtiğin Android klasöründeki UTF-8 Markdown notlarını açan ve d�
 
 Bir notun üzerine basılı tutarak doğrudan düzenleyebilir, yeniden adlandırabilir, sabitleyebilir veya silebilirsin. Sabitlenen notlar, seçtiğin sıralamaya göre listenin başında görünür. Silmeden önce onay ekranı açılır.
 
+## Galeri
+
+1. **Ayarlar → Galeri** bölümünde **Cihaz** ve **Google Drive** sekmelerini kullan. Cihaz sekmesinde Android’in dosya seçicisini aç. Drive sekmesinde Google hesabını bağla, istediğin klasöre gir ve **Bu klasörü kullan** seçeneğine dokun. İki seçim ayrı saklanır.
+2. Görselleri dosya yöneticisinden veya Drive uygulamasından ilgili klasöre koy. Son değişiklikleri görmek için Notier’de **Galeriyi yenile** düğmesine dokun. Galeri seçilen klasörün doğrudan içindeki görselleri gösterir.
+3. Editörün kaydırılabilir araç çubuğundaki görsel simgesinden **Galeriden görsel ekle** seçeneğini aç. Bir küçük resme dokunduğunda bağlantı imlece eklenir. Seçili metin görsel açıklaması olur. **URL ile görsel ekle** seçeneği çevrim içi görseller içindir.
+
+Notier cihazdaki dosyaları `notier-gallery:/dosya-adı` ile seçili klasörde dosya adına göre bulur. Drive görselleri `notier-drive-image:/dosya-kimliği` ile seçili Drive klasöründen okunur. Drive önizlemesi için ilgili Google hesabına bağlı olman gerekir. Aynı notta her iki kaynağın görselleri kullanılabilir. Başka bir cihazda ilgili galeri klasörlerini yeniden seç. Notun dışa aktarımı Markdown metnini ve bağlantıları taşır. Standart Markdown okuyucularında HTTPS veya nota göre göreli görsel yolu kullanabilirsin.
+
+## Yama notlarının önbelleği
+
+Android uygulaması ve site, yama notlarını yayımlanan GitHub Releases açıklamalarından okur. İlk başarılı denetimden sonra önbellek 12 saat boyunca kullanılır. Bir sonraki denetimde GitHub değişiklik bildirmezse önceki yanıt korunur. Android’de **Güncellemeleri denetle** ile elle denetleyebilirsin. İnternet kesilirse daha önce alınan yama notlarını açabilirsin.
+
 ## Ayarlar
 
-Ana ekrandaki **dişli** veya nottaki **üç nokta → Ayarlar** ile toplam 42 dil arasından seçim yapabilirsin. **Görünüm → Simge tarzı** altında Lucide çizgi, Minecraft tarzı piksel ve kalın çizgi seçenekleri bulunur. Sürüm bilgisi **Ayarlar → Hakkında** ekranında yer alır. Yazı, arayüz ve buton boyutları ayrı ayrı ayarlanabilir.
+Ana ekrandaki **dişli** veya nottaki **üç nokta → Ayarlar** ile desteklenen dil ve alfabeler arasından seçim yapabilirsin. **Görünüm → Simge tarzı** altında Lucide çizgi, Minecraft tarzı piksel ve kalın çizgi seçenekleri bulunur. Sürüm bilgisi **Ayarlar → Hakkında** ekranında yer alır. Yazı, arayüz ve buton boyutları ayrı ayrı ayarlanabilir.
 
 **Görünüm → Tema** ile **Açık** veya **Koyu** seçebilirsin. Koyu temada düğmeler füme, yazılar yumuşak gri ve arka plan koyudur. Listeler, düzenleyici, açılır menüler ve Markdown önizlemesi de seçime uyar. Tema tercihi cihazda saklanır.
 
@@ -89,7 +101,7 @@ ZIP dosyasını İndirilenler'e kaydet. İlk derlemede Maven Central ve Google M
 pkg install openjdk-21 aapt2 d8 apksigner python curl unzip
 termux-setup-storage
 cd ~
-unzip -o ~/storage/downloads/Notier-GitHub-v1.0.2.zip
+unzip -o ~/storage/downloads/Notier-GitHub-v1.1.0.zip
 cd Notier
 bash derle.sh
 cp build/Notier.apk ~/storage/downloads/Notier.apk
@@ -104,7 +116,8 @@ Hazır Notier v1.0.2 APK, hazır v1.0.1 sürümünün üzerine kurulabilir. Andr
 ## Kaynak kodu
 
 - `MainActivity.kt` Android ekranları, arama, gezinme ve dosya seçici.
-- `DriveApi.kt` doğrudan Google Drive klasörleri ve Markdown dosya işlemleri.
+- `DriveApi.kt` Google Drive klasörleri, önizleme görselleri ve Markdown dosya işlemleri.
+- `Gallery.kt` cihaz galerisinin izinli klasörünü ve küçük resimlerini okuma.
 - `Notes.kt` seçilen klasördeki notları okuma, sıralama ve yazma.
 - `Markdown.kt` Markdown, resim ve video önizlemesi.
 - `NoteFont.kt` düzenleyici ve önizleme yazı tipi seçenekleri.
@@ -113,3 +126,33 @@ Hazır Notier v1.0.2 APK, hazır v1.0.1 sürümünün üzerine kurulabilir. Andr
 - `derle.sh` Kotlin → DEX → imzalı APK derleme akışı.
 
 Arayüzde Lucide vektör ikonları ve Geist yazı tipi, Markdown ayrıştırmada CommonMark Java ve Autolink kullanılır. Yazı tipi lisansları ve diğer lisanslar `app/src/main/assets` klasöründedir.
+
+## GitHub Pages ve v1.1.0 yayını
+
+`Notier-GitHub-v1.1.0.zip` içindeki `Notier/` klasörünün içeriğini mevcut `nullnode1/notier-app` deposunun köküne aktar. Site dosyaları `docs/` altında. APK’yı sürüm dosyası olarak GitHub Releases bölümüne ekle. GitHub Pages yayın kaynağı `main` ve `/docs`.
+
+### Termux üzerinden İndirilenler klasöründen yayınlama
+
+```bash
+pkg install git gh unzip
+termux-setup-storage
+gh auth login
+gh auth setup-git
+git clone https://github.com/nullnode1/notier-app.git ~/notier-yayin
+cd ~/notier-yayin
+
+notier_paket="$(mktemp -d)"
+unzip ~/storage/downloads/Notier-GitHub-v1.1.0.zip -d "$notier_paket"
+cp -a "$notier_paket/Notier/." .
+git status --short
+git diff --check
+git add .gitignore LICENSE NOTICE README.md README.en.md README.ru.md derle.sh app docs tools
+git diff --cached --stat
+git commit -m "Notier 1.1.0: klasör tabanlı galeri"
+git push origin main
+
+gh release create v1.1.0 ~/storage/downloads/Notier-v1.1.0.apk \
+  --target main --title "Notier v1.1.0" --notes-file docs/updates/v1.1.0.md
+```
+
+Yerelde zaten güncel bir klon varsa `git clone` yerine o depoyu açıp temiz çalışma ağacında `git pull --ff-only` ile başla. Aynı etiketle mevcut bir taslak Release varsa açıklamasını ve APK’yı GitHub arayüzünden güncelle. Mevcut kurulumların üzerine yayın yaparken hazır APK’yı kullan veya önceki sürümle aynı paket kimliği ve imzalama anahtarıyla derle. Notier, APK içeren kararlı sürümü GitHub’dan okur. Yama notu kaynağı [v1.1.0](updates/v1.1.0.md) ve [İngilizce v1.1.0](updates/v1.1.0.en.md).

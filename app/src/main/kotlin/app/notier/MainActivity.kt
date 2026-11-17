@@ -12,6 +12,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.Rect
@@ -37,6 +39,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.WindowManager
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.inputmethod.EditorInfo
@@ -90,6 +93,19 @@ import kotlin.math.roundToInt
 internal class MainActivity : Activity() {
     private val prefs by lazy { getSharedPreferences("notier", MODE_PRIVATE) }
     private val notes by lazy { Notes(contentResolver) }
+    private val gallery by lazy { Gallery(contentResolver) }
+    private var galleryUri: Uri? = null
+    private enum class GallerySource(val label: Int) { DEVICE(R.string.gallery_device), DRIVE(R.string.gallery_drive) }
+    private var gallerySource = GallerySource.DEVICE
+    private var galleryFromEditor = false
+    private var chooseGalleryDriveAfterAuth: Boolean? = null
+    private var refreshGalleryAfterAuth: (() -> Unit)? = null
+    private val galleryWorker = Executors.newSingleThreadExecutor()
+    private var pendingGalleryResult: Intent? = null
+    private val galleryThumbWorker = Executors.newFixedThreadPool(2)
+    private val galleryThumbs = object : android.util.LruCache<Triple<Uri, Long, Int>, Bitmap>(8 * 1024) {
+        override fun sizeOf(key: Triple<Uri, Long, Int>, value: Bitmap) = (value.byteCount / 1024).coerceAtLeast(1)
+    }
     private val drive by lazy { DriveDocuments(contentResolver, notes) }
     private val drafts by lazy { DraftStore(filesDir) }
     private val css by lazy { assets.open("preview.css").bufferedReader().use { it.readText() } }
@@ -127,7 +143,7 @@ internal class MainActivity : Activity() {
     private var driveUnavailable = 0
     private var driveLoading = false
     private var folderLoading = false
-    private var driveApi: DriveApi? = null
+    @Volatile private var driveApi: DriveApi? = null
     private var driveFolder: DriveItem? = null
     private var driveRoot: DriveItem? = null
     private var driveFolderId = "root"
@@ -157,7 +173,6 @@ internal class MainActivity : Activity() {
     private var resumed = false
     private var pendingUpdates = false
     private var shownDialog: Dialog? = null
-    private var lastForegroundAttempt: Long? = null
     private var pendingCopyUri: Uri? = null
     private var pendingCopyFlags = 0
     private var applyingEdit = false
@@ -192,6 +207,7 @@ internal class MainActivity : Activity() {
     private lateinit var content: FrameLayout
     private lateinit var fullscreen: FrameLayout
     private var preview: WebView? = null
+    private var previewHasDriveImages = false
     private var outline = emptyList<OutlineHeading>()
     private var copyPort: WebMessagePort? = null
     private var fullScreenCallback: WebChromeClient.CustomViewCallback? = null
@@ -210,6 +226,9 @@ internal class MainActivity : Activity() {
         pendingUpdates = state == null && intent?.action == Updates.OPEN_UPDATES
         Updates.ensureScheduled(this)
         folderUri = prefs.getString("folder", null)?.let(Uri::parse)
+        galleryUri = prefs.getString("gallery_folder", null)?.let(Uri::parse)
+        galleryFromEditor = state?.getBoolean("galleryFromEditor") ?: false
+        chooseGalleryDriveAfterAuth = state?.takeIf { it.containsKey("galleryDriveAuth") }?.getBoolean("galleryDriveAuth")
         driveScreen = prefs.getBoolean("drive_screen", false)
         reconnectDrive = prefs.getBoolean("direct_drive", false)
         driveConsentPending = state?.getBoolean("driveConsentPending") ?: false
@@ -246,8 +265,11 @@ internal class MainActivity : Activity() {
                 showNote(recovered, state?.getBoolean("editing") ?: false)
                 if (driveScreen && reconnectDrive) connectDrive(interactive = false)
                 val position = state?.getInt("editorSelection", -1) ?: -1
-                if (position >= 0) editor.setSelection(position.coerceAtMost(editor.length()))
-                if (!recovered.dirty && !pickerPending) persistDraft()
+                val start = state?.getInt("editorSelectionStart", position) ?: position
+                if (position >= 0 && start >= 0) {
+                    editor.setSelection(start.coerceAtMost(editor.length()), position.coerceAtMost(editor.length()))
+                }
+                if (!recovered.dirty && !pickerPending && chooseGalleryDriveAfterAuth == null) persistDraft()
             } else if (draft == null) {
                 updateHome()
                 reloadNotes()
@@ -256,6 +278,10 @@ internal class MainActivity : Activity() {
             pendingCopyUri?.let { uri ->
                 pendingCopyUri = null
                 onCopySelected(uri, pendingCopyFlags)
+            }
+            pendingGalleryResult?.let { data ->
+                pendingGalleryResult = null
+                galleryPickerResult(data)
             }
             showLaunchPanel()
         }
@@ -305,19 +331,23 @@ internal class MainActivity : Activity() {
     }
 
     private fun refreshReleaseAnnouncements() {
-        if (!Updates.online(this)) return
-        val now = android.os.SystemClock.elapsedRealtime()
-        if (lastForegroundAttempt?.let { now - it < 5 * 60_000L } == true) return
-        if (System.currentTimeMillis() - Updates.cached(this).checkedAt in 0 until Updates.FOREGROUND_INTERVAL) return
-        lastForegroundAttempt = now
-        fetchReleases { showLaunchPanel() }
+        if (releaseListeners.isEmpty() && Updates.shouldCheck(this)) fetchReleases { showLaunchPanel() }
     }
 
-    private fun fetchReleases(deliver: (Updates.Check) -> Unit) {
+    private val releaseListeners = mutableListOf<(Updates.Check) -> Unit>()
+
+    private fun fetchReleases(manual: Boolean = false, deliver: (Updates.Check) -> Unit) {
+        val running = releaseListeners.isNotEmpty()
+        releaseListeners += deliver
+        if (running) return
         val context = applicationContext
         kotlin.concurrent.thread(name = "Notier GitHub releases") {
-            val result = Updates.check(context)
-            main.post { if (!isDestroyed && !isFinishing) deliver(result) }
+            val result = Updates.check(context, manual)
+            main.post {
+                val listeners = releaseListeners.toList()
+                releaseListeners.clear()
+                if (!isDestroyed && !isFinishing) listeners.forEach { it(result) }
+            }
         }
     }
 
@@ -375,7 +405,12 @@ internal class MainActivity : Activity() {
         outState.putString("query", query)
         outState.putInt("homeListIndex", homeListIndex)
         outState.putInt("homeListOffset", homeListOffset)
-        if (draft != null && ::editor.isInitialized) outState.putInt("editorSelection", editor.selectionEnd)
+        if (draft != null && ::editor.isInitialized) {
+            outState.putInt("editorSelection", editor.selectionEnd)
+            outState.putInt("editorSelectionStart", editor.selectionStart)
+        }
+        outState.putBoolean("galleryFromEditor", galleryFromEditor)
+        chooseGalleryDriveAfterAuth?.let { outState.putBoolean("galleryDriveAuth", it) }
         outState.putBoolean("editing", editing)
         outState.putBoolean("pickerPending", pickerPending)
         outState.putBoolean("driveConsentPending", driveConsentPending)
@@ -388,6 +423,8 @@ internal class MainActivity : Activity() {
         main.removeCallbacksAndMessages(null)
         destroyPreview()
         driveCountWorker.shutdownNow()
+        galleryThumbWorker.shutdownNow()
+        galleryWorker.shutdownNow()
         super.onDestroy()
     }
 
@@ -720,8 +757,9 @@ internal class MainActivity : Activity() {
         appearance.addView(reset)
 
         val general = settingsGroup(choices, R.string.general)
-        if (driveScreen) row(general, R.string.drive_account, R.drawable.ic_cloud,
+        if (driveScreen || reconnectDrive) row(general, R.string.drive_account, R.drawable.ic_cloud,
             s(if (driveApi == null) R.string.drive_connect else R.string.drive_connected)) { showDriveAccount() }
+        row(general, R.string.gallery, R.drawable.ic_image, "") { showGallery(fromEditor = false) }
         row(general, R.string.language, R.drawable.ic_languages, languages[currentLanguage()].second) {
             chooseLanguage(::showSettings)
         }
@@ -798,13 +836,13 @@ internal class MainActivity : Activity() {
             }
         }
         val check = settingsRow(s(R.string.check_updates), "", leading = R.drawable.ic_refresh_cw)
-        fun runCheck() {
+        fun runCheck(manual: Boolean = false) {
             if (!check.isEnabled) return
             check.isEnabled = false
             check.alpha = .55f
             message.visibility = View.VISIBLE
             message.text = s(R.string.updates_checking)
-            fetchReleases { refreshed ->
+            fetchReleases(manual) { refreshed ->
                 if (dialog.isShowing) {
                     check.isEnabled = true
                     check.alpha = 1f
@@ -813,7 +851,7 @@ internal class MainActivity : Activity() {
                 }
             }
         }
-        check.setOnClickListener { runCheck() }
+        check.setOnClickListener { runCheck(manual = true) }
         rows.addView(check)
         rows.addView(download)
         rows.addView(openRelease)
@@ -859,8 +897,7 @@ internal class MainActivity : Activity() {
         })
         rowProjectWebsite(rows)
         showDialog(dialog)
-        if (result.issue != Updates.Issue.OFFLINE && System.currentTimeMillis() - result.checkedAt >= 5 * 60_000L)
-            runCheck()
+        if (Updates.shouldCheck(this)) runCheck()
     }
 
     private fun rowProjectWebsite(rows: LinearLayout) {
@@ -1041,9 +1078,10 @@ internal class MainActivity : Activity() {
                 })
             }
         }
-        render(initial, checking = initial.issue != Updates.Issue.OFFLINE)
+        val checking = Updates.shouldCheck(this)
+        render(initial, checking)
         showDialog(dialog)
-        if (initial.issue != Updates.Issue.OFFLINE) fetchReleases { if (dialog.isShowing) render(it) }
+        if (checking) fetchReleases { if (dialog.isShowing) render(it) }
     }
 
     private var updatePermissionResult: (() -> Unit)? = null
@@ -1075,19 +1113,9 @@ internal class MainActivity : Activity() {
         showDialog(dialog)
     }
 
-    private fun previewCopyIcon() = when (iconStyle) {
-        IconStyle.LUCIDE -> copyIcon
-        IconStyle.BOLD -> copyIcon.replace("stroke-width=\"2\"", "stroke-width=\"3\"")
-        IconStyle.PIXEL -> """
-            <svg class="copy-icon" width="24" height="24" viewBox="0 0 16 16" aria-hidden="true"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path fill="#302726" d="M1 1H12V4H15V15H4V12H1Z"/>
-                <path fill="#C38646" d="M2 2H10V4H4V10H2Z"/>
-                <path fill="#FFE8B3" d="M5 5H14V14H5Z"/>
-                <path fill="#795130" d="M7 7H12V8H7ZM7 10H11V11H7Z"/>
-            </svg>
-        """.trimIndent()
-    }
+    private fun previewCopyIcon() = if (iconStyle == IconStyle.BOLD) {
+        copyIcon.replace("stroke-width=\"2\"", "stroke-width=\"3\"")
+    } else copyIcon
 
     private fun showAbout() {
         val rows = settingsColumn()
@@ -1653,6 +1681,8 @@ internal class MainActivity : Activity() {
             driveUnavailable = 0
         }
         if (interactive) toast(s(R.string.drive_auth_error))
+        finishGalleryDriveAuthorization(success = false)
+        refreshGalleryAfterAuth?.invoke()
         if (driveScreen && draft == null && !reconnectDrive) refreshDrive()
         else updateHome()
     }
@@ -1686,6 +1716,7 @@ internal class MainActivity : Activity() {
             loaded.onSuccess { rootFolder ->
                 val previousRoot = prefs.getString("drive_root", null)
                 if (previousRoot != rootFolder.id) {
+                    galleryThumbs.evictAll()
                     driveFolderId = rootFolder.id
                     driveFiles = emptyList()
                     driveCounts = emptyMap()
@@ -1701,6 +1732,9 @@ internal class MainActivity : Activity() {
                 reconnectDrive = true
                 driveNeedsConsent = false
                 driveApi = api
+                if (previewHasDriveImages) refreshGalleryPreview()
+                finishGalleryDriveAuthorization(success = true)
+                refreshGalleryAfterAuth?.invoke()
                 driveFolder = if (driveFolderId == rootFolder.id) rootFolder else driveFolder?.takeIf { it.id == driveFolderId }
                 driveUnavailable = 0
                 if (driveScreen && draft == null) refreshDriveFolder(knownFolder = rootFolder.takeIf { it.id == driveFolderId })
@@ -1718,6 +1752,8 @@ internal class MainActivity : Activity() {
         ++driveRequest
         driveApi = null
         driveRoot = null
+        galleryThumbs.evictAll()
+        if (previewHasDriveImages) refreshGalleryPreview()
         driveFolder = null
         driveLoading = false
         driveCountTask?.cancel(true)
@@ -1882,7 +1918,7 @@ internal class MainActivity : Activity() {
         }
     }
 
-    private fun driveError(error: Throwable): Boolean {
+    private fun driveError(error: Throwable, notify: Boolean = true): Boolean {
         if (error !is DriveRequestFailed) return false
         if (error.status == 401) {
             ++driveRequest
@@ -1908,14 +1944,14 @@ internal class MainActivity : Activity() {
                 } catch (_: RuntimeException) {
                     resumeConnection()
                 }
-                if (draft != null) toast(s(R.string.drive_retry_save))
+                if (notify && draft != null) toast(s(R.string.drive_retry_save))
                 return true
             }
             driveFolder = null
             driveFiles = emptyList()
             updateHome()
-            toast(s(R.string.drive_auth_expired))
-        } else toast(s(R.string.drive_api_failed))
+            if (notify) toast(s(R.string.drive_auth_expired))
+        } else if (notify) toast(s(R.string.drive_api_failed))
         return true
     }
 
@@ -2545,7 +2581,10 @@ internal class MainActivity : Activity() {
             val description = s(shortcut.label)
             val resource = shortcut.icon
             val chip = if (resource != null) {
-                icon(resource, description, 18, quiet = true) { applyShortcut(shortcut) }
+                icon(resource, description, 18, quiet = true) { anchor ->
+                    if (shortcut == MarkdownShortcut.IMAGE) showImageOptions(anchor)
+                    else applyShortcut(shortcut)
+                }
             } else label(shortcut.symbol, 13f, bold = true).apply {
                 gravity = Gravity.CENTER
                 maxLines = 1
@@ -2573,6 +2612,379 @@ internal class MainActivity : Activity() {
             clipToOutline = true
             addView(strip, FrameLayout.LayoutParams(WRAP, WRAP))
         }
+    }
+
+    private fun showImageOptions(anchor: View) {
+        if (!editing) return
+        showMenu(anchor, listOf(
+            MenuAction(R.string.gallery_url, R.drawable.ic_link_2) { applyShortcut(MarkdownShortcut.IMAGE) },
+            MenuAction(R.string.gallery_insert, R.drawable.ic_image) { showGallery(fromEditor = true) }
+        ))
+    }
+
+    private fun driveGalleryFolder(): String? {
+        val owner = driveRoot?.id ?: return null
+        if (owner != prefs.getString("gallery_drive_owner", null)) return null
+        return prefs.getString("gallery_drive_folder", null)
+    }
+
+    private fun showGallery(fromEditor: Boolean, source: GallerySource = gallerySource) {
+        if (busy || startLoading || (fromEditor && !editing)) return
+        gallerySource = source
+        hideKeyboard()
+        var dialog: Dialog? = null
+        val back = {
+            dialog?.dismiss()
+            if (!fromEditor) showSettings()
+        }
+        val screen = dialogPanel(s(R.string.gallery), !fromEditor, back)
+        val tabs = LinearLayout(this).apply {
+            setPaddingRelative(dp(16), 0, dp(16), dp(4))
+        }
+        for (tab in GallerySource.entries) {
+            val button = dialogAction(tab.label, primary = tab == source) {
+                if (tab != source) {
+                    dialog?.dismiss()
+                    showGallery(fromEditor, tab)
+                }
+            }
+            button.isSelected = tab == source
+            tabs.addView(button, LinearLayout.LayoutParams(0, WRAP, 1f).apply {
+                if (tab == GallerySource.DEVICE) marginEnd = dp(6)
+            })
+        }
+        screen.addView(tabs, LinearLayout.LayoutParams(MATCH, WRAP))
+        val toolbar = LinearLayout(this).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setPaddingRelative(dp(12), 0, dp(9), 0)
+        }
+        val driveFolder = driveGalleryFolder()
+        val folder = label(
+            prefs.getString("gallery_drive_name", null).takeIf { source == GallerySource.DRIVE && driveFolder != null }
+                ?: s(R.string.gallery_no_folder), 14f, palette.muted, bold = true
+        ).apply {
+            maxLines = 2
+            ellipsize = TextUtils.TruncateAt.END
+            setPaddingRelative(dp(7), 0, dp(4), 0)
+        }
+        toolbar.addView(folder, LinearLayout.LayoutParams(0, WRAP, 1f))
+        toolbar.addView(icon(R.drawable.ic_folder_open, s(R.string.gallery_choose), 21, quiet = true) {
+            if (source == GallerySource.DRIVE && (authorizingDrive || !Updates.online(this))) {
+                if (!authorizingDrive) toast(s(R.string.drive_offline))
+                return@icon
+            }
+            dialog?.dismiss()
+            if (source == GallerySource.DRIVE) {
+                chooseDriveGallery(fromEditor)
+            } else {
+                galleryFromEditor = fromEditor
+                launchPicker(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                    galleryUri?.let { putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
+                }, PICK_GALLERY)
+                if (!pickerPending) showGallery(fromEditor, source)
+            }
+        }, buttonLayout(44))
+        screen.addView(toolbar, LinearLayout.LayoutParams(MATCH, WRAP))
+
+        val search = EditText(this).apply {
+            setSingleLine()
+            hint = s(R.string.gallery_search)
+            contentDescription = hint
+            setTextColor(palette.ink)
+            setHintTextColor(palette.muted)
+            textSize = 14f * textScale
+            background = searchSurface(false)
+            setPaddingRelative(dp(12), dp(7), dp(12), dp(7))
+            minHeight = dp(42)
+            visibility = View.GONE
+        }
+        screen.addView(search, LinearLayout.LayoutParams(MATCH, WRAP).apply {
+            marginStart = dp(16); marginEnd = dp(16); bottomMargin = dp(6)
+        })
+
+        val adapter = GalleryAdapter()
+        val grid = GridView(this).apply {
+            this.adapter = adapter
+            numColumns = GridView.AUTO_FIT
+            columnWidth = dp(105)
+            stretchMode = GridView.STRETCH_COLUMN_WIDTH
+            horizontalSpacing = dp(7)
+            verticalSpacing = dp(7)
+            setPaddingRelative(dp(16), dp(3), dp(16), dp(3))
+            clipToPadding = false
+            if (fromEditor) setOnItemClickListener { _, _, index, _ ->
+                dialog?.dismiss()
+                insertGalleryImage(adapter.items[index])
+            }
+        }
+        val message = label("", 14f, palette.muted).apply {
+            gravity = Gravity.CENTER
+            setPaddingRelative(dp(20), dp(8), dp(20), dp(8))
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+        }
+        screen.addView(FrameLayout(this).apply {
+            addView(grid, frameMatch())
+            addView(message, frameMatch())
+        }, LinearLayout.LayoutParams(MATCH, 0, 1f))
+
+        var images = emptyList<GalleryImage>()
+        fun filter(query: String) {
+            val keyword = searchKey(query.trim())
+            adapter.items = images.filter { searchKey(it.name).contains(keyword) }
+            adapter.notifyDataSetChanged()
+            grid.visibility = if (adapter.items.isEmpty()) View.GONE else View.VISIBLE
+            message.visibility = if (adapter.items.isEmpty()) View.VISIBLE else View.GONE
+            message.text = s(if (images.isEmpty()) R.string.gallery_empty else R.string.gallery_no_matches)
+        }
+        search.watch(::filter)
+        var request = 0
+        fun load() {
+            val tree = galleryUri
+            val api = driveApi
+            val selected = driveGalleryFolder()
+            val generation = ++request
+            grid.visibility = View.GONE
+            message.visibility = View.VISIBLE
+            search.visibility = View.GONE
+            val hint = when {
+                source == GallerySource.DEVICE && tree == null -> R.string.gallery_prompt
+                source == GallerySource.DRIVE && !Updates.online(this) -> R.string.drive_offline
+                source == GallerySource.DRIVE && api == null && authorizingDrive -> R.string.gallery_loading
+                source == GallerySource.DRIVE && api == null -> R.string.gallery_drive_connect
+                source == GallerySource.DRIVE && selected == null -> R.string.gallery_drive_prompt
+                else -> null
+            }
+            if (hint != null) {
+                message.text = s(hint)
+                return
+            }
+            message.text = s(R.string.gallery_loading)
+            background({
+                if (source == GallerySource.DEVICE) gallery.list(requireNotNull(tree))
+                else GalleryFolder(prefs.getString("gallery_drive_name", "").orEmpty(),
+                    requireNotNull(api).images(requireNotNull(selected)))
+            }, galleryWorker) { result ->
+                if (dialog?.isShowing != true || generation != request) return@background
+                result.onSuccess {
+                    folder.text = it.name
+                    images = it.images
+                    search.visibility = if (images.isEmpty()) View.GONE else View.VISIBLE
+                    filter(search.text.toString())
+                }.onFailure {
+                    if (source == GallerySource.DRIVE && driveApi === api) driveError(it, notify = false)
+                    message.text = s(R.string.gallery_unavailable)
+                }
+            }
+        }
+        toolbar.addView(icon(R.drawable.ic_refresh_cw, s(R.string.gallery_refresh), 20, quiet = true) {
+            galleryThumbs.evictAll()
+            load()
+        }, buttonLayout(44))
+        dialog = Dialog(this, dialogTheme()).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(screen, frameMatch())
+            setCanceledOnTouchOutside(true)
+            if (!fromEditor) setOnCancelListener { showSettings() }
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        }
+        screen.isFocusableInTouchMode = true
+        screen.requestFocus()
+        showDialogWindow(dialog)
+        dialog.window?.setLayout(MATCH, px((resources.configuration.screenHeightDp * .91f).coerceAtMost(660f)))
+        if (source == GallerySource.DRIVE) {
+            val refresh = { if (dialog.isShowing) load() }
+            refreshGalleryAfterAuth = refresh
+            dialog.setOnDismissListener {
+                if (refreshGalleryAfterAuth === refresh) refreshGalleryAfterAuth = null
+            }
+            if (driveApi == null && reconnectDrive && !driveNeedsConsent && prefs.contains("gallery_drive_folder")) {
+                connectDrive(interactive = false)
+            }
+        }
+        load()
+    }
+
+    private fun finishGalleryDriveAuthorization(success: Boolean) {
+        val fromEditor = chooseGalleryDriveAfterAuth ?: return
+        chooseGalleryDriveAfterAuth = null
+        root.post {
+            if (isDestroyed || isFinishing) return@post
+            if (success) chooseDriveGallery(fromEditor)
+            else showGallery(fromEditor, GallerySource.DRIVE)
+        }
+    }
+
+    private fun chooseDriveGallery(fromEditor: Boolean, destination: String? = null) {
+        val api = driveApi
+        val driveHome = driveRoot
+        if (api == null || driveHome == null) {
+            if (authorizingDrive) {
+                showGallery(fromEditor, GallerySource.DRIVE)
+                return
+            }
+            chooseGalleryDriveAfterAuth = fromEditor
+            connectDrive(interactive = !reconnectDrive || driveNeedsConsent)
+            if (!authorizingDrive && chooseGalleryDriveAfterAuth != null) finishGalleryDriveAuthorization(false)
+            return
+        }
+        val id = destination ?: driveGalleryFolder() ?: driveHome.id
+        val rows = settingsColumn()
+        val back = { showGallery(fromEditor, GallerySource.DRIVE) }
+        val dialog = settingsDialog(s(R.string.gallery_choose_drive), rows, up = true, onUp = back)
+        rows.addView(label(s(R.string.gallery_loading), 14f, palette.muted))
+        showDialog(dialog)
+        background({
+            val folder = api.folder(id)
+            folder to api.folders(folder.id)
+        }, galleryWorker) { result ->
+            if (!dialog.isShowing || driveApi !== api) return@background
+            rows.removeAllViews()
+            fun option(title: String, icon: Int, action: () -> Unit) {
+                rows.addView(settingsRow(title, "", leading = icon, navigate = true).apply {
+                    setOnClickListener { dialog.dismiss(); action() }
+                })
+            }
+            result.onSuccess { (folder, children) ->
+                rows.addView(settingsRow(if (folder.id == driveHome.id) s(R.string.my_drive) else folder.name,
+                    "", leading = R.drawable.ic_folder_open))
+                option(s(R.string.gallery_use_folder), R.drawable.ic_check) {
+                    prefs.edit().putString("gallery_drive_owner", driveHome.id)
+                        .putString("gallery_drive_folder", folder.id)
+                        .putString("gallery_drive_name", if (folder.id == driveHome.id) s(R.string.my_drive) else folder.name)
+                        .apply()
+                    refreshGalleryPreview()
+                    back()
+                }
+                folder.parent?.let { parent ->
+                    option(s(R.string.parent_folder), R.drawable.ic_arrow_up) { chooseDriveGallery(fromEditor, parent) }
+                }
+                if (folder.id != driveHome.id) {
+                    option(s(R.string.my_drive), R.drawable.ic_cloud) { chooseDriveGallery(fromEditor, driveHome.id) }
+                }
+                for (child in children) option(child.name, R.drawable.ic_folder_open) {
+                    chooseDriveGallery(fromEditor, child.id)
+                }
+            }.onFailure {
+                driveError(it, notify = false)
+                rows.addView(label(s(R.string.gallery_unavailable), 14f, palette.muted))
+                if (id != driveHome.id && driveApi === api) option(s(R.string.my_drive), R.drawable.ic_cloud) {
+                    chooseDriveGallery(fromEditor, driveHome.id)
+                }
+            }
+        }
+    }
+
+    private inner class GalleryAdapter : BaseAdapter() {
+        var items = emptyList<GalleryImage>()
+        override fun getCount() = items.size
+        override fun getItem(position: Int) = items[position]
+        override fun getItemId(position: Int) = position.toLong()
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+            ((convertView as? GalleryTile) ?: GalleryTile()).apply { bind(getItem(position)) }
+    }
+
+    private inner class GalleryTile : LinearLayout(this@MainActivity) {
+        private val picture = ImageView(this@MainActivity).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }
+        private val caption = label("", 12f).apply {
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.MIDDLE
+            setPaddingRelative(dp(1), dp(6), dp(1), dp(3))
+        }
+        private var thumbnailTask: Future<*>? = null
+        private var binding = 0
+
+        init {
+            orientation = VERTICAL
+            background = pressSurface(palette.surface, 13, palette.line)
+            setPadding(dp(7), dp(7), dp(7), dp(7))
+            addView(picture, LinearLayout.LayoutParams(MATCH, dp(76)))
+            addView(caption, LinearLayout.LayoutParams(MATCH, WRAP))
+        }
+
+        fun bind(image: GalleryImage) {
+            thumbnailTask?.cancel(false)
+            val generation = ++binding
+            caption.text = image.name
+            picture.setImageDrawable(appIcons.drawable(R.drawable.ic_image, IconStyle.LUCIDE))
+            picture.imageTintList = ColorStateList.valueOf(palette.muted)
+            picture.setPadding(dp(24), dp(24), dp(24), dp(24))
+            val imageApi = driveApi
+            val edge = dp(120).coerceIn(100, 440)
+            val key = Triple(image.uri, image.modified, edge)
+            fun display(bitmap: Bitmap) {
+                picture.imageTintList = null
+                picture.setPadding(0, 0, 0, 0)
+                picture.setImageBitmap(bitmap)
+            }
+            val cached = galleryThumbs.get(key)
+            if (cached != null) {
+                display(cached)
+            } else {
+                thumbnailTask = galleryThumbWorker.submit {
+                    val thumbnail = runCatching {
+                        if (DriveApi.id(image.uri) == null) gallery.thumbnail(image, edge)
+                        else image.driveThumbnail?.let { imageApi?.openGalleryThumbnail(it)?.use { stream -> BitmapFactory.decodeStream(stream) } }
+                    }.getOrNull() ?: return@submit
+                    if (DriveApi.id(image.uri) != null && driveApi !== imageApi) return@submit
+                    galleryThumbs.put(key, thumbnail)
+                    main.post { if (!isDestroyed && binding == generation) display(thumbnail) }
+                }
+            }
+        }
+    }
+
+    private fun insertGalleryImage(image: GalleryImage) {
+        if (!editing || draft == null || busy) return
+        val start = minOf(editor.selectionStart, editor.selectionEnd).coerceIn(0, editor.length())
+        val end = maxOf(editor.selectionStart, editor.selectionEnd).coerceIn(start, editor.length())
+        val selection = editor.text.subSequence(start, end).toString()
+        val alt = selection.ifBlank { image.name.substringBeforeLast('.') }
+        val link = Markdown.galleryLink(image.name, alt, DriveApi.id(image.uri))
+        val next = start + link.length
+        replaceEditorText(start, end, link)
+        editor.requestFocus()
+        editor.setSelection(next)
+        recordChange(EditorChange(start, selection, link, end, next))
+    }
+
+    private fun galleryPickerResult(data: Intent?) {
+        val fromEditor = galleryFromEditor && editing && draft != null
+        val uri = data?.data ?: return showGallery(fromEditor, GallerySource.DEVICE)
+        val previous = galleryUri
+        busy = true
+        background({
+            contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            try {
+                gallery.list(uri)
+            } catch (error: Exception) {
+                if (previous != uri) releaseGrant(uri)
+                throw error
+            }
+        }) { result ->
+            busy = false
+            result.onSuccess {
+                galleryUri = uri
+                prefs.edit().putString("gallery_folder", uri.toString()).apply()
+                if (previous != null && previous != uri) releaseGrant(previous)
+                refreshGalleryPreview()
+            }.onFailure { toast(s(R.string.gallery_unavailable)) }
+            showGallery(fromEditor, GallerySource.DEVICE)
+        }
+    }
+
+    private fun refreshGalleryPreview() {
+        val active = draft ?: return
+        if (editing) return
+        val view = preview ?: return
+        val scroll = view.scrollY
+        destroyPreview()
+        showPreview(active, scroll)
     }
 
     private fun applyShortcut(shortcut: MarkdownShortcut) {
@@ -2709,19 +3121,30 @@ internal class MainActivity : Activity() {
         preview = view
         content.addView(view, frameMatch())
         val tree = folderUri.takeIf { value.local }
+        val galleryTree = galleryUri
         val font = noteFont
         val themeCss = notierTheme.previewCss()
         val curve = if (notierTheme.pixel) 0f else cornerScale
         val strings = PreviewStrings(appLocale.toLanguageTag()) { id, args -> s(id, *args) }
         background({
             val styles = "$themeCss\n:root{--curve:$curve;}\n$css\n${font.previewCss()}"
-            Markdown.render(value.text, styles, tree != null, previewCopyIcon(), copyScript, strings)
+            val page = Markdown.render(value.text, styles, tree != null, previewCopyIcon(), copyScript, strings)
+            val images = if (galleryTree != null && page.galleryImages.isNotEmpty()) {
+                runCatching { gallery.list(galleryTree).images.associateBy { it.name } }.getOrDefault(emptyMap())
+            } else emptyMap()
+            page to images
         }) { result ->
             if (preview !== view) return@background
-            result.onSuccess { page ->
+            result.onSuccess { (page, galleryImages) ->
                 view.settings.javaScriptEnabled = page.hasFrames || page.codeBlocks.isNotEmpty() || page.outline.isNotEmpty()
                 view.settings.domStorageEnabled = page.hasFrames
-                view.webViewClient = PreviewClient(tree, page, font, initialScroll)
+                previewHasDriveImages = page.driveImages.isNotEmpty()
+                val cloud = driveApi?.let { api -> driveGalleryFolder()?.let { DriveGalleryAccess(api, it) } }
+                view.webViewClient = PreviewClient(tree, page, galleryImages, cloud, font, initialScroll)
+                if (previewHasDriveImages && cloud == null && driveApi == null && reconnectDrive &&
+                    !driveNeedsConsent && prefs.contains("gallery_drive_folder")) {
+                    connectDrive(interactive = false)
+                }
                 view.webChromeClient = object : WebChromeClient() {
                     override fun onShowCustomView(video: View, callback: CustomViewCallback) {
                         if (fullScreenCallback != null) {
@@ -2767,9 +3190,13 @@ internal class MainActivity : Activity() {
         showDialog(dialog)
     }
 
+    private data class DriveGalleryAccess(val api: DriveApi, val folder: String)
+
     private inner class PreviewClient(
         private val tree: Uri?,
         private val page: Preview,
+        private val images: Map<String, GalleryImage>,
+        private val driveGallery: DriveGalleryAccess?,
         private val font: NoteFont,
         private var initialScroll: Int
     ) : WebViewClient() {
@@ -2828,6 +3255,28 @@ internal class MainActivity : Activity() {
                 val stream = font.asset?.let { asset -> runCatching { assets.open(asset) }.getOrNull() }
                 if (stream != null) return WebResourceResponse("font/ttf", null, stream)
             }
+            if (url.scheme == "https" && url.authority == Markdown.HOST && !request.isForMainFrame &&
+                path.startsWith(Markdown.GALLERY_PATH)) {
+                val key = path.removePrefix(Markdown.GALLERY_PATH)
+                val image = page.galleryImages[key]?.let(images::get)
+                if (image != null) {
+                    val stream = runCatching { contentResolver.openInputStream(image.uri) }.getOrNull()
+                    if (stream != null) return galleryResponse(image.mime, stream)
+                }
+                val id = page.driveImages[key]
+                val cloud = driveGallery
+                if (id != null && cloud != null && driveApi === cloud.api) {
+                    val loaded = runCatching {
+                        val remote = cloud.api.galleryImage(id, cloud.folder) ?: return@runCatching null
+                        galleryResponse(remote.mime, cloud.api.openGalleryImage(id))
+                    }
+                    loaded.getOrNull()?.let { return it }
+                    val failure = loaded.exceptionOrNull()
+                    if (failure is DriveRequestFailed && failure.status == 401) {
+                        main.post { if (preview === view && driveApi === cloud.api) driveError(failure, notify = false) }
+                    }
+                }
+            }
             val asset = page.localImages[path.removePrefix(Markdown.IMAGE_PATH)]
             val selected = tree
             if (selected != null && path.startsWith(Markdown.IMAGE_PATH) && asset != null) {
@@ -2846,7 +3295,12 @@ internal class MainActivity : Activity() {
         }
     }
 
+    private fun galleryResponse(mime: String, stream: java.io.InputStream) =
+        WebResourceResponse(mime, null, 200, "OK",
+            mapOf("Cache-Control" to "no-store", "X-Content-Type-Options" to "nosniff"), stream)
+
     private fun destroyPreview() {
+        previewHasDriveImages = false
         outline = emptyList()
         if (::contentsButton.isInitialized) contentsButton.visibility = View.GONE
         exitFullscreen()
@@ -3023,6 +3477,13 @@ internal class MainActivity : Activity() {
         }
         if (request == AUTHORIZE_DRIVE) {
             driveAuthorizationResult(result, data)
+            return
+        }
+        if (request == PICK_GALLERY) {
+            pickerPending = false
+            val selected = data.takeIf { result == RESULT_OK }
+            if (startLoading) pendingGalleryResult = selected
+            else galleryPickerResult(selected)
             return
         }
         if (request != PICK_FOLDER && request != SAVE_COPY && request != PICK_DRIVE) return
@@ -3220,13 +3681,14 @@ internal class MainActivity : Activity() {
     private fun persistDraft() {
         if (startLoading || busy) return
         val snapshot = draft
-        val keepClean = pickerPending || keepNoteAfterRecreate
+        val keepClean = pickerPending || keepNoteAfterRecreate || chooseGalleryDriveAfterAuth != null
         worker.execute {
             runCatching { drafts.store(snapshot, keepClean) }
         }
     }
 
     private fun releaseGrant(uri: Uri): Boolean {
+        if (uri == folderUri || uri == galleryUri) return true
         val grant = contentResolver.persistedUriPermissions.firstOrNull { it.uri == uri } ?: return true
         val flags = (if (grant.isReadPermission) Intent.FLAG_GRANT_READ_URI_PERMISSION else 0) or
             (if (grant.isWritePermission) Intent.FLAG_GRANT_WRITE_URI_PERMISSION else 0)
@@ -3340,8 +3802,8 @@ internal class MainActivity : Activity() {
         }
     }
 
-    private fun <T> background(action: () -> T, done: (Result<T>) -> Unit) {
-        worker.execute {
+    private fun <T> background(action: () -> T, executor: java.util.concurrent.Executor = worker, done: (Result<T>) -> Unit) {
+        executor.execute {
             val result = runCatching(action)
             main.post { if (!isDestroyed && !isFinishing) done(result) }
         }
@@ -3457,13 +3919,19 @@ internal class MainActivity : Activity() {
         val pressed = if (accented) palette.accentPressed else palette.pressed
         val hovered = if (accented) palette.accentHover else palette.hover
         fun face(fill: Int, edge: Int?, inset: Boolean = false): android.graphics.drawable.Drawable {
-            if (!notierTheme.pixel || !accented) return rounded(fill, radius, edge)
-            val light = Color.rgb(132, 159, 98)
-            val dark = Color.rgb(45, 58, 32)
-            val bevel = px(2f).coerceAtLeast(1)
-            return LayerDrawable(arrayOf(rounded(dark, 0), rounded(if (inset) dark else light, 0), rounded(fill, 0))).apply {
+            if (!notierTheme.pixel || fill == Color.TRANSPARENT) return rounded(fill, radius, edge)
+            if (!accented && color != palette.surface) return rounded(fill, radius, edge)
+            val light = if (accented) Color.rgb(153, 176, 113) else palette.paper
+            val dark = edge ?: if (accented) Color.rgb(42, 52, 28) else palette.line
+            val bevel = px(if (accented) 2f else 1f).coerceAtLeast(1)
+            return LayerDrawable(arrayOf(
+                rounded(dark, radius),
+                rounded(if (inset) dark else light, radius),
+                rounded(fill, radius)
+            )).apply {
                 setLayerInset(1, bevel, bevel, bevel, bevel)
-                setLayerInset(2, bevel * 2, if (inset) bevel * 3 else bevel * 2, bevel * 2, bevel * 3)
+                setLayerInset(2, bevel * 2, if (inset) bevel * 3 else bevel * 2,
+                    bevel * 2, if (inset) bevel * 2 else bevel * 3)
             }
         }
         addState(intArrayOf(-android.R.attr.state_enabled), face(color, border, true))
@@ -3534,6 +4002,7 @@ internal class MainActivity : Activity() {
         private const val AUTHORIZE_DRIVE = 14
         private const val PICK_GOOGLE_ACCOUNT = 15
         private const val UPDATE_PERMISSION = 16
+        private const val PICK_GALLERY = 17
         private const val DOCUMENT_GRANTS = Intent.FLAG_GRANT_READ_URI_PERMISSION or
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         private const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
